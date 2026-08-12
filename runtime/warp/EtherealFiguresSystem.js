@@ -68,7 +68,7 @@ export class EtherealFiguresSystem{
     const living=clamp01(state.livingLight||0),ideal=clamp01(state.idealized||0),review=clamp01(state.lifeReview||0);
     const boundary=clamp01(state.boundary||0),ret=clamp01(state.returnForce||0),finalFade=clamp01(state.finalFade||0);
     const stageEligible=stage==='LIVING_LIGHT'||stage==='IDEALIZED_COSMOS'||stage==='LIFE_REVIEW';
-    const presence=clamp01(Math.max(living*.92,ideal*.98,review*.92,stageEligible?.14:0))*(1-boundary*.94)*(1-ret)*(1-finalFade);
+    const presence=clamp01(Math.max(living*.92,ideal*.98,review*.92,stageEligible ? .14 : 0))*(1-boundary*.94)*(1-ret)*(1-finalFade);
     const p=clamp01(state.soulProgress||0);
     const sequence=clamp01((p-.55)/.30);
     const vpX=(vanishingPoint?.x||0),vpY=(vanishingPoint?.y||0);
