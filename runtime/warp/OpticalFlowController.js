@@ -1,3 +1,12 @@
-const clamp=(v,min,max)=>Math.max(min,Math.min(max,v)),clamp01=v=>clamp(v,0,1);
-const directions=[{x:0,y:0},{x:-.85,y:.28},{x:.72,y:.58},{x:1,y:-.22},{x:-.55,y:-.72},{x:.15,y:.92},{x:-1,y:.05},{x:.42,y:-.92},{x:.92,y:.35}];
-export class OpticalFlowController{constructor(){this.time=0;this.vanishingX=0;this.vanishingY=0;this.bank=0;this.segmentAge=0;this.index=0;this.lastTransient=0;}update(dt,state,features){this.time+=dt;this.segmentAge+=dt;const energy=features?.energy??state.warpIntensity,crescendo=features?.crescendo??0,transient=features?.transient??0,drive=clamp01(state.warpIntensity*.45+energy*.34+crescendo*.55),strongBeat=transient>.22&&this.lastTransient<=.22;this.lastTransient=transient;const maxSegment=7.2-drive*3.2,minSegment=2.25-drive*.45;if((strongBeat&&this.segmentAge>minSegment)||this.segmentAge>maxSegment){this.index=(this.index+1)%directions.length;this.segmentAge=0;}const dir=directions[this.index],amp=.055+drive*.115+crescendo*.045,breath=.012+drive*.012,tx=dir.x*amp+Math.sin(this.time*.23)*breath+Math.sin(this.time*.071)*breath*.55,ty=dir.y*amp*.78+Math.cos(this.time*.19)*breath*.72,response=.62+drive*1.25,prevX=this.vanishingX;this.vanishingX+=(tx-this.vanishingX)*(1-Math.exp(-response*dt));this.vanishingY+=(ty-this.vanishingY)*(1-Math.exp(-response*dt));const lateralVelocity=(this.vanishingX-prevX)/Math.max(.001,dt),targetBank=clamp(-lateralVelocity*.018,-.055,.055);this.bank+=(targetBank-this.bank)*(1-Math.exp(-(1.4+drive*2.2)*dt));return{x:this.vanishingX,y:this.vanishingY,bank:this.bank};}}
+const clamp01=v=>Math.max(0,Math.min(1,v));
+export class OpticalFlowController{
+  constructor(){this.time=0;this.bank=0;}
+  update(dt,state,features){
+    this.time+=dt;
+    // Permanent hypnotic travel invariant: normalized origin is exactly (0.5,0.5), represented here as scene offset (0,0).
+    // No lateral drift, oscillation, directional jumps or camera banking are permitted.
+    this.bank+=(0-this.bank)*(1-Math.exp(-4*dt));
+    const breath=Math.sin((this.time/4)*Math.PI*2)*.0035;
+    return{x:0,y:0,bank:this.bank,radialBreath:breath,drive:clamp01((state?.warpIntensity||0)*.6+(features?.energy||0)*.4)};
+  }
+}
