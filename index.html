@@ -201,7 +201,75 @@ const nMat = new THREE.PointsMaterial({size:3.5, vertexColors:true, transparent:
   sizeAttenuation:true, depthWrite:false, blending:THREE.AdditiveBlending});
 scene.add(new THREE.Points(nGeo, nMat));
 
-// ── Tunnel rings — sized to stay inside viewport ────────
+// ── Galactic cloud spheres — luminous orbs you fly through ──
+// Each is a dense sphere of particles with its own color and position
+// They spawn ahead, you fly into and through them
+const CLOUD_SPHERES = 12;
+const PTS_PER_CLOUD = 320;
+const cloudMeshes   = [];
+const cloudData     = []; // {baseX, baseY, baseZ, radius, hue}
+
+const cloudColors = [
+  [0.55, 0.75, 1.00], // ice blue
+  [0.80, 0.40, 1.00], // violet
+  [0.20, 0.80, 0.70], // teal
+  [1.00, 0.55, 0.20], // amber
+  [0.30, 0.50, 1.00], // cobalt
+  [1.00, 0.30, 0.50], // rose
+];
+
+for (let s = 0; s < CLOUD_SPHERES; s++) {
+  const cGeo = new THREE.BufferGeometry();
+  const cPos = new Float32Array(PTS_PER_CLOUD * 3);
+  const cCol = new Float32Array(PTS_PER_CLOUD * 3);
+
+  const col = cloudColors[s % cloudColors.length];
+  for (let i = 0; i < PTS_PER_CLOUD; i++) {
+    // Uniform sphere distribution
+    const u  = Math.random(), v = Math.random();
+    const th = 2 * Math.PI * u;
+    const ph = Math.acos(2*v - 1);
+    const r  = Math.random(); // volume fill
+    cPos[i*3]   = r * Math.sin(ph) * Math.cos(th);
+    cPos[i*3+1] = r * Math.sin(ph) * Math.sin(th);
+    cPos[i*3+2] = r * Math.cos(ph);
+    // Color: core brighter, edges dimmer
+    const br = 0.4 + r * 0.6;
+    cCol[i*3]   = col[0] * br;
+    cCol[i*3+1] = col[1] * br;
+    cCol[i*3+2] = col[2] * br;
+  }
+  cGeo.setAttribute('position', new THREE.BufferAttribute(cPos, 3));
+  cGeo.setAttribute('color',    new THREE.BufferAttribute(cCol, 3));
+
+  const cMat = new THREE.PointsMaterial({
+    size: 0.28, vertexColors: true,
+    transparent: true, opacity: 0.0,  // start invisible, fade in
+    sizeAttenuation: true, depthWrite: false,
+    blending: THREE.AdditiveBlending
+  });
+
+  const cloud = new THREE.Points(cGeo, cMat);
+  cloud.scale.setScalar(4 + Math.random() * 5); // radius 4–9 world units
+
+  // Distribute along tunnel, offset from center
+  const angle  = Math.random() * Math.PI * 2;
+  const offset = 3 + Math.random() * 5;
+  cloud.position.set(
+    Math.cos(angle) * offset,
+    Math.sin(angle) * offset,
+    -(30 + s * 22 + Math.random() * 15)
+  );
+
+  scene.add(cloud);
+  cloudMeshes.push(cloud);
+  cloudData.push({
+    hue:    s / CLOUD_SPHERES,
+    radius: cloud.scale.x,
+    col:    col,
+  });
+}
+
 // Ring radius chosen so it fits screen regardless of orientation
 function ringRadius() {
   // Project a circle at z=-20 and see how big it needs to be to frame the view
@@ -555,6 +623,65 @@ function loop() {
 
   scene.fog.near = 35 + energy * 18;
   scene.fog.far  = 140 + energy * 70;
+
+  // ── Galactic cloud spheres ─────────────────────────
+  for (let s = 0; s < CLOUD_SPHERES; s++) {
+    const cloud = cloudMeshes[s];
+    const cd    = cloudData[s];
+    const mat   = cloud.material;
+
+    // Move with the warp (same speed as rings)
+    cloud.position.z += warpSpeed * 2.8;
+
+    // Distance from camera to cloud center
+    const dz   = cloud.position.z - camZ;
+    const dx   = cloud.position.x - cx;
+    const dy   = cloud.position.y - cy;
+    const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+    const R    = cd.radius;
+
+    // Fade in as we approach, peak opacity when inside, fade out behind
+    let opacity = 0;
+    if (dz < 0 && dz > -R * 3) {
+      // Approaching — fade in
+      opacity = Math.max(0, 1 - Math.abs(dz) / (R * 3));
+    } else if (dz >= 0 && dz < R) {
+      // We're inside or just passed — glow
+      opacity = 1 - dz / R;
+    }
+
+    // Pulse with music
+    mat.opacity = Math.min(0.75, opacity * (0.35 + sBass * 0.45 + sMid * 0.2));
+    mat.size    = 0.22 + sBass * 0.18 + sHi * 0.08;
+
+    // Slow rotation for living feel
+    cloud.rotation.y += dt * 0.08;
+    cloud.rotation.x += dt * 0.05;
+
+    // Respawn ahead when fully behind camera
+    if (cloud.position.z > camZ + R + 5) {
+      const angle  = Math.random() * Math.PI * 2;
+      const offset = 2 + Math.random() * 6;
+      cloud.position.set(
+        cx + Math.cos(angle) * offset,
+        cy + Math.sin(angle) * offset,
+        camZ - 200 - Math.random() * 60
+      );
+      cloud.scale.setScalar(4 + Math.random() * 5);
+      cd.radius = cloud.scale.x;
+      // New color on respawn
+      const newCol = cloudColors[Math.floor(Math.random() * cloudColors.length)];
+      cd.col = newCol;
+      const cColArr = cloud.geometry.attributes.color.array;
+      for (let i = 0; i < PTS_PER_CLOUD; i++) {
+        const br = 0.4 + Math.random() * 0.6;
+        cColArr[i*3]   = newCol[0] * br;
+        cColArr[i*3+1] = newCol[1] * br;
+        cColArr[i*3+2] = newCol[2] * br;
+      }
+      cloud.geometry.attributes.color.needsUpdate = true;
+    }
+  }
 
   renderer.render(scene, camera);
 }
