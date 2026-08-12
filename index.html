@@ -2,14 +2,28 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover"/>
   <title>Interstellar Journey</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-    html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:-apple-system,sans-serif;color:#fff}
-    canvas{position:fixed;top:0;left:0;width:100%;height:100%}
+    html,body{
+      width:100%;height:100%;
+      overflow:hidden;background:#000;
+      font-family:-apple-system,sans-serif;color:#fff;
+      /* Prevent iOS bounce scroll */
+      position:fixed;top:0;left:0;right:0;bottom:0;
+    }
+    canvas{
+      position:fixed;top:0;left:0;
+      width:100% !important;height:100% !important;
+      display:block;
+    }
 
-    #ui{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;transition:opacity 1.2s}
+    #ui{
+      position:fixed;inset:0;z-index:20;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      background:#000;transition:opacity 1.2s;
+    }
     #ui.gone{opacity:0;pointer-events:none}
 
     h1{font-size:clamp(1.4rem,5vw,2.8rem);font-weight:200;letter-spacing:.5em;color:#a8c4e8;text-transform:uppercase;margin-bottom:8px;text-align:center}
@@ -30,15 +44,13 @@
     #startBtn:active{background:rgba(90,143,192,.1);border-color:#5a8fc0}
     #startBtn svg{width:36px;height:36px;stroke:#5a8fc0;fill:none;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round}
 
-    #loadBar{
-      width:200px;height:2px;background:#0a1020;border-radius:2px;margin-top:30px;overflow:hidden;
-      display:none;
-    }
+    #loadBar{width:200px;height:2px;background:#0a1020;border-radius:2px;margin-top:30px;overflow:hidden;display:none;}
     #loadFill{height:100%;background:linear-gradient(90deg,#1a3a6a,#5a8fc0);width:0%;transition:width .3s;}
     #loadTxt{font-size:.68rem;color:#2a3a4a;letter-spacing:.15em;margin-top:10px;display:none;}
 
     #hud{
-      position:fixed;bottom:max(28px,env(safe-area-inset-bottom,28px));
+      position:fixed;
+      bottom:max(28px,env(safe-area-inset-bottom,28px));
       left:50%;transform:translateX(-50%);z-index:30;
       display:flex;align-items:center;gap:20px;
       background:rgba(0,5,15,.75);border:1px solid #0a2030;border-radius:60px;
@@ -49,12 +61,26 @@
     #hud button{background:none;border:none;color:#5a8fc0;font-size:1.3rem;cursor:pointer;padding:4px 8px;-webkit-appearance:none;min-width:44px;min-height:44px}
     #tname{font-size:.7rem;color:#2a3a4a;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-    #back{position:fixed;top:max(18px,env(safe-area-inset-top,18px));left:18px;z-index:30;
+    #back{
+      position:fixed;
+      top:max(18px,env(safe-area-inset-top,18px));
+      left:max(18px,env(safe-area-inset-left,18px));
+      z-index:30;
       background:rgba(0,5,15,.65);border:1px solid #0a2030;border-radius:20px;
       color:#2a3a4a;font-size:.7rem;padding:10px 18px;cursor:pointer;
       opacity:0;pointer-events:none;transition:opacity .5s;
-      -webkit-appearance:none;min-height:44px;letter-spacing:.1em}
+      -webkit-appearance:none;min-height:44px;letter-spacing:.1em;
+    }
     #back.on{opacity:1;pointer-events:all}
+
+    /* Fullscreen hint — shows briefly on load */
+    #fsHint{
+      position:fixed;top:max(18px,env(safe-area-inset-top,18px));right:18px;
+      z-index:30;opacity:0;pointer-events:none;
+      font-size:.62rem;color:#1a2a3a;letter-spacing:.12em;
+      transition:opacity 1s;
+    }
+    #fsHint.show{opacity:1}
   </style>
 </head>
 <body>
@@ -63,12 +89,10 @@
 <div id="ui">
   <h1>Interstellar</h1>
   <p class="sub">Journey Through Space</p>
-
   <button id="startBtn">
-    <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+    <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21" fill="#5a8fc0" stroke="none"/></svg>
     Iniciar
   </button>
-
   <div id="loadBar"><div id="loadFill"></div></div>
   <div id="loadTxt"></div>
 </div>
@@ -79,9 +103,41 @@
   <button id="stopBtn">⏹</button>
 </div>
 <button id="back">← Volver</button>
+<div id="fsHint">⛶ Pantalla completa</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
+// ══════════════════════════════════════════════════════
+// FULLSCREEN + RESIZE
+// ══════════════════════════════════════════════════════
+function requestFS() {
+  const el = document.documentElement;
+  const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+  if (req) req.call(el).catch(() => {});
+}
+
+// Request fullscreen on first user interaction (startBtn click)
+// iOS Safari doesn't support fullscreen API but we use CSS to fill 100%
+
+function updateSize() {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  renderer.setSize(w, h);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+
+  // Recompute viewport-dependent tunnel bounds
+  VIEWPORT_W = w;
+  VIEWPORT_H = h;
+}
+
+// Listen for orientation change + resize
+window.addEventListener('resize', () => { updateSize(); });
+window.addEventListener('orientationchange', () => {
+  // Small delay for iOS to settle
+  setTimeout(updateSize, 300);
+});
+
 // ══════════════════════════════════════════════════════
 // RENDERER
 // ══════════════════════════════════════════════════════
@@ -90,64 +146,101 @@ const renderer = new THREE.WebGLRenderer({canvas:cv, antialias:false, powerPrefe
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(innerWidth, innerHeight);
 renderer.setClearColor(0x000005);
+
 const scene  = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x000008, 0.08);
+scene.fog = new THREE.FogExp2(0x000008, 0.075);
+
 const camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.01, 300);
-camera.position.set(0,0,0);
-addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+camera.position.set(0, 0, 0);
 
-// ── Stars ──────────────────────────────────────────
-const STAR_COUNT = 6000, TUNNEL_RADIUS = 12, TUNNEL_LENGTH = 300;
-const starGeo = new THREE.BufferGeometry();
-const starPos = new Float32Array(STAR_COUNT*3);
-const starCol = new Float32Array(STAR_COUNT*3);
-const starSeed= new Float32Array(STAR_COUNT);
+let VIEWPORT_W = innerWidth, VIEWPORT_H = innerHeight;
 
-for(let i=0;i<STAR_COUNT;i++){resetStar(i,true);starSeed[i]=Math.random()*Math.PI*2;}
-starGeo.setAttribute('position',new THREE.BufferAttribute(starPos,3));
-starGeo.setAttribute('color',new THREE.BufferAttribute(starCol,3));
-const starMat=new THREE.PointsMaterial({size:.18,vertexColors:true,transparent:true,opacity:.9,sizeAttenuation:true,depthWrite:false,blending:THREE.AdditiveBlending});
-scene.add(new THREE.Points(starGeo,starMat));
+// ── Frustum helper — keeps objects inside view ──────
+// We'll use this to clamp camera wander so stars never escape
+const MAX_CAM_OFFSET = 2.5; // max camera X/Y displacement from tunnel center
 
-function resetStar(i,init){
-  const angle=Math.random()*Math.PI*2, r=TUNNEL_RADIUS*(.3+Math.random()*.7);
-  starPos[i*3]=Math.cos(angle)*r; starPos[i*3+1]=Math.sin(angle)*r;
-  starPos[i*3+2]=init?-Math.random()*TUNNEL_LENGTH:-TUNNEL_LENGTH*.5;
-  const warm=Math.random()<.15;
-  if(warm){starCol[i*3]=1;starCol[i*3+1]=.7+Math.random()*.3;starCol[i*3+2]=.3+Math.random()*.3;}
-  else{const t=Math.random();starCol[i*3]=.6+t*.4;starCol[i*3+1]=.7+t*.3;starCol[i*3+2]=.9+t*.1;}
+// ── Stars ───────────────────────────────────────────
+const STAR_COUNT = 7000;
+const TUNNEL_RADIUS = 14;
+const TUNNEL_LENGTH = 300;
+
+const starGeo  = new THREE.BufferGeometry();
+const starPos  = new Float32Array(STAR_COUNT * 3);
+const starCol  = new Float32Array(STAR_COUNT * 3);
+const starSeed = new Float32Array(STAR_COUNT);
+
+for (let i = 0; i < STAR_COUNT; i++) { resetStar(i, true); starSeed[i] = Math.random() * Math.PI * 2; }
+starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+starGeo.setAttribute('color',    new THREE.BufferAttribute(starCol, 3));
+
+const starMat = new THREE.PointsMaterial({
+  size:.18, vertexColors:true, transparent:true, opacity:.9,
+  sizeAttenuation:true, depthWrite:false, blending:THREE.AdditiveBlending
+});
+scene.add(new THREE.Points(starGeo, starMat));
+
+function resetStar(i, init) {
+  const angle = Math.random() * Math.PI * 2;
+  // Distribute across full tunnel width + a wall ring at the edge
+  const wallBias = Math.random() < 0.3; // 30% on the outer ring wall
+  const r = wallBias
+    ? TUNNEL_RADIUS * (0.85 + Math.random() * 0.15)
+    : TUNNEL_RADIUS * (0.1 + Math.random() * 0.75);
+  starPos[i*3]   = Math.cos(angle) * r;
+  starPos[i*3+1] = Math.sin(angle) * r;
+  starPos[i*3+2] = init ? -Math.random() * TUNNEL_LENGTH : -TUNNEL_LENGTH * 0.5;
+  const warm = Math.random() < 0.15;
+  if (warm) { starCol[i*3]=1; starCol[i*3+1]=.7+Math.random()*.3; starCol[i*3+2]=.3+Math.random()*.3; }
+  else { const t=Math.random(); starCol[i*3]=.6+t*.4; starCol[i*3+1]=.7+t*.3; starCol[i*3+2]=.9+t*.1; }
 }
 
-// ── Nebula ─────────────────────────────────────────
-const NEBULA_COUNT=1200;
-const nebGeo=new THREE.BufferGeometry();
-const nebPos=new Float32Array(NEBULA_COUNT*3), nebCol=new Float32Array(NEBULA_COUNT*3);
-const nebColors=[[.2,.4,.9],[.5,.1,.8],[.1,.6,.5],[.8,.2,.3]];
-for(let i=0;i<NEBULA_COUNT;i++)resetNebula(i,true);
-nebGeo.setAttribute('position',new THREE.BufferAttribute(nebPos,3));
-nebGeo.setAttribute('color',new THREE.BufferAttribute(nebCol,3));
-const nebMat=new THREE.PointsMaterial({size:2.5,vertexColors:true,transparent:true,opacity:.06,sizeAttenuation:true,depthWrite:false,blending:THREE.AdditiveBlending});
-scene.add(new THREE.Points(nebGeo,nebMat));
+// ── Nebula ──────────────────────────────────────────
+const NEBULA_COUNT = 1400;
+const nebGeo = new THREE.BufferGeometry();
+const nebPos = new Float32Array(NEBULA_COUNT * 3);
+const nebCol = new Float32Array(NEBULA_COUNT * 3);
+const nebColors = [[.2,.4,.9],[.5,.1,.8],[.1,.6,.5],[.8,.2,.3],[.1,.3,.8]];
+for (let i = 0; i < NEBULA_COUNT; i++) resetNebula(i, true);
+nebGeo.setAttribute('position', new THREE.BufferAttribute(nebPos, 3));
+nebGeo.setAttribute('color',    new THREE.BufferAttribute(nebCol, 3));
+const nebMat = new THREE.PointsMaterial({
+  size:3, vertexColors:true, transparent:true, opacity:.06,
+  sizeAttenuation:true, depthWrite:false, blending:THREE.AdditiveBlending
+});
+scene.add(new THREE.Points(nebGeo, nebMat));
 
-function resetNebula(i,init){
-  const angle=Math.random()*Math.PI*2, r=TUNNEL_RADIUS*(.1+Math.random()*1.2);
-  nebPos[i*3]=Math.cos(angle)*r; nebPos[i*3+1]=Math.sin(angle)*r;
-  nebPos[i*3+2]=init?-Math.random()*TUNNEL_LENGTH:-TUNNEL_LENGTH*.45;
-  const c=nebColors[Math.floor(Math.random()*nebColors.length)];
-  nebCol[i*3]=c[0];nebCol[i*3+1]=c[1];nebCol[i*3+2]=c[2];
+function resetNebula(i, init) {
+  const angle = Math.random() * Math.PI * 2;
+  const r = TUNNEL_RADIUS * (0.05 + Math.random() * 0.9); // strictly inside tunnel
+  nebPos[i*3]   = Math.cos(angle) * r;
+  nebPos[i*3+1] = Math.sin(angle) * r;
+  nebPos[i*3+2] = init ? -Math.random() * TUNNEL_LENGTH : -TUNNEL_LENGTH * 0.45;
+  const c = nebColors[Math.floor(Math.random() * nebColors.length)];
+  nebCol[i*3]=c[0]; nebCol[i*3+1]=c[1]; nebCol[i*3+2]=c[2];
 }
 
-// ── Rings ──────────────────────────────────────────
-const rings=[];
-for(let i=0;i<30;i++)createRing(-i*10-5);
-function createRing(zPos){
-  const segs=80, geo=new THREE.BufferGeometry();
-  const pos=new Float32Array(segs*3);
-  for(let i=0;i<segs;i++){const a=(i/segs)*Math.PI*2;pos[i*3]=Math.cos(a)*TUNNEL_RADIUS;pos[i*3+1]=Math.sin(a)*TUNNEL_RADIUS;pos[i*3+2]=0;}
-  geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
-  const mat=new THREE.PointsMaterial({size:.12,color:new THREE.Color().setHSL(Math.random(),.8,.7),transparent:true,opacity:.4,blending:THREE.AdditiveBlending,depthWrite:false});
-  const ring=new THREE.Points(geo,mat);
-  ring.position.z=zPos;
+// ── Rings ───────────────────────────────────────────
+const rings = [];
+for (let i = 0; i < 32; i++) createRing(-i * 9 - 5);
+function createRing(zPos) {
+  const segs = 96;
+  const geo  = new THREE.BufferGeometry();
+  const pos  = new Float32Array(segs * 3);
+  const hue  = Math.random();
+  for (let i = 0; i < segs; i++) {
+    const a = (i / segs) * Math.PI * 2;
+    // Ring exactly at tunnel radius — never outside
+    pos[i*3]   = Math.cos(a) * TUNNEL_RADIUS;
+    pos[i*3+1] = Math.sin(a) * TUNNEL_RADIUS;
+    pos[i*3+2] = 0;
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const mat = new THREE.PointsMaterial({
+    size:.14, color:new THREE.Color().setHSL(hue, .85, .7),
+    transparent:true, opacity:.35, blending:THREE.AdditiveBlending, depthWrite:false
+  });
+  const ring = new THREE.Points(geo, mat);
+  ring.position.z = zPos;
   scene.add(ring); rings.push(ring);
 }
 
@@ -155,233 +248,288 @@ function createRing(zPos){
 // AUDIO
 // ══════════════════════════════════════════════════════
 const AUDIO_URL = 'https://raw.githubusercontent.com/PyCHile/Music_pulse/main/music.mp3';
-let actx=null,analyser=null,freq=null;
-let srcNode=null,audioBuf=null;
-let playing=false,paused=false,pauseAt=0,startAt=0;
+let actx=null, analyser=null, freq=null;
+let srcNode=null, audioBuf=null;
+let playing=false, paused=false, pauseAt=0, startAt=0;
 let windGain=null;
 
 const loadBar  = document.getElementById('loadBar');
 const loadFill = document.getElementById('loadFill');
 const loadTxt  = document.getElementById('loadTxt');
 
-function setLoad(pct, txt){
-  loadBar.style.display='block'; loadTxt.style.display='block';
-  loadFill.style.width = pct+'%';
-  loadTxt.textContent = txt;
+function setLoad(pct, txt) {
+  loadBar.style.display = 'block'; loadTxt.style.display = 'block';
+  loadFill.style.width  = pct + '%';
+  loadTxt.textContent   = txt;
 }
 
-document.getElementById('startBtn').addEventListener('click', async function(){
-  this.style.display='none';
-  setLoad(5,'Iniciando…');
+document.getElementById('startBtn').addEventListener('click', async function() {
+  // Request fullscreen here — this is a user gesture
+  requestFS();
 
-  // Create AudioContext synchronously in click handler
-  try{
-    actx = new(window.AudioContext||window.webkitAudioContext)();
+  this.style.display = 'none';
+  setLoad(5, 'Iniciando…');
+
+  try {
+    actx = new (window.AudioContext || window.webkitAudioContext)();
     await actx.resume();
-  }catch(e){setLoad(0,'Error: '+e.message);return;}
+  } catch(e) { setLoad(0, 'Error: ' + e.message); return; }
 
-  setLoad(10,'Descargando audio…');
+  setLoad(10, 'Descargando audio…');
 
-  // Fetch with progress
-  try{
+  try {
     const resp = await fetch(AUDIO_URL);
-    if(!resp.ok) throw new Error('HTTP '+resp.status);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
     const total = +resp.headers.get('Content-Length') || 0;
-    const reader2 = resp.body.getReader();
-    const chunks = [];
-    let received = 0;
-    while(true){
-      const {done,value} = await reader2.read();
-      if(done) break;
-      chunks.push(value);
-      received += value.length;
-      if(total) setLoad(10 + (received/total)*70, `Cargando… ${Math.round(received/1024/1024)}MB`);
+    const rdr   = resp.body.getReader();
+    const chunks = []; let received = 0;
+    while (true) {
+      const {done, value} = await rdr.read();
+      if (done) break;
+      chunks.push(value); received += value.length;
+      if (total) setLoad(10 + (received/total)*70, `Cargando… ${Math.round(received/1024/1024)}MB`);
     }
-    setLoad(80,'Decodificando…');
-    const blob = new Blob(chunks);
-    const arrayBuf = await blob.arrayBuffer();
-
-    audioBuf = await actx.decodeAudioData(arrayBuf);
-    setLoad(100,'¡Listo!');
-    setTimeout(()=>{ startJourney(); }, 400);
-
-  }catch(err){
-    setLoad(0,'Error: '+err.message+'. Intenta recargar.');
+    setLoad(82, 'Decodificando…');
+    const ab = await new Blob(chunks).arrayBuffer();
+    audioBuf  = await actx.decodeAudioData(ab);
+    setLoad(100, '¡Listo!');
+    setTimeout(startJourney, 400);
+  } catch(err) {
+    setLoad(0, 'Error: ' + err.message);
     console.error(err);
   }
 });
 
-function createWind(){
-  if(!actx) return;
-  windGain = actx.createGain();
-  windGain.gain.value = 0;
+function createWind() {
+  if (!actx) return;
+  windGain = actx.createGain(); windGain.gain.value = 0;
   const filt = actx.createBiquadFilter();
-  filt.type='bandpass'; filt.frequency.value=600; filt.Q.value=0.4;
+  filt.type='bandpass'; filt.frequency.value=600; filt.Q.value=.4;
   windGain.connect(filt); filt.connect(actx.destination);
-  [180,320,550,900,1400].forEach(f=>{
-    const o=actx.createOscillator(); o.type='sawtooth';
-    o.frequency.value=f+Math.random()*40;
-    const g=actx.createGain(); g.gain.value=.012+Math.random()*.008;
+  [180,320,550,900,1400].forEach(f => {
+    const o = actx.createOscillator(); o.type='sawtooth';
+    o.frequency.value = f + Math.random()*40;
+    const g = actx.createGain(); g.gain.value = .012 + Math.random()*.008;
     o.connect(g); g.connect(windGain); o.start();
   });
 }
 
-function triggerWind(intensity){
-  if(!windGain) return;
-  const now=actx.currentTime;
+function triggerWind(intensity) {
+  if (!windGain) return;
+  const now = actx.currentTime;
   windGain.gain.cancelScheduledValues(now);
-  windGain.gain.setValueAtTime(windGain.gain.value,now);
-  windGain.gain.linearRampToValueAtTime(intensity*.28,now+.06);
-  windGain.gain.exponentialRampToValueAtTime(.001,now+1.4);
+  windGain.gain.setValueAtTime(windGain.gain.value, now);
+  windGain.gain.linearRampToValueAtTime(intensity * .28, now + .06);
+  windGain.gain.exponentialRampToValueAtTime(.001, now + 1.4);
 }
 
-function setupNodes(){
-  if(srcNode){try{srcNode.stop();}catch(_){}}
-  analyser=actx.createAnalyser(); analyser.fftSize=2048; analyser.smoothingTimeConstant=.8;
-  freq=new Uint8Array(analyser.frequencyBinCount);
-  srcNode=actx.createBufferSource(); srcNode.buffer=audioBuf;
+function setupNodes() {
+  if (srcNode) { try { srcNode.stop(); } catch(_){} }
+  analyser = actx.createAnalyser(); analyser.fftSize=2048; analyser.smoothingTimeConstant=.8;
+  freq = new Uint8Array(analyser.frequencyBinCount);
+  srcNode = actx.createBufferSource(); srcNode.buffer = audioBuf;
   srcNode.connect(analyser); analyser.connect(actx.destination);
   createWind();
 }
 
-function startSource(offset){
-  srcNode.start(0,offset); startAt=actx.currentTime-offset;
+function startSource(offset) {
+  srcNode.start(0, offset); startAt = actx.currentTime - offset;
   playing=true; paused=false;
-  srcNode.onended=()=>{if(!paused)playing=false;};
+  srcNode.onended = () => { if (!paused) playing=false; };
 }
 
-function startJourney(){
+function startJourney() {
   setupNodes();
-  actx.resume().then(()=>{
+  actx.resume().then(() => {
     startSource(0);
     document.getElementById('ui').classList.add('gone');
     document.getElementById('hud').classList.add('on');
     document.getElementById('back').classList.add('on');
+    document.getElementById('pauseBtn').textContent = '⏸';
   });
 }
 
-document.getElementById('pauseBtn').addEventListener('click',()=>{
-  if(!actx||!srcNode) return;
-  if(paused){
-    setupNodes(); actx.resume().then(()=>{startSource(pauseAt);document.getElementById('pauseBtn').textContent='⏸';});
-  }else{
-    pauseAt=actx.currentTime-startAt;
-    try{srcNode.stop();}catch(_){}
-    playing=false;paused=true;document.getElementById('pauseBtn').textContent='▶';
+document.getElementById('pauseBtn').addEventListener('click', () => {
+  if (!actx || !srcNode) return;
+  if (paused) {
+    setupNodes(); actx.resume().then(() => { startSource(pauseAt); document.getElementById('pauseBtn').textContent='⏸'; });
+  } else {
+    pauseAt = actx.currentTime - startAt;
+    try { srcNode.stop(); } catch(_){}
+    playing=false; paused=true; document.getElementById('pauseBtn').textContent='▶';
   }
 });
-document.getElementById('stopBtn').addEventListener('click',stopAll);
-document.getElementById('back').addEventListener('click',stopAll);
+document.getElementById('stopBtn').addEventListener('click', stopAll);
+document.getElementById('back').addEventListener('click', stopAll);
 
-function stopAll(){
-  if(srcNode){try{srcNode.stop();}catch(_){}srcNode=null;}
-  if(actx){try{actx.close();}catch(_){}actx=null;}
-  playing=false;paused=false;analyser=null;windGain=null;
+function stopAll() {
+  if (srcNode) { try { srcNode.stop(); } catch(_){} srcNode=null; }
+  if (actx)   { try { actx.close();   } catch(_){} actx=null; }
+  playing=false; paused=false; analyser=null; windGain=null;
   document.getElementById('hud').classList.remove('on');
   document.getElementById('back').classList.remove('on');
   document.getElementById('ui').classList.remove('gone');
   document.getElementById('startBtn').style.display='';
   loadBar.style.display='none'; loadTxt.style.display='none';
+  // Exit fullscreen
+  const exit = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen;
+  if (exit) exit.call(document).catch(()=>{});
 }
 
 // ══════════════════════════════════════════════════════
 // RENDER LOOP
 // ══════════════════════════════════════════════════════
-let t=0,camYaw=0,camPitch=0,targetYaw=0,targetPitch=0;
-let lastBass=0,lastMid=0,ringTimer=0,turnTimer=0;
+let t=0, camYaw=0, camPitch=0, targetYaw=0, targetPitch=0;
+let lastBass=0, lastMid=0, ringTimer=0, turnTimer=0;
 let turnInterval=4+Math.random()*4, windTriggered=false;
-let lx=0,ly=0;
+let lx=0, ly=0;
 
-cv.addEventListener('touchstart',e=>{lx=e.touches[0].clientX;ly=e.touches[0].clientY;},{passive:true});
-cv.addEventListener('touchmove',e=>{
-  targetYaw  +=(e.touches[0].clientX-lx)*.003;
-  targetPitch+=(e.touches[0].clientY-ly)*.002;
-  lx=e.touches[0].clientX;ly=e.touches[0].clientY;
-},{passive:true});
-cv.addEventListener('mousemove',e=>{
-  targetYaw  =(e.clientX/innerWidth-.5)*.6;
-  targetPitch=(e.clientY/innerHeight-.5)*.3;
+// Touch drag
+cv.addEventListener('touchstart', e => { lx=e.touches[0].clientX; ly=e.touches[0].clientY; }, {passive:true});
+cv.addEventListener('touchmove',  e => {
+  targetYaw   += (e.touches[0].clientX - lx) * 0.003;
+  targetPitch += (e.touches[0].clientY - ly) * 0.002;
+  lx=e.touches[0].clientX; ly=e.touches[0].clientY;
+}, {passive:true});
+cv.addEventListener('mousemove', e => {
+  targetYaw   = (e.clientX/innerWidth  - .5) * .5;
+  targetPitch = (e.clientY/innerHeight - .5) * .25;
 });
 
-let prevTime=performance.now();
-function loop(){
-  requestAnimationFrame(loop);
-  const now=performance.now(), dt=Math.min((now-prevTime)/1000,.05);
-  prevTime=now; t+=dt;
+// Clamp yaw/pitch so camera never fully leaves the tunnel center
+const MAX_YAW   = 0.45;
+const MAX_PITCH = 0.28;
 
-  let bass=0,mid=0,hi=0,energy=0;
-  if(analyser&&playing){
+let prevTime = performance.now();
+
+function loop() {
+  requestAnimationFrame(loop);
+  const now = performance.now();
+  const dt  = Math.min((now - prevTime) / 1000, 0.05);
+  prevTime  = now; t += dt;
+
+  // ── Audio ───────────────────────────────────────
+  let bass=0, mid=0, hi=0, energy=0;
+  if (analyser && playing) {
     analyser.getByteFrequencyData(freq);
-    const L=freq.length;
-    for(let i=0;i<L*.05;i++) bass+=freq[i]; bass/=(L*.05*255);
-    for(let i=L*.05|0;i<L*.25;i++) mid+=freq[i]; mid/=(L*.20*255);
-    for(let i=L*.25|0;i<L*.70;i++) hi+=freq[i];  hi/=(L*.45*255);
-    energy=bass*.6+mid*.3+hi*.1;
+    const L = freq.length;
+    for (let i=0; i<L*.05; i++) bass+=freq[i]; bass/=(L*.05*255);
+    for (let i=L*.05|0; i<L*.25; i++) mid+=freq[i]; mid/=(L*.20*255);
+    for (let i=L*.25|0; i<L*.70; i++) hi+=freq[i];  hi/=(L*.45*255);
+    energy = bass*.6 + mid*.3 + hi*.1;
   }
-  const sBass=lastBass+(bass-lastBass)*.15, sMid=lastMid+(mid-lastMid)*.12;
+  const sBass = lastBass + (bass-lastBass)*.15;
+  const sMid  = lastMid  + (mid -lastMid) *.12;
   lastBass=sBass; lastMid=sMid;
 
-  const speed=(8+energy*25)*dt;
+  const speed = (8 + energy*25) * dt;
 
-  turnTimer+=dt;
-  if(turnTimer>turnInterval){
+  // ── Auto turns ──────────────────────────────────
+  turnTimer += dt;
+  if (turnTimer > turnInterval) {
     turnTimer=0; turnInterval=3+Math.random()*5;
-    targetYaw  +=(Math.random()-.5)*.5;
-    targetPitch+=(Math.random()-.5)*.25;
-    targetPitch=Math.max(-.35,Math.min(.35,targetPitch));
-    if(actx&&playing) triggerWind(.5+energy*.5);
+    targetYaw   += (Math.random()-.5) * .4;
+    targetPitch += (Math.random()-.5) * .2;
+    if (actx && playing) triggerWind(.5+energy*.5);
   }
-  if(sBass>.6&&!windTriggered&&actx&&playing){triggerWind(sBass*.4);windTriggered=true;}
-  if(sBass<.4) windTriggered=false;
 
-  camYaw  +=(targetYaw  -camYaw)  *3*dt;
-  camPitch+=(targetPitch-camPitch)*3*dt;
+  // Clamp targets strictly
+  targetYaw   = Math.max(-MAX_YAW,   Math.min(MAX_YAW,   targetYaw));
+  targetPitch = Math.max(-MAX_PITCH, Math.min(MAX_PITCH, targetPitch));
+
+  if (sBass>.6 && !windTriggered && actx && playing) { triggerWind(sBass*.4); windTriggered=true; }
+  if (sBass<.4) windTriggered=false;
+
+  // Smooth camera rotation
+  camYaw   += (targetYaw   - camYaw)   * 3 * dt;
+  camPitch += (targetPitch - camPitch) * 3 * dt;
+
   camera.rotation.order='YXZ';
-  camera.rotation.y=camYaw  +Math.sin(t*.3)*.04;
-  camera.rotation.x=camPitch+Math.sin(t*.2)*.02;
-  camera.rotation.z=Math.sin(t*.15)*.03+sBass*.05;
+  // Gentle organic sway layered on top — very subtle so stars don't escape
+  camera.rotation.y = camYaw   + Math.sin(t*.3)*.02;
+  camera.rotation.x = camPitch + Math.sin(t*.2)*.015;
+  camera.rotation.z = Math.sin(t*.15)*.02 + sBass*.03;
 
-  const dir=new THREE.Vector3(0,0,-1).applyEuler(camera.rotation);
-  camera.position.addScaledVector(dir,speed);
-  const camR=Math.sqrt(camera.position.x**2+camera.position.y**2);
-  if(camR>TUNNEL_RADIUS*.6){camera.position.x*=.98;camera.position.y*=.98;}
+  // Move forward along view direction
+  const dir = new THREE.Vector3(0,0,-1).applyEuler(camera.rotation);
+  camera.position.addScaledVector(dir, speed);
 
-  const camZ=camera.position.z;
-  const sAttr=starGeo.attributes.position;
-  for(let i=0;i<STAR_COUNT;i++){
-    if(sAttr.array[i*3+2]>camZ+5){
-      const angle=Math.random()*Math.PI*2, r=TUNNEL_RADIUS*(.2+Math.random()*.8);
-      sAttr.array[i*3]=camera.position.x+Math.cos(angle)*r;
-      sAttr.array[i*3+1]=camera.position.y+Math.sin(angle)*r;
-      sAttr.array[i*3+2]=camZ-TUNNEL_LENGTH*.5-Math.random()*20;
-    }
-    const sh=.85+.15*Math.sin(t*3+starSeed[i]);
-    starCol[i*3]*=sh+sMid*.1; starCol[i*3+1]*=sh; starCol[i*3+2]*=sh;
+  // ── Keep camera strictly inside tunnel ──────────
+  const camR = Math.sqrt(camera.position.x**2 + camera.position.y**2);
+  const maxCamR = TUNNEL_RADIUS * 0.45; // camera stays well inside
+  if (camR > maxCamR) {
+    const scale = maxCamR / camR;
+    camera.position.x *= scale;
+    camera.position.y *= scale;
   }
-  sAttr.needsUpdate=true; starGeo.attributes.color.needsUpdate=true;
 
-  const nAttr=nebGeo.attributes.position;
-  for(let i=0;i<NEBULA_COUNT;i++){if(nAttr.array[i*3+2]>camZ+10){resetNebula(i,false);nAttr.array[i*3+2]=camZ-TUNNEL_LENGTH*.45;}}
+  const camZ = camera.position.z;
+
+  // ── Stars — respawn behind frustum, place inside tunnel ──
+  const sAttr = starGeo.attributes.position;
+  const cAttr = starGeo.attributes.color;
+  for (let i = 0; i < STAR_COUNT; i++) {
+    // If star has passed the camera (is behind), respawn ahead
+    if (sAttr.array[i*3+2] > camZ + 3) {
+      const angle = Math.random() * Math.PI * 2;
+      const wallBias = Math.random() < 0.3;
+      const r = wallBias
+        ? TUNNEL_RADIUS * (.85 + Math.random()*.14)
+        : TUNNEL_RADIUS * (.08 + Math.random()*.77);
+      sAttr.array[i*3]   = camera.position.x + Math.cos(angle)*r;
+      sAttr.array[i*3+1] = camera.position.y + Math.sin(angle)*r;
+      sAttr.array[i*3+2] = camZ - TUNNEL_LENGTH*.45 - Math.random()*30;
+      // Recolor to current energy tint
+      const warm = Math.random()<.15;
+      if (warm) { cAttr.array[i*3]=1;cAttr.array[i*3+1]=.8;cAttr.array[i*3+2]=.4+sMid*.3; }
+      else { cAttr.array[i*3]=.7+sMid*.3;cAttr.array[i*3+1]=.8+hi*.2;cAttr.array[i*3+2]=1; }
+    }
+    // Shimmer
+    const sh = .88 + .12*Math.sin(t*3.5 + starSeed[i]);
+    cAttr.array[i*3]   = Math.min(1, cAttr.array[i*3]   * sh);
+    cAttr.array[i*3+1] = Math.min(1, cAttr.array[i*3+1] * sh);
+    cAttr.array[i*3+2] = Math.min(1, cAttr.array[i*3+2] * sh);
+  }
+  sAttr.needsUpdate=true; cAttr.needsUpdate=true;
+
+  // ── Nebula ──────────────────────────────────────
+  const nAttr = nebGeo.attributes.position;
+  for (let i = 0; i < NEBULA_COUNT; i++) {
+    if (nAttr.array[i*3+2] > camZ + 10) {
+      resetNebula(i, false);
+      nAttr.array[i*3+2] = camZ - TUNNEL_LENGTH*.4;
+    }
+  }
   nAttr.needsUpdate=true;
-  nebMat.opacity=.04+sMid*.08+hi*.06; nebMat.size=2.5+energy*3;
+  nebMat.opacity = .04 + sMid*.09 + hi*.05;
+  nebMat.size    = 2.5 + energy*3.5;
 
-  for(const r of rings){
-    r.position.z+=speed*2.5;
-    const rs=1+sBass*.3; r.scale.set(rs,rs,1);
-    r.material.opacity=.15+sMid*.4;
-    r.rotation.z+=dt*.3+sBass*.5*dt;
-    if(r.position.z>camZ+8){
-      r.position.z=camZ-280-Math.random()*20;
-      r.material.color.setHSL(Math.random(),.8,.6+energy*.3);
+  // ── Rings — move toward camera, respawn ahead ───
+  for (const r of rings) {
+    r.position.z += speed * 2.5;
+    const rs = 1 + sBass*.25; r.scale.set(rs, rs, 1);
+    r.material.opacity = .12 + sMid*.38;
+    r.rotation.z += dt*.25 + sBass*.4*dt;
+    if (r.position.z > camZ + 6) {
+      r.position.z = camZ - 270 - Math.random()*20;
+      r.material.color.setHSL(Math.random(), .85, .6+energy*.25);
     }
   }
-  ringTimer+=dt;
-  if(sBass>.55&&ringTimer>.3){ringTimer=0;for(const r of rings)r.material.color.setHSL(Math.random(),1,.8);}
+  ringTimer += dt;
+  if (sBass>.55 && ringTimer>.3) {
+    ringTimer=0;
+    for (const r of rings) r.material.color.setHSL(Math.random(), 1, .8);
+  }
 
-  starMat.size=.12+sBass*.25+hi*.08;
-  camera.fov=75+energy*20+sBass*10; camera.updateProjectionMatrix();
-  scene.fog.density=.05+sMid*.04;
-  renderer.render(scene,camera);
+  // ── Global visual response ───────────────────────
+  starMat.size = .14 + sBass*.22 + hi*.07;
+  // FOV warp — clamped so it never looks broken
+  camera.fov = 75 + energy*18 + sBass*8;
+  camera.fov = Math.max(60, Math.min(110, camera.fov));
+  camera.updateProjectionMatrix();
+  scene.fog.density = .05 + sMid*.04;
+
+  renderer.render(scene, camera);
 }
 loop();
 </script>
