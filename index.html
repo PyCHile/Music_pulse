@@ -15,6 +15,17 @@
     html,body{width:100%;height:100%;overflow:hidden;background:#000;position:fixed;inset:0}
     canvas{position:fixed;inset:0;width:100%!important;height:100%!important;display:block}
 
+    /* Mask the system status bar (time, signal, battery).
+       A black-to-transparent gradient on top blends it into space.
+       Height covers iOS status bar (~50px) + safe area. */
+    #statusMask{
+      position:fixed;top:0;left:0;right:0;
+      height:max(54px, env(safe-area-inset-top, 54px));
+      background:linear-gradient(to bottom, rgba(0,0,8,1) 0%, rgba(0,0,8,.85) 55%, transparent 100%);
+      z-index:100;
+      pointer-events:none;
+    }
+
     #ui{
       position:fixed;inset:0;z-index:20;
       display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -70,6 +81,7 @@
 </head>
 <body>
 <canvas id="c"></canvas>
+<div id="statusMask"></div>
 
 <div id="ui">
   <div class="title">Interstellar</div>
