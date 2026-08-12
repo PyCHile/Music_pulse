@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import { StarTunnelSystem } from './StarTunnelSystem.js?v=20260812-19';
-import { NebulaBackdrop } from './NebulaBackdrop.js?v=20260812-20';
-import { GalacticWispSystem } from './GalacticWispSystem.js?v=20260812-1';
-import { EtherealFiguresSystem } from './EtherealFiguresSystem.js?v=20260812-png6';
+import { NebulaBackdrop } from './NebulaBackdrop.js?v=20260812-21';
+import { GalacticWispSystem } from './GalacticWispSystem.js?v=20260812-2';
+import { EtherealFiguresSystem } from './EtherealFiguresSystem.js?v=20260812-png7';
 const dustVertex=`attribute float aSize;varying float vFade;void main(){vec4 mv=modelViewMatrix*vec4(position,1.0);vFade=clamp(1.0-(-mv.z/140.0),0.0,1.0);gl_PointSize=aSize*clamp(90.0/max(5.0,-mv.z),0.3,2.1);gl_Position=projectionMatrix*mv;}`;const dustFragment=`varying float vFade;uniform float uOpacity;void main(){float d=length(gl_PointCoord-vec2(.5));float a=smoothstep(.5,.10,d)*uOpacity*(.20+vFade*.80);gl_FragColor=vec4(vec3(.18,.32,.62),a);}`;
 export class WarpFieldManager{
  constructor(maxStars){this.group=new THREE.Group();this.nebula=new NebulaBackdrop();this.galacticWisps=new GalacticWispSystem(maxStars<=1200?28:36);this.starTunnel=new StarTunnelSystem(maxStars);this.etherealFigures=new EtherealFiguresSystem();this.group.add(this.nebula.mesh);this.group.add(this.galacticWisps.group);this.group.add(this.starTunnel.group);this.group.add(this.etherealFigures.group);const dustCount=Math.max(140,Math.floor(maxStars*.075));this.dustPositions=new Float32Array(dustCount*3);this.dustSpeeds=new Float32Array(dustCount);this.dustCount=dustCount;for(let i=0;i<dustCount;i++)this.resetDust(i,true);this.dustGeometry=new THREE.BufferGeometry();this.dustGeometry.setAttribute('position',new THREE.BufferAttribute(this.dustPositions,3));const sizes=new Float32Array(dustCount);for(let i=0;i<dustCount;i++)sizes[i]=.5+Math.random()*.9;this.dustGeometry.setAttribute('aSize',new THREE.BufferAttribute(sizes,1));this.dustMaterial=new THREE.ShaderMaterial({vertexShader:dustVertex,fragmentShader:dustFragment,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,uniforms:{uOpacity:{value:.034}}});this.dust=new THREE.Points(this.dustGeometry,this.dustMaterial);this.dust.frustumCulled=false;this.group.add(this.dust);}
