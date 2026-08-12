@@ -3,57 +3,76 @@ const smoothstep=(a,b,x)=>{const t=clamp01((x-a)/(b-a));return t*t*(3-2*t);};
 const mix=(a,b,t)=>a+(b-a)*t;
 const gaussian=(x,c,w)=>Math.exp(-Math.pow((x-c)/w,2)*.5);
 export class JourneyNarrativeDirector{
-  constructor(){this.heartClock=0;this.climaxReached=false;this.climaxAge=0;this.bridgeReached=false;this.bridgeAge=0;this.finalHookReached=false;this.stage='HEARTBEAT';}
+  constructor(){this.heartClock=0;this.climaxReached=false;this.climaxAge=0;this.bridgeReached=false;this.bridgeAge=0;this.returnReached=false;this.returnAge=0;this.stage='DETACHMENT';}
   update(dt,features,musicalState,progress){
     const p=clamp01(progress||0);
-    const climaxSignal=(musicalState.phase==='CLIMAX'&&features.energy>.40)||(features.climaxProbability>.72&&features.energy>.48);
-    if(!this.climaxReached&&p>.28&&climaxSignal){this.climaxReached=true;this.climaxAge=0;this.stage='CLIMAX_STILLNESS';}
+    const climaxSignal=(p>.30&&musicalState.phase==='CLIMAX'&&features.energy>.38)||(p>.34&&features.climaxProbability>.70&&features.energy>.44)||p>.58;
+    if(!this.climaxReached&&climaxSignal){this.climaxReached=true;this.climaxAge=0;}
     if(this.climaxReached)this.climaxAge+=dt;
-    const bridgeSignal=this.climaxReached&&p>.66&&((musicalState.phase==='RELEASING'||musicalState.phase==='RECOVERING')||features.calmness>.46||musicalState.trend<-.035);
-    if(!this.bridgeReached&&(bridgeSignal||p>.80)){this.bridgeReached=true;this.bridgeAge=0;this.stage='BRIDGE_ARRIVAL';}
-    if(this.bridgeReached)this.bridgeAge+=dt;
-    const hookSignal=this.bridgeReached&&p>.80&&((musicalState.phase==='BUILDING'||musicalState.phase==='ACCELERATING'||musicalState.phase==='CLIMAX')||features.crescendo>.12);
-    if(!this.finalHookReached&&(hookSignal||p>.91)){this.finalHookReached=true;this.stage='FINAL_HOOK_STILLNESS';}
 
-    const ascent=smoothstep(.04,.62,p);
-    const bpm=mix(70,50,ascent);
+    const bridgeSignal=this.climaxReached&&p>.72&&((musicalState.phase==='RELEASING'||musicalState.phase==='RECOVERING')||musicalState.trend<-.035||features.calmness>.52);
+    if(!this.bridgeReached&&(bridgeSignal||p>.86)){this.bridgeReached=true;this.bridgeAge=0;}
+    if(this.bridgeReached)this.bridgeAge+=dt;
+
+    const finalHookSignal=this.bridgeReached&&p>.84&&((musicalState.phase==='BUILDING'||musicalState.phase==='ACCELERATING'||musicalState.phase==='CLIMAX')||features.crescendo>.13||features.energy>features.mediumTermEnergy+.06);
+    if(!this.returnReached&&(finalHookSignal||p>.945)){this.returnReached=true;this.returnAge=0;}
+    if(this.returnReached)this.returnAge+=dt;
+
+    if(this.returnReached)this.stage='RETURN';
+    else if(this.bridgeReached)this.stage='BOUNDARY';
+    else if(this.climaxReached&&p>.72)this.stage='LIFE_REVIEW';
+    else if(this.climaxReached&&p>.57)this.stage='IDEALIZED_COSMOS';
+    else if(this.climaxReached)this.stage='LIVING_LIGHT';
+    else if(p>.10)this.stage='DARK_TUNNEL';
+    else this.stage='DETACHMENT';
+
+    const ascent=smoothstep(.03,.55,p);
+    const bpm=mix(72,48,ascent);
     const period=60/bpm;
     this.heartClock=(this.heartClock+dt)%period;
     const hp=this.heartClock/period;
-    const lub=gaussian(hp,.070,.025);
-    const dub=gaussian(hp,.205,.042)*.58;
-    const preClimaxEnvelope=(1-smoothstep(.10,.68,p))*(1-clamp01(features.climaxProbability*.70));
-    const heartbeat=this.climaxReached?0:clamp01((lub+dub)*(.92*preClimaxEnvelope+.05));
+    const lub=gaussian(hp,.065,.022);
+    const dub=gaussian(hp,.205,.038)*.62;
+    const heartbeatEnvelope=this.climaxReached?0:(1-smoothstep(.08,.53,p))*(1-clamp01(features.climaxProbability*.58));
+    const heartbeat=clamp01((lub+dub)*(.96*heartbeatEnvelope));
 
-    const postSoft=this.climaxReached?smoothstep(0,13,this.climaxAge):0;
-    const galaxyReveal=this.climaxReached?clamp01(smoothstep(1.0,15,this.climaxAge)*.72+smoothstep(.62,.88,p)*.42):smoothstep(.45,.72,p)*.08;
-    const arrival=this.bridgeReached?smoothstep(0,9.5,this.bridgeAge):0;
-    const fullStill=this.finalHookReached?Math.max(arrival,.92):arrival;
-    const travelFade=clamp01(postSoft*.58+fullStill*.82);
-    const perspectiveTurn=this.bridgeReached?smoothstep(0,5.5,this.bridgeAge)*(1-smoothstep(8,14,this.bridgeAge)):0;
-    const turnX=perspectiveTurn*.19;
-    const turnY=-perspectiveTurn*.11;
-    return{stage:this.stage,progress:p,heartbeat,postSoftness:postSoft,galaxyReveal,arrival:fullStill,travelFade,turnX,turnY,climaxReached:this.climaxReached,bridgeReached:this.bridgeReached,finalHookReached:this.finalHookReached};
+    const light=this.climaxReached?smoothstep(.1,10,this.climaxAge):smoothstep(.46,.58,p)*.06;
+    const galaxyReveal=this.climaxReached?clamp01(smoothstep(2,17,this.climaxAge)*.68+smoothstep(.58,.82,p)*.46):0;
+    const idealized=smoothstep(.57,.69,p)*(1-smoothstep(.78,.87,p));
+    const lifeReview=smoothstep(.70,.77,p)*(1-smoothstep(.84,.90,p));
+    const boundary=this.bridgeReached?smoothstep(0,7.5,this.bridgeAge):0;
+    const returnForce=this.returnReached?smoothstep(0,3.6,this.returnAge):0;
+    const finalFade=this.returnReached?smoothstep(2.0,7.5,this.returnAge):0;
+    const travelFade=clamp01(light*.48+boundary*.68+returnForce*.90);
+    const perspectiveTurn=boundary*(1-smoothstep(4.5,9.5,this.bridgeAge));
+    const turnX=perspectiveTurn*.22;
+    const turnY=-perspectiveTurn*.13;
+    return{stage:this.stage,progress:p,heartbeat,light,galaxyReveal,idealized,lifeReview,boundary,returnForce,finalFade,travelFade,turnX,turnY,climaxReached:this.climaxReached,bridgeReached:this.bridgeReached,returnReached:this.returnReached};
   }
-  apply(state,narrative){
-    const fade=narrative.travelFade,arrival=narrative.arrival,soft=narrative.postSoftness;
+  apply(state,n){
+    const soft=n.light,arrival=n.boundary,ret=n.returnForce;
+    const remaining=1-n.finalFade;
     return{...state,
-      speed:Math.max(0,state.speed*mix(1,.34,soft)*mix(1,.025,arrival)),
-      warpIntensity:Math.max(0.015,state.warpIntensity*mix(1,.34,soft)*mix(1,.08,arrival)),
-      streakLength:Math.max(.025,state.streakLength*mix(1,.26,soft)*mix(1,.045,arrival)),
-      starDensity:Math.max(.34,state.starDensity*mix(1,.80,soft)*mix(1,.68,arrival)),
-      fov:mix(state.fov,62,clamp01(soft*.55+arrival*.9)),
-      bloom:Math.max(.08,state.bloom*mix(1,.62,soft)*mix(1,.44,arrival)),
-      dustDensity:Math.max(.035,state.dustDensity*mix(1,.72,soft)*mix(1,.42,arrival)),
-      nebulaPresence:Math.min(.98,Math.max(state.nebulaPresence,narrative.galaxyReveal)),
-      darkness:Math.max(.46,state.darkness-mix(0,.22,narrative.galaxyReveal)),
-      shimmer:Math.max(.04,(state.shimmer??.1)*mix(1,.48,soft)),
-      compression:(state.compression??0)*mix(1,.18,arrival),
-      heartPulse:narrative.heartbeat,
-      galaxyReveal:narrative.galaxyReveal,
-      travelFade:fade,
-      arrival:arrival,
-      journeyStage:narrative.stage
+      speed:Math.max(0,state.speed*mix(1,.42,soft)*mix(1,.09,arrival)*mix(1,.015,ret)*remaining),
+      warpIntensity:Math.max(0,state.warpIntensity*mix(1,.36,soft)*mix(1,.12,arrival)*mix(1,.02,ret)*remaining),
+      streakLength:Math.max(0,state.streakLength*mix(1,.28,soft)*mix(1,.07,arrival)*mix(1,.01,ret)*remaining),
+      starDensity:Math.max(.18,state.starDensity*mix(1,.86,soft)*mix(1,.74,arrival)*mix(1,.55,ret)),
+      fov:mix(state.fov,60,clamp01(soft*.48+arrival*.82+ret)),
+      bloom:Math.max(.035,state.bloom*mix(1,.72,soft)*mix(1,.52,arrival)*mix(1,.30,ret)),
+      dustDensity:Math.max(.02,state.dustDensity*mix(1,.70,soft)*mix(1,.42,arrival)),
+      nebulaPresence:Math.min(1,Math.max(state.nebulaPresence,n.galaxyReveal)),
+      darkness:Math.max(.28,state.darkness-mix(0,.34,n.galaxyReveal)),
+      shimmer:Math.max(.02,(state.shimmer??.1)*mix(1,.44,soft)*remaining),
+      compression:(state.compression??0)*mix(1,.10,arrival),
+      heartPulse:n.heartbeat,
+      galaxyReveal:n.galaxyReveal,
+      idealized:n.idealized,
+      lifeReview:n.lifeReview,
+      boundary:n.boundary,
+      returnForce:n.returnForce,
+      finalFade:n.finalFade,
+      travelFade:n.travelFade,
+      journeyStage:n.stage
     };
   }
 }
