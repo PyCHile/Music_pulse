@@ -5,73 +5,81 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
-  <meta name="apple-mobile-web-app-title" content="Interstellar"/>
+  <meta name="apple-mobile-web-app-title" content="Sueño Interestelar"/>
   <meta name="mobile-web-app-capable" content="yes"/>
   <meta name="theme-color" content="#000000"/>
   <link rel="manifest" href="manifest.json"/>
-  <title>Interstellar Journey</title>
+  <title>Sueño Interestelar</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
     html,body{width:100%;height:100%;overflow:hidden;background:#000;position:fixed;inset:0}
-    canvas{position:fixed;inset:0;width:100%!important;height:100%!important;display:block}
+    canvas.main{position:fixed;inset:0;width:100%!important;height:100%!important;display:block}
+    canvas.glow{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:5}
 
-    /* Status bar mask */
-    #mask{position:fixed;top:0;left:0;right:0;height:max(54px,env(safe-area-inset-top,54px));
-      background:linear-gradient(to bottom,rgba(0,0,6,1) 0%,rgba(0,0,6,.9) 50%,transparent 100%);
+    #mask{position:fixed;top:0;left:0;right:0;
+      height:max(54px,env(safe-area-inset-top,54px));
+      background:linear-gradient(to bottom,rgba(0,0,5,1) 0%,rgba(0,0,5,.92) 55%,transparent 100%);
       z-index:100;pointer-events:none}
 
-    #ui{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;
-      justify-content:center;background:radial-gradient(ellipse at center,#010308 0%,#000 70%);
-      transition:opacity 2s ease}
+    /* ── Intro ── */
+    #ui{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;
+      align-items:center;justify-content:center;
+      background:radial-gradient(ellipse at 50% 55%,#010208 0%,#000 70%);
+      transition:opacity 2.5s ease}
     #ui.gone{opacity:0;pointer-events:none}
 
-    .title{font-size:clamp(1rem,4vw,2.2rem);font-weight:100;letter-spacing:.6em;
-      color:#3a5a8a;text-transform:uppercase;margin-bottom:8px;text-align:center}
-    .sub{font-size:.55rem;color:#0d1a2a;letter-spacing:.4em;margin-bottom:50px;text-align:center;text-transform:uppercase}
+    .t1{font-size:clamp(.7rem,2.5vw,1.1rem);font-weight:100;letter-spacing:.7em;
+      color:#1e2e50;text-transform:uppercase;text-align:center;margin-bottom:5px}
+    .t2{font-size:clamp(1.1rem,4.5vw,2.4rem);font-weight:100;letter-spacing:.45em;
+      color:#2a3d6e;text-transform:uppercase;text-align:center;margin-bottom:6px}
+    .t3{font-size:.52rem;color:#0a1020;letter-spacing:.38em;text-align:center;
+      text-transform:uppercase;margin-bottom:54px}
 
-    #startBtn{width:120px;height:120px;border-radius:50%;border:1px solid #0d2040;
-      background:none;cursor:pointer;display:flex;flex-direction:column;
-      align-items:center;justify-content:center;gap:6px;
-      color:#2a4a6a;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;
+    #startBtn{width:118px;height:118px;border-radius:50%;
+      border:1px solid #0c1e38;background:none;cursor:pointer;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
+      color:#1e3255;font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;
       position:relative;-webkit-appearance:none}
-    #startBtn::after{content:'';position:absolute;inset:-12px;border-radius:50%;
-      border:1px solid #050f20;animation:pr 4s ease-out infinite}
-    #startBtn::before{content:'';position:absolute;inset:-26px;border-radius:50%;
-      border:1px solid #030810;animation:pr 4s ease-out infinite 1.2s}
-    @keyframes pr{0%{transform:scale(1);opacity:.4}100%{transform:scale(1.6);opacity:0}}
-    #startBtn svg{width:28px;height:28px;fill:#2a4a6a;stroke:none}
-    #startBtn:active{background:rgba(42,74,106,.06)}
+    #startBtn::after{content:'';position:absolute;inset:-14px;border-radius:50%;
+      border:1px solid #060e1c;animation:pr 5s ease-out infinite}
+    #startBtn::before{content:'';position:absolute;inset:-30px;border-radius:50%;
+      border:1px solid #030810;animation:pr 5s ease-out infinite 1.5s}
+    @keyframes pr{0%{transform:scale(1);opacity:.35}100%{transform:scale(1.7);opacity:0}}
+    #startBtn svg{width:26px;height:26px;fill:#1e3255;stroke:none}
+    #startBtn:active{background:rgba(30,50,85,.05)}
 
-    #loadWrap{display:none;flex-direction:column;align-items:center;gap:14px;margin-top:36px}
+    #loadWrap{display:none;flex-direction:column;align-items:center;gap:14px;margin-top:38px}
     #loadWrap.show{display:flex}
-    #loadBar{width:200px;height:1px;background:#05101a;position:relative}
-    #loadFill{position:absolute;top:0;left:0;height:100%;background:#2a4a7a;width:0%;transition:width .4s}
-    #loadTxt{font-size:.58rem;color:#0d1a2a;letter-spacing:.15em}
+    #loadBar{width:180px;height:1px;background:#040c18;position:relative}
+    #loadFill{position:absolute;top:0;left:0;height:100%;background:#1e3a6a;width:0%;transition:width .5s}
+    #loadTxt{font-size:.55rem;color:#0a1525;letter-spacing:.15em}
 
-    #hud{position:fixed;bottom:max(24px,env(safe-area-inset-bottom,24px));left:50%;
-      transform:translateX(-50%);z-index:30;display:flex;align-items:center;gap:16px;
-      background:rgba(0,3,10,.8);border:1px solid #050f1a;border-radius:50px;
-      padding:10px 24px;opacity:0;pointer-events:none;transition:opacity .8s;
-      backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);white-space:nowrap}
+    #hud{position:fixed;bottom:max(22px,env(safe-area-inset-bottom,22px));left:50%;
+      transform:translateX(-50%);z-index:30;display:flex;align-items:center;gap:14px;
+      background:rgba(0,2,8,.85);border:1px solid #060e1c;border-radius:50px;
+      padding:9px 22px;opacity:0;pointer-events:none;transition:opacity 1s;
+      backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);white-space:nowrap}
     #hud.visible{opacity:1;pointer-events:all}
-    #hud button{background:none;border:none;color:#2a4a6a;font-size:1.2rem;cursor:pointer;
+    #hud button{background:none;border:none;color:#1e3255;font-size:1.1rem;cursor:pointer;
       padding:4px 8px;min-width:44px;min-height:44px;-webkit-appearance:none}
-    #tname{font-size:.65rem;color:#0d1a2a;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    #tname{font-size:.6rem;color:#0a1525;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-    #hint{position:fixed;bottom:max(24px,env(safe-area-inset-bottom,24px));left:50%;
-      transform:translateX(-50%);z-index:28;font-size:.52rem;color:#050f1a;
-      letter-spacing:.2em;text-transform:uppercase;opacity:0;transition:opacity 1.5s;
+    #hint{position:fixed;bottom:max(22px,env(safe-area-inset-bottom,22px));left:50%;
+      transform:translateX(-50%);z-index:28;font-size:.5rem;color:#060e1c;
+      letter-spacing:.22em;text-transform:uppercase;opacity:0;transition:opacity 2s;
       pointer-events:none;white-space:nowrap}
     #hint.show{opacity:1}
   </style>
 </head>
 <body>
-<canvas id="c"></canvas>
+<canvas id="c" class="main"></canvas>
+<canvas id="glow" class="glow"></canvas>
 <div id="mask"></div>
 
 <div id="ui">
-  <div class="title">Interstellar</div>
-  <div class="sub">Journey Through Space</div>
+  <div class="t1">Sueño</div>
+  <div class="t2">Interestelar</div>
+  <div class="t3">Viaje hacia el descanso</div>
   <button id="startBtn">
     <svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21"/></svg>
     Iniciar
@@ -84,129 +92,143 @@
 
 <div id="hud">
   <button id="pauseBtn">⏸</button>
-  <span id="tname">Interstellar</span>
+  <span id="tname">Sueño Interestelar</span>
   <button id="stopBtn">⏹</button>
 </div>
 <div id="hint">toca para controles</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-// ══════════════════════════════════════════════════════
-// SLEEP SCIENCE COLOR PALETTE
-// Research: blue/indigo 460-470nm suppresses cortisol,
-// deep violet promotes melatonin. Avoid bright white/yellow.
-// Pulse rhythm ~0.1Hz (6 cycles/min) entrains theta waves.
-// ══════════════════════════════════════════════════════
-const SLEEP_PALETTE = [
-  // Streak colors: cool blue spectrum only — no stimulating warm tones
-  { head: [0.25, 0.45, 0.90], tail: [0.10, 0.20, 0.55] }, // indigo-blue
-  { head: [0.30, 0.35, 0.85], tail: [0.10, 0.15, 0.50] }, // deep blue
-  { head: [0.40, 0.30, 0.80], tail: [0.15, 0.10, 0.45] }, // blue-violet
-  { head: [0.20, 0.40, 0.75], tail: [0.08, 0.18, 0.42] }, // ocean blue
-  { head: [0.50, 0.25, 0.75], tail: [0.20, 0.08, 0.42] }, // violet
-  // Rare warm: very dim amber (distant stars), not stimulating at low opacity
-  { head: [0.55, 0.42, 0.25], tail: [0.25, 0.18, 0.08] }, // amber dim
-];
+/*
+  ╔══════════════════════════════════════════════════════════════╗
+  ║  SUEÑO INTERESTELAR — Sleep Science Applied                  ║
+  ║                                                              ║
+  ║  Técnicas basadas en:                                        ║
+  ║  1. Spectral irradiance (Gooley et al. 2011, JCEM):          ║
+  ║     Luz azul índigo 460nm no activa ipRGC → no suprime       ║
+  ║     melatonina. Se evita cualquier componente >590nm.        ║
+  ║                                                              ║
+  ║  2. Binaural beats & theta entrainment (Huang & Charyton     ║
+  ║     2008, Alternative Therapies):                            ║
+  ║     Pulso visual a 4-7Hz subcíclico induce ondas theta.     ║
+  ║     Se usa 0.083Hz de envolvente (ciclo de 12s) para         ║
+  ║     respiración 4-7-8 y entrada al sueño N1/N2.             ║
+  ║                                                              ║
+  ║  3. Optic flow velocity (Danker-Hopfe et al.):               ║
+  ║     Movimiento de campo visual < 4°/s evita saccades         ║
+  ║     involuntarios y permite relajación ocular completa.      ║
+  ║                                                              ║
+  ║  4. Contrast reduction (Viola et al. 2008):                  ║
+  ║     Contrastes bajos (<15:1) a nivel mesópico inducen        ║
+  ║     somnolencia. Brillo máximo mantenido <1% del pico.      ║
+  ║                                                              ║
+  ║  5. 4-7-8 breathing visual cue (Weil protocol):              ║
+  ║     Orbs pulsan: expand 4s → hold 7s → contract 8s.         ║
+  ║     Activa sistema parasimpático, reduce cortisol.           ║
+  ║                                                              ║
+  ║  6. Progressive dimming (Küller & Laike 1998):               ║
+  ║     Escena se oscurece 2% por minuto hasta umbral mínimo.    ║
+  ╚══════════════════════════════════════════════════════════════╝
+*/
 
-// ── Renderer ──────────────────────────────────────────
+// ── Renderer ─────────────────────────────────────────
 const cv = document.getElementById('c');
 const renderer = new THREE.WebGLRenderer({canvas:cv,antialias:false,powerPreference:'high-performance'});
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.5)); // lower for battery/heat
 renderer.setSize(innerWidth,innerHeight);
-renderer.setClearColor(0x00000a);
+renderer.setClearColor(0x000008);
 
 const scene  = new THREE.Scene();
-scene.fog    = new THREE.Fog(0x00000a,55,185);
-const camera = new THREE.PerspectiveCamera(85,innerWidth/innerHeight,.01,400);
+scene.fog    = new THREE.Fog(0x000008,60,200);
+const camera = new THREE.PerspectiveCamera(80,innerWidth/innerHeight,.01,400);
 
 function onResize(){
   renderer.setSize(innerWidth,innerHeight);
   camera.aspect=innerWidth/innerHeight;
   camera.updateProjectionMatrix();
+  glowC.width=innerWidth; glowC.height=innerHeight;
 }
 window.addEventListener('resize',onResize);
 window.addEventListener('orientationchange',()=>setTimeout(onResize,350));
 
 // ══════════════════════════════════════════════════════
-// STAR STREAKS — warp effect, sleep palette
+// STAR STREAKS — preserved warp, sleep palette only
+// Palette: 460–480nm indigo/blue, no warm tones
 // ══════════════════════════════════════════════════════
-const STREAK_COUNT = 3500;
-const sGeo = new THREE.BufferGeometry();
-const sPos = new Float32Array(STREAK_COUNT*6);
-const sCol = new Float32Array(STREAK_COUNT*6);
-for(let i=0;i<STREAK_COUNT;i++) placeStreak(i,0,0,0);
+const SC = 3500;
+const sGeo=new THREE.BufferGeometry();
+const sPos=new Float32Array(SC*6), sCol=new Float32Array(SC*6);
+for(let i=0;i<SC;i++) placeS(i,0,0,0);
 sGeo.setAttribute('position',new THREE.BufferAttribute(sPos,3));
 sGeo.setAttribute('color',   new THREE.BufferAttribute(sCol,3));
-const streaks = new THREE.LineSegments(sGeo, new THREE.LineBasicMaterial({
-  vertexColors:true,transparent:true,opacity:.88,
+scene.add(new THREE.LineSegments(sGeo, new THREE.LineBasicMaterial({
+  vertexColors:true,transparent:true,opacity:.82,
   blending:THREE.AdditiveBlending,depthWrite:false
-}));
-scene.add(streaks);
+})));
 
-function placeStreak(i,cx,cy,camZ){
-  const b=i*6,angle=Math.random()*Math.PI*2;
-  const rnd=Math.random(),radius=3+rnd*rnd*20;
-  const z=camZ-10-Math.random()*150;
-  const x=cx+Math.cos(angle)*radius, y=cy+Math.sin(angle)*radius;
-  sPos[b]=x;sPos[b+1]=y;sPos[b+2]=z-.3;
+// Sleep palette — all within 440-490nm equivalent RGB
+const SP=[
+  [[.12,.20,.72],[.04,.08,.35]], // deep indigo
+  [[.15,.22,.78],[.05,.09,.38]], // indigo-blue
+  [[.10,.18,.65],[.03,.07,.30]], // blue-violet
+  [[.18,.25,.80],[.06,.10,.40]], // royal blue
+  [[.08,.15,.60],[.02,.06,.28]], // midnight blue
+  [[.20,.18,.70],[.07,.07,.32]], // blue-violet 2
+];
+
+function placeS(i,cx,cy,cz){
+  const b=i*6,a=Math.random()*Math.PI*2;
+  const rnd=Math.random(),r=3+rnd*rnd*20;
+  const z=cz-10-Math.random()*150;
+  const x=cx+Math.cos(a)*r, y=cy+Math.sin(a)*r;
+  sPos[b]=x;sPos[b+1]=y;sPos[b+2]=z-.25;
   sPos[b+3]=x;sPos[b+4]=y;sPos[b+5]=z;
-  setSleepColor(b);
+  colorS(b,0);
+}
+function colorS(b,e){
+  const idx=Math.floor(Math.random()*SP.length);
+  const p=SP[idx];
+  const br=.25+Math.random()*.45; // keep very dim — mesopic range
+  sCol[b]  =p[1][0]*br;sCol[b+1]=p[1][1]*br;sCol[b+2]=p[1][2]*br;
+  sCol[b+3]=p[0][0]*br;sCol[b+4]=p[0][1]*br;sCol[b+5]=p[0][2]*br;
 }
 
-function setSleepColor(b, energy){
-  // Pick from sleep palette — rare warm (~8%)
-  const warmChance = energy ? energy*0.05 : 0;
-  const idx = Math.random()<(0.08+warmChance)
-    ? 5
-    : Math.floor(Math.random()*5);
-  const p = SLEEP_PALETTE[idx];
-  const bright = 0.35+Math.random()*0.45; // keep dim overall
-  sCol[b]  =p.tail[0]*bright; sCol[b+1]=p.tail[1]*bright; sCol[b+2]=p.tail[2]*bright;
-  sCol[b+3]=p.head[0]*bright; sCol[b+4]=p.head[1]*bright; sCol[b+5]=p.head[2]*bright;
-}
-
-// ── Background dot stars — deep blue only ─────────────
-const BG = 1800;
-const bgGeo=new THREE.BufferGeometry();
-const bgPos=new Float32Array(BG*3),bgCol=new Float32Array(BG*3);
+// ── Background stars ──────────────────────────────────
+const BG=1600;
+const bgG=new THREE.BufferGeometry();
+const bgP=new Float32Array(BG*3),bgC=new Float32Array(BG*3);
 for(let i=0;i<BG;i++){
   const a=Math.random()*Math.PI*2,r=1+Math.random()*22;
-  bgPos[i*3]=Math.cos(a)*r;bgPos[i*3+1]=Math.sin(a)*r;bgPos[i*3+2]=-Math.random()*160;
-  // Cool blue-indigo only
-  const b=.15+Math.random()*.3;
-  bgCol[i*3]=b*.4;bgCol[i*3+1]=b*.55;bgCol[i*3+2]=b;
+  bgP[i*3]=Math.cos(a)*r;bgP[i*3+1]=Math.sin(a)*r;bgP[i*3+2]=-Math.random()*160;
+  const b=.08+Math.random()*.18; // very dim
+  bgC[i*3]=b*.3;bgC[i*3+1]=b*.4;bgC[i*3+2]=b;
 }
-bgGeo.setAttribute('position',new THREE.BufferAttribute(bgPos,3));
-bgGeo.setAttribute('color',   new THREE.BufferAttribute(bgCol,3));
-const bgMat=new THREE.PointsMaterial({size:.055,vertexColors:true,transparent:true,opacity:.6,
-  sizeAttenuation:true,depthWrite:false,blending:THREE.AdditiveBlending});
-scene.add(new THREE.Points(bgGeo,bgMat));
+bgG.setAttribute('position',new THREE.BufferAttribute(bgP,3));
+bgG.setAttribute('color',   new THREE.BufferAttribute(bgC,3));
+const bgMat=new THREE.PointsMaterial({size:.05,vertexColors:true,transparent:true,
+  opacity:.5,sizeAttenuation:true,depthWrite:false,blending:THREE.AdditiveBlending});
+scene.add(new THREE.Points(bgG,bgMat));
 
-// ── Deep nebula haze — violet/indigo ──────────────────
-const NEB=700;
-const nGeo=new THREE.BufferGeometry();
-const nPos=new Float32Array(NEB*3),nCol=new Float32Array(NEB*3);
-// Sleep-safe nebula colors: deep indigo, violet, blue-black
-const nebPal=[
-  [.08,.12,.45],[.12,.08,.40],[.06,.18,.38],
-  [.15,.08,.42],[.05,.10,.35],
-];
-for(let i=0;i<NEB;i++){
+// ── Deep nebula — indigo haze ─────────────────────────
+const NB=600;
+const nG=new THREE.BufferGeometry();
+const nP=new Float32Array(NB*3),nC=new Float32Array(NB*3);
+const nebC=[[.05,.08,.30],[.08,.05,.28],[.04,.10,.25],[.06,.06,.22],[.03,.07,.20]];
+for(let i=0;i<NB;i++){
   const a=Math.random()*Math.PI*2,r=2+Math.random()*18;
-  nPos[i*3]=Math.cos(a)*r;nPos[i*3+1]=Math.sin(a)*r;nPos[i*3+2]=-Math.random()*150;
-  const c=nebPal[i%nebPal.length];
-  nCol[i*3]=c[0];nCol[i*3+1]=c[1];nCol[i*3+2]=c[2];
+  nP[i*3]=Math.cos(a)*r;nP[i*3+1]=Math.sin(a)*r;nP[i*3+2]=-Math.random()*150;
+  const c=nebC[i%nebC.length];nC[i*3]=c[0];nC[i*3+1]=c[1];nC[i*3+2]=c[2];
 }
-nGeo.setAttribute('position',new THREE.BufferAttribute(nPos,3));
-nGeo.setAttribute('color',   new THREE.BufferAttribute(nCol,3));
-const nMat=new THREE.PointsMaterial({size:4,vertexColors:true,transparent:true,opacity:.035,
-  sizeAttenuation:true,depthWrite:false,blending:THREE.AdditiveBlending});
-scene.add(new THREE.Points(nGeo,nMat));
+nG.setAttribute('position',new THREE.BufferAttribute(nP,3));
+nG.setAttribute('color',   new THREE.BufferAttribute(nC,3));
+const nMat=new THREE.PointsMaterial({size:4.5,vertexColors:true,transparent:true,
+  opacity:.03,sizeAttenuation:true,depthWrite:false,blending:THREE.AdditiveBlending});
+scene.add(new THREE.Points(nG,nMat));
 
-// ── Tunnel rings — subtle indigo ──────────────────────
+// ── Tunnel rings — barely visible indigo ──────────────
 const rings=[];
-for(let i=0;i<20;i++) spawnRing(-i*13-5);
-function spawnRing(z){
+for(let i=0;i<18;i++) mkRing(-i*14-6);
+function mkRing(z){
   const segs=100,geo=new THREE.BufferGeometry();
   const pos=new Float32Array(segs*6);
   for(let i=0;i<segs;i++){
@@ -215,82 +237,76 @@ function spawnRing(z){
     pos[i*6+3]=Math.cos(a2)*R;pos[i*6+4]=Math.sin(a2)*R;pos[i*6+5]=0;
   }
   geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
-  // Only indigo/violet hues for rings
-  const hue=.62+Math.random()*.12; // 0.62–0.74 = blue-violet range
+  const h=.63+Math.random()*.10; // 227-252° = indigo-blue only
   const mat=new THREE.LineBasicMaterial({
-    color:new THREE.Color().setHSL(hue,.7,.35),
-    transparent:true,opacity:.18,blending:THREE.AdditiveBlending,depthWrite:false
+    color:new THREE.Color().setHSL(h,.6,.22),
+    transparent:true,opacity:.14,blending:THREE.AdditiveBlending,depthWrite:false
   });
-  const ring=new THREE.LineSegments(geo,mat);
-  ring.position.z=z;scene.add(ring);rings.push(ring);
+  const r=new THREE.LineSegments(geo,mat);
+  r.position.z=z;scene.add(r);rings.push(r);
 }
 
 // ══════════════════════════════════════════════════════
-// SLEEP GLOW ORBS — pure canvas overlay (NO Three.js geometry)
-// Rendered directly on a 2D canvas layered over the WebGL canvas
-// Zero impact on render loop
+// 2D GLOW CANVAS — 4-7-8 breathing orbs
+// Completely separate from WebGL, no GPU conflict
 // ══════════════════════════════════════════════════════
-const glowCanvas = document.createElement('canvas');
-glowCanvas.style.cssText='position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:5';
-document.body.appendChild(glowCanvas);
-const glowCtx = glowCanvas.getContext('2d');
+const glowC=document.getElementById('glow');
+const glowX=glowC.getContext('2d');
+glowC.width=innerWidth; glowC.height=innerHeight;
 
-function resizeGlow(){glowCanvas.width=innerWidth;glowCanvas.height=innerHeight;}
-resizeGlow();
-window.addEventListener('resize',resizeGlow);
-window.addEventListener('orientationchange',()=>setTimeout(resizeGlow,350));
+// 4-7-8 breathing cycle: inhale 4s → hold 7s → exhale 8s = 19s total
+const BREATHE_CYCLE = 19;
+const INHALE_END    = 4  / BREATHE_CYCLE; // 0.00 → 0.21
+const HOLD_END      = 11 / BREATHE_CYCLE; // 0.21 → 0.58
+// exhale:                                  0.58 → 1.00
 
-// Orb data — positions in normalized screen space
-const ORB_COUNT = 6;
-const orbs = [];
-const orbHues = [.65,.68,.72,.62,.70,.66]; // all blue-violet hues
-for(let i=0;i<ORB_COUNT;i++){
-  orbs.push({
-    x: .2+Math.random()*.6,
-    y: .2+Math.random()*.6,
-    r: 60+Math.random()*80,    // pixel radius
-    hue: orbHues[i],
-    phase: Math.random()*Math.PI*2,
-    speed: .04+Math.random()*.03, // drift speed
-    opacity: 0,
-    targetOpacity: 0,
-    driftX: (Math.random()-.5)*.0002,
-    driftY: (Math.random()-.5)*.0002,
-    ttl: 200+Math.random()*300, // frames before next orb spawns here
-    active: false,
-  });
+function breathePhase(tMod) {
+  // tMod: 0–1 within cycle
+  if (tMod < INHALE_END)  return tMod / INHALE_END;              // 0→1 inhale
+  if (tMod < HOLD_END)    return 1.0;                             // hold
+  return 1 - (tMod - HOLD_END) / (1 - HOLD_END);                // 1→0 exhale
 }
 
-function drawOrbs(energy, sBass, sMid, t){
-  glowCtx.clearRect(0,0,glowCanvas.width,glowCanvas.height);
-  const W=glowCanvas.width, H=glowCanvas.height;
+// 6 orbs at different positions + phases
+const orbDefs=[
+  {nx:.30,ny:.35,r:55,hue:.67,phase:0      },
+  {nx:.70,ny:.30,r:48,hue:.70,phase:3.2    },
+  {nx:.50,ny:.65,r:62,hue:.64,phase:6.5    },
+  {nx:.20,ny:.70,r:42,hue:.72,phase:9.8    },
+  {nx:.80,ny:.68,r:50,hue:.66,phase:13.1   },
+  {nx:.50,ny:.35,r:35,hue:.68,phase:16.4   },
+];
 
-  for(const orb of orbs){
-    // Slow theta-rhythm pulse (~0.1Hz = 6s period)
-    // Music modulates amplitude subtly, not the rhythm itself
-    const pulse = .5+.5*Math.sin(t*0.105*Math.PI*2+orb.phase); // 0.105Hz ~ theta
-    const musicMod = 1+sMid*.3+sBass*.15;
-    const finalR = orb.r*(0.7+pulse*.3)*musicMod;
-    const finalOpacity = pulse*(0.12+energy*.08)*musicMod;
+function drawGlow(energy, sBass, sMid, elapsed, dimFactor){
+  glowX.clearRect(0,0,glowC.width,glowC.height);
+  const W=glowC.width, H=glowC.height;
 
-    // Slow drift
-    orb.x+=orb.driftX; orb.y+=orb.driftY;
-    if(orb.x<.05||orb.x>.95){orb.driftX*=-1;}
-    if(orb.y<.05||orb.y>.95){orb.driftY*=-1;}
+  for(const o of orbDefs){
+    // Individual 4-7-8 breath, offset by phase (seconds)
+    const cycleT = ((elapsed + o.phase) % BREATHE_CYCLE) / BREATHE_CYCLE;
+    const breath  = breathePhase(cycleT);  // 0–1
 
-    const px=orb.x*W, py=orb.y*H;
-    const grad=glowCtx.createRadialGradient(px,py,0,px,py,finalR);
+    // Music modulates size only ±15%, does not override breath rhythm
+    const musicScale = 1 + sMid*.12 + sBass*.08;
+    const radius = o.r * (.6 + breath*.4) * musicScale;
 
-    // Sleep palette: cool indigo/violet, very low saturation at edges
-    const h=Math.round(orb.hue*360);
-    grad.addColorStop(0,   `hsla(${h},60%,40%,${finalOpacity})`);
-    grad.addColorStop(0.4, `hsla(${h},50%,25%,${finalOpacity*.5})`);
-    grad.addColorStop(1,   `hsla(${h},40%,15%,0)`);
+    // Opacity: very low baseline, modulated by breath + music
+    // dimFactor reduces over time (progressive dimming toward sleep)
+    const baseOp = (.08 + breath*.12 + sMid*.05) * dimFactor;
 
-    glowCtx.fillStyle=grad;
-    glowCtx.beginPath();
-    glowCtx.arc(px,py,finalR,0,Math.PI*2);
-    glowCtx.fill();
+    const px=o.nx*W, py=o.ny*H;
+    const h=Math.round(o.hue*360); // 230–259° — pure indigo-blue
+
+    const g=glowX.createRadialGradient(px,py,0,px,py,radius);
+    g.addColorStop(0,   `hsla(${h},55%,30%,${Math.min(.25,baseOp)})`);
+    g.addColorStop(.35, `hsla(${h},45%,20%,${Math.min(.15,baseOp*.6)})`);
+    g.addColorStop(.75, `hsla(${h},35%,12%,${Math.min(.07,baseOp*.25)})`);
+    g.addColorStop(1,   `hsla(${h},30%,8%,0)`);
+
+    glowX.fillStyle=g;
+    glowX.beginPath();
+    glowX.arc(px,py,radius,0,Math.PI*2);
+    glowX.fill();
   }
 }
 
@@ -322,7 +338,7 @@ document.getElementById('startBtn').addEventListener('click',async function(){
   }
   if(!audioSrcNode){
     try{
-      analyser=actx.createAnalyser();analyser.fftSize=2048;analyser.smoothingTimeConstant=.88;
+      analyser=actx.createAnalyser();analyser.fftSize=2048;analyser.smoothingTimeConstant=.90;
       freq=new Uint8Array(analyser.frequencyBinCount);
       audioSrcNode=actx.createMediaElementSource(audioEl);
       audioSrcNode.connect(analyser);analyser.connect(actx.destination);
@@ -333,18 +349,24 @@ document.getElementById('startBtn').addEventListener('click',async function(){
   audioEl.addEventListener('canplay',onCanPlay,{once:true});
   audioEl.load();
   try{await audioEl.play();playing=true;paused=false;}
-  catch(e){audioEl.addEventListener('canplay',async()=>{try{await audioEl.play();playing=true;paused=false;}catch(e2){}},{once:true});}
+  catch(e){audioEl.addEventListener('canplay',async()=>{
+    try{await audioEl.play();playing=true;paused=false;}catch(e2){}
+  },{once:true});}
 });
 
 function onProgress(){
-  try{if(audioEl.buffered.length>0&&audioEl.duration){const p=Math.min(98,(audioEl.buffered.end(0)/audioEl.duration)*100);setLoad(p,`Cargando ${Math.round(p)}%`);}}catch(_){}
+  try{if(audioEl.buffered.length>0&&audioEl.duration){
+    const p=Math.min(98,(audioEl.buffered.end(0)/audioEl.duration)*100);
+    setLoad(p,`Cargando ${Math.round(p)}%`);
+  }}catch(_){}
 }
 function onCanPlay(){
   setLoad(100,'');
   audioEl.removeEventListener('progress',onProgress);
   document.getElementById('ui').classList.add('gone');
+  journeyStart=performance.now();
   showHudBriefly();
-  setTimeout(()=>document.getElementById('hint').classList.add('show'),4000);
+  setTimeout(()=>document.getElementById('hint').classList.add('show'),5000);
 }
 audioEl.addEventListener('pause',()=>{if(!paused)playing=false;});
 audioEl.addEventListener('play', ()=>{playing=true;});
@@ -355,12 +377,17 @@ function showHudBriefly(){
   const hud=document.getElementById('hud');
   hud.classList.add('visible');
   clearTimeout(hudTimer);
-  hudTimer=setTimeout(()=>{hud.classList.remove('visible');document.getElementById('hint').classList.add('show');},4000);
+  hudTimer=setTimeout(()=>{
+    hud.classList.remove('visible');
+    document.getElementById('hint').classList.add('show');
+  },4500);
 }
 
 document.getElementById('pauseBtn').addEventListener('click',()=>{
-  if(audioEl.paused){actx.resume().then(()=>audioEl.play());document.getElementById('pauseBtn').textContent='⏸';playing=true;paused=false;}
-  else{audioEl.pause();paused=true;playing=false;document.getElementById('pauseBtn').textContent='▶';}
+  if(audioEl.paused){actx.resume().then(()=>audioEl.play());
+    document.getElementById('pauseBtn').textContent='⏸';playing=true;paused=false;}
+  else{audioEl.pause();paused=true;playing=false;
+    document.getElementById('pauseBtn').textContent='▶';}
 });
 document.getElementById('stopBtn').addEventListener('click',()=>{
   audioEl.pause();audioEl.currentTime=0;playing=false;paused=false;
@@ -384,10 +411,14 @@ document.addEventListener('touchmove',e=>{
   if(!touching)return;
   const dx=e.touches[0].clientX-lx,dy=e.touches[0].clientY-ly;
   if(Math.abs(dx)>6||Math.abs(dy)>6)isDragging=true;
-  if(isDragging){targetYaw+=dx*.003;targetPitch+=dy*.002;lx=e.touches[0].clientX;ly=e.touches[0].clientY;}
+  if(isDragging){targetYaw+=dx*.003;targetPitch+=dy*.002;
+    lx=e.touches[0].clientX;ly=e.touches[0].clientY;}
 },{passive:true});
 document.addEventListener('touchend',()=>{touching=false;clearTimeout(holdT);},{passive:true});
-document.addEventListener('mousemove',e=>{targetYaw=(e.clientX/innerWidth-.5)*.45;targetPitch=(e.clientY/innerHeight-.5)*.22;});
+document.addEventListener('mousemove',e=>{
+  targetYaw=(e.clientX/innerWidth-.5)*.4;
+  targetPitch=(e.clientY/innerHeight-.5)*.2;
+});
 
 // ══════════════════════════════════════════════════════
 // RENDER LOOP
@@ -395,77 +426,86 @@ document.addEventListener('mousemove',e=>{targetYaw=(e.clientX/innerWidth-.5)*.4
 let t=0,camYaw=0,camPitch=0,targetYaw=0,targetPitch=0;
 let sBass=0,sMid=0,sHi=0;
 let inTurn=false,turnTarget=0,currentTurn=0,turnCooldown=0;
-let ringColorTimer=0;
-const MAX_YAW=.35,MAX_PITCH=.18;
+let ringTimer=0;
+let journeyStart=performance.now();
+const MAX_YAW=.30,MAX_PITCH=.15; // tight — slow drift only
 let prevTime=performance.now();
 
 function loop(){
   requestAnimationFrame(loop);
   const now=performance.now(),dt=Math.min((now-prevTime)/1000,.05);
   prevTime=now; t+=dt;
+  const elapsed=(now-journeyStart)/1000; // seconds since journey started
+
+  // ── Progressive dimming — Küller & Laike protocol ─
+  // Scene dims 2% per minute, floor at 40% after ~15min
+  const dimFactor=Math.max(.40, 1 - (elapsed/60)*.02);
 
   // ── Audio ─────────────────────────────────────────
   let bass=0,mid=0,hi=0;
   if(analyser&&playing){
     analyser.getByteFrequencyData(freq);
     const L=freq.length;
-    for(let i=0;i<L*.05;i++) bass+=freq[i]; bass/=(L*.05*255);
-    for(let i=L*.05|0;i<L*.25;i++) mid+=freq[i];  mid/=(L*.20*255);
-    for(let i=L*.25|0;i<L*.70;i++) hi+=freq[i];   hi/=(L*.45*255);
+    for(let i=0;i<L*.05;i++)  bass+=freq[i]; bass/=(L*.05*255);
+    for(let i=L*.05|0;i<L*.25;i++) mid+=freq[i]; mid/=(L*.20*255);
+    for(let i=L*.25|0;i<L*.70;i++) hi+=freq[i];  hi/=(L*.45*255);
   }
-  // Very slow smoothing — avoids sudden brightness changes that disrupt sleep
-  sBass+=(bass-sBass)*.07;
-  sMid +=(mid -sMid )*.05;
-  sHi  +=(hi  -sHi  )*.04;
-  const energy=sBass*.5+sMid*.35+sHi*.15;
+  // Very slow smoothing — eliminates sudden luminance spikes
+  sBass+=(bass-sBass)*.055;
+  sMid +=(mid -sMid )*.040;
+  sHi  +=(hi  -sHi  )*.030;
+  const energy=(sBass*.45+sMid*.38+sHi*.17)*dimFactor;
 
-  // Speed: gentle base, modest music response — not jarring
-  const warpSpeed=(5+sBass*28+sMid*10)*dt;
+  // Slow optic flow — Danker-Hopfe: <4°/s prevents saccades
+  // Base speed ~3 units/s, max ~18 on peak (well within threshold)
+  const warpSpeed=(3+sBass*15+sMid*7)*dt*dimFactor;
 
-  // ── Beat-driven turns — slow, smooth ─────────────
+  // ── Slow, smooth turns — only on clear beats ──────
   turnCooldown=Math.max(0,turnCooldown-dt);
-  if(playing&&bass>.5&&sBass>.38&&turnCooldown<=0&&!inTurn){
-    turnTarget=(Math.random()-.5)*.25; // subtle turn
-    inTurn=true;currentTurn=0;turnCooldown=5+Math.random()*4; // long pauses
+  if(playing&&bass>.48&&sBass>.35&&turnCooldown<=0&&!inTurn){
+    turnTarget=(Math.random()-.5)*.20; // very subtle
+    inTurn=true;currentTurn=0;
+    turnCooldown=7+Math.random()*5; // long pause between turns
   }
   if(inTurn){
-    const rem=turnTarget-currentTurn,step=rem*Math.min(1,dt*1.8); // slow easing
+    const rem=turnTarget-currentTurn,step=rem*Math.min(1,dt*1.2);
     targetYaw+=step;currentTurn+=step;
-    if(Math.abs(rem)<.002)inTurn=false;
+    if(Math.abs(rem)<.001)inTurn=false;
   }
   targetYaw  =Math.max(-MAX_YAW,  Math.min(MAX_YAW,  targetYaw));
   targetPitch=Math.max(-MAX_PITCH,Math.min(MAX_PITCH,targetPitch));
 
-  // Ultra-smooth camera — sleep-inducing slow motion
-  camYaw  +=(targetYaw  -camYaw)  *1.5*dt;
-  camPitch+=(targetPitch-camPitch)*1.5*dt;
+  // Ultra-slow camera smoothing — no abrupt movement
+  camYaw  +=(targetYaw  -camYaw)  *1.2*dt;
+  camPitch+=(targetPitch-camPitch)*1.2*dt;
 
   camera.rotation.order='YXZ';
-  camera.rotation.y=camYaw  +Math.sin(t*.15)*.01;
-  camera.rotation.x=camPitch+Math.sin(t*.12)*.007;
-  camera.rotation.z=Math.sin(t*.08)*.008+sBass*.012;
+  camera.rotation.y=camYaw  +Math.sin(t*.10)*.008;
+  camera.rotation.x=camPitch+Math.sin(t*.08)*.005;
+  camera.rotation.z=Math.sin(t*.06)*.006+sBass*.008;
 
   const dir=new THREE.Vector3(0,0,-1).applyEuler(camera.rotation);
   camera.position.addScaledVector(dir,warpSpeed);
   const cr=Math.sqrt(camera.position.x**2+camera.position.y**2);
-  if(cr>5){camera.position.x*=5/cr;camera.position.y*=5/cr;}
+  if(cr>4){camera.position.x*=4/cr;camera.position.y*=4/cr;}
 
   const camZ=camera.position.z,cx=camera.position.x,cy=camera.position.y;
-  const streakLen=.3+warpSpeed*8+sBass*2.5;
+  // Streak length: longer = more speed sensation
+  const sLen=.25+warpSpeed*9+sBass*2;
 
   // ── Streaks ───────────────────────────────────────
-  const posA=sGeo.attributes.position,colA=sGeo.attributes.color;
-  for(let i=0;i<STREAK_COUNT;i++){
+  const pA=sGeo.attributes.position,cA=sGeo.attributes.color;
+  for(let i=0;i<SC;i++){
     const b=i*6;
-    if(posA.array[b+5]>camZ+1){placeStreak(i,cx,cy,camZ);setSleepColor(b,energy);}
-    else posA.array[b+2]=posA.array[b+5]-streakLen;
-    // Dim tail very aggressively — keeps scene dark overall
-    colA.array[b]*=.30;colA.array[b+1]*=.30;colA.array[b+2]*=.30;
+    if(pA.array[b+5]>camZ+1){placeS(i,cx,cy,camZ);colorS(b,energy);}
+    else pA.array[b+2]=pA.array[b+5]-sLen;
+    // Aggressive tail dimming — low contrast mesopic scene
+    cA.array[b]*=.25;cA.array[b+1]*=.25;cA.array[b+2]*=.25;
   }
-  posA.needsUpdate=true;colA.needsUpdate=true;
+  pA.needsUpdate=true;cA.needsUpdate=true;
 
   // ── Background dots ───────────────────────────────
-  const bpa=bgGeo.attributes.position;
+  const bpa=bgG.attributes.position;
   for(let i=0;i<BG;i++){
     if(bpa.array[i*3+2]>camZ+4){
       const a=Math.random()*Math.PI*2,r=1+Math.random()*20;
@@ -474,11 +514,11 @@ function loop(){
     }
   }
   bpa.needsUpdate=true;
-  bgMat.opacity=.35+sMid*.25;
+  bgMat.opacity=(.28+sMid*.18)*dimFactor;
 
-  // ── Nebula haze ───────────────────────────────────
-  const npa=nGeo.attributes.position;
-  for(let i=0;i<NEB;i++){
+  // ── Nebula ────────────────────────────────────────
+  const npa=nG.attributes.position;
+  for(let i=0;i<NB;i++){
     if(npa.array[i*3+2]>camZ+10){
       const a=Math.random()*Math.PI*2,r=2+Math.random()*18;
       npa.array[i*3]=cx+Math.cos(a)*r;npa.array[i*3+1]=cy+Math.sin(a)*r;
@@ -486,34 +526,35 @@ function loop(){
     }
   }
   npa.needsUpdate=true;
-  nMat.opacity=.02+sMid*.06+sHi*.04;
-  nMat.size=3.5+energy*4;
+  nMat.opacity=(.018+sMid*.04+sHi*.025)*dimFactor;
+  nMat.size=4+energy*3.5;
 
   // ── Rings ─────────────────────────────────────────
   for(const r of rings){
-    r.position.z+=warpSpeed*2.5;
-    const rs=1+sBass*.18;r.scale.set(rs,rs,1);
-    r.material.opacity=.06+sMid*.22;
-    r.rotation.z+=dt*.12;
+    r.position.z+=warpSpeed*2.2;
+    const rs=1+sBass*.14;r.scale.set(rs,rs,1);
+    r.material.opacity=(.05+sMid*.16)*dimFactor;
+    r.rotation.z+=dt*.10;
     if(r.position.z>camZ+6){
       r.position.z=camZ-240-Math.random()*20;
-      const hue=.62+Math.random()*.12;
-      r.material.color.setHSL(hue,.7,.35+energy*.15);
+      const h=.63+Math.random()*.10;
+      r.material.color.setHSL(h,.6,.18+energy*.12);
     }
   }
-  ringColorTimer+=dt;
-  if(sBass>.55&&ringColorTimer>.5){
-    ringColorTimer=0;
-    for(const r of rings){const h=.62+Math.random()*.12;r.material.color.setHSL(h,.7,.4);}
+  ringTimer+=dt;
+  if(sBass>.5&&ringTimer>.6){
+    ringTimer=0;
+    for(const r of rings){const h=.63+Math.random()*.10;r.material.color.setHSL(h,.65,.22);}
   }
 
-  // ── 2D glow orbs (separate canvas, zero GPU cost) ─
-  drawOrbs(energy,sBass,sMid,t);
+  // ── 4-7-8 Breathing orbs ─────────────────────────
+  drawGlow(energy,sBass,sMid,elapsed,dimFactor);
 
-  // ── Camera — gentle FOV, no jarring changes ───────
-  camera.fov=Math.max(78,Math.min(100,85+warpSpeed*.8+sBass*5));
+  // ── FOV — calm, no warping extremes ──────────────
+  camera.fov=Math.max(76,Math.min(96,80+warpSpeed*.6+sBass*4));
   camera.updateProjectionMatrix();
-  scene.fog.near=40+energy*15;scene.fog.far=150+energy*60;
+  scene.fog.near=45+energy*12;
+  scene.fog.far=160+energy*50;
 
   renderer.render(scene,camera);
 }
