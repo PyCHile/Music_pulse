@@ -201,80 +201,68 @@ const nMat = new THREE.PointsMaterial({size:3.5, vertexColors:true, transparent:
   sizeAttenuation:true, depthWrite:false, blending:THREE.AdditiveBlending});
 scene.add(new THREE.Points(nGeo, nMat));
 
-// ── Galactic cloud spheres — luminous orbs you fly through ──
-// Each is a dense sphere of particles with its own color and position
-// They spawn ahead, you fly into and through them
-const CLOUD_SPHERES = 12;
-const PTS_PER_CLOUD = 320;
-const cloudMeshes   = [];
-const cloudData     = []; // {baseX, baseY, baseZ, radius, hue}
-
+// ── Galactic cloud orbs — lightweight glow meshes ──────
+// Use MeshBasicMaterial sphere wireframes + color, NO particles
+// This avoids the square artifact and GPU overload on iPad
+const CLOUD_COUNT = 8;
+const cloudMeshes = [];
+const cloudData   = [];
 const cloudColors = [
-  [0.55, 0.75, 1.00], // ice blue
-  [0.80, 0.40, 1.00], // violet
-  [0.20, 0.80, 0.70], // teal
-  [1.00, 0.55, 0.20], // amber
-  [0.30, 0.50, 1.00], // cobalt
-  [1.00, 0.30, 0.50], // rose
+  new THREE.Color(0.3, 0.5, 1.0),   // blue
+  new THREE.Color(0.6, 0.2, 1.0),   // violet
+  new THREE.Color(0.1, 0.8, 0.6),   // teal
+  new THREE.Color(1.0, 0.5, 0.15),  // amber
+  new THREE.Color(1.0, 0.25, 0.45), // rose
+  new THREE.Color(0.2, 0.7, 1.0),   // cyan
 ];
 
-for (let s = 0; s < CLOUD_SPHERES; s++) {
-  const cGeo = new THREE.BufferGeometry();
-  const cPos = new Float32Array(PTS_PER_CLOUD * 3);
-  const cCol = new Float32Array(PTS_PER_CLOUD * 3);
+// Each cloud = 3 layered point halos at different radii
+// using a tiny set of points arranged in concentric shells
+for (let s = 0; s < CLOUD_COUNT; s++) {
+  const col    = cloudColors[s % cloudColors.length];
+  const radius = 3 + Math.random() * 4;
+  const group  = new THREE.Group();
 
-  const col = cloudColors[s % cloudColors.length];
-  for (let i = 0; i < PTS_PER_CLOUD; i++) {
-    // Uniform sphere distribution
-    const u  = Math.random(), v = Math.random();
-    const th = 2 * Math.PI * u;
-    const ph = Math.acos(2*v - 1);
-    const r  = Math.random(); // volume fill
-    cPos[i*3]   = r * Math.sin(ph) * Math.cos(th);
-    cPos[i*3+1] = r * Math.sin(ph) * Math.sin(th);
-    cPos[i*3+2] = r * Math.cos(ph);
-    // Color: core brighter, edges dimmer
-    const br = 0.4 + r * 0.6;
-    cCol[i*3]   = col[0] * br;
-    cCol[i*3+1] = col[1] * br;
-    cCol[i*3+2] = col[2] * br;
+  // 3 shells: inner dense, mid medium, outer sparse
+  const shells = [
+    { r: radius * 0.35, n: 60,  size: 0.12 },
+    { r: radius * 0.65, n: 80,  size: 0.09 },
+    { r: radius * 1.0,  n: 50,  size: 0.07 },
+  ];
+
+  for (const sh of shells) {
+    const geo = new THREE.BufferGeometry();
+    const pos = new Float32Array(sh.n * 3);
+    for (let i = 0; i < sh.n; i++) {
+      const u=Math.random(), v=Math.random();
+      const th=2*Math.PI*u, ph=Math.acos(2*v-1);
+      pos[i*3]  =sh.r*Math.sin(ph)*Math.cos(th);
+      pos[i*3+1]=sh.r*Math.sin(ph)*Math.sin(th);
+      pos[i*3+2]=sh.r*Math.cos(ph);
+    }
+    geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+    const mat = new THREE.PointsMaterial({
+      size: sh.size, color: col.clone(),
+      transparent: true, opacity: 0,
+      sizeAttenuation: true, depthWrite: false,
+      blending: THREE.AdditiveBlending
+    });
+    group.add(new THREE.Points(geo, mat));
   }
-  cGeo.setAttribute('position', new THREE.BufferAttribute(cPos, 3));
-  cGeo.setAttribute('color',    new THREE.BufferAttribute(cCol, 3));
 
-  const cMat = new THREE.PointsMaterial({
-    size: 0.28, vertexColors: true,
-    transparent: true, opacity: 0.0,  // start invisible, fade in
-    sizeAttenuation: true, depthWrite: false,
-    blending: THREE.AdditiveBlending
-  });
-
-  const cloud = new THREE.Points(cGeo, cMat);
-  cloud.scale.setScalar(4 + Math.random() * 5); // radius 4–9 world units
-
-  // Distribute along tunnel, offset from center
-  const angle  = Math.random() * Math.PI * 2;
-  const offset = 3 + Math.random() * 5;
-  cloud.position.set(
-    Math.cos(angle) * offset,
-    Math.sin(angle) * offset,
-    -(30 + s * 22 + Math.random() * 15)
+  const angle  = Math.random()*Math.PI*2;
+  const offset = 2 + Math.random()*5;
+  group.position.set(
+    Math.cos(angle)*offset,
+    Math.sin(angle)*offset,
+    -(25 + s*28 + Math.random()*15)
   );
 
-  scene.add(cloud);
-  cloudMeshes.push(cloud);
-  cloudData.push({
-    hue:    s / CLOUD_SPHERES,
-    radius: cloud.scale.x,
-    col:    col,
-  });
+  scene.add(group);
+  cloudMeshes.push(group);
+  cloudData.push({ radius, col });
 }
 
-// Ring radius chosen so it fits screen regardless of orientation
-function ringRadius() {
-  // Project a circle at z=-20 and see how big it needs to be to frame the view
-  return Math.min(innerWidth, innerHeight) * 0.38;
-}
 
 const rings = [];
 for (let i = 0; i < 22; i++) spawnRing(-i*12 - 5);
@@ -624,62 +612,36 @@ function loop() {
   scene.fog.near = 35 + energy * 18;
   scene.fog.far  = 140 + energy * 70;
 
-  // ── Galactic cloud spheres ─────────────────────────
-  for (let s = 0; s < CLOUD_SPHERES; s++) {
-    const cloud = cloudMeshes[s];
+  // ── Galactic cloud orbs ────────────────────────────
+  for (let s = 0; s < CLOUD_COUNT; s++) {
+    const group = cloudMeshes[s];
     const cd    = cloudData[s];
-    const mat   = cloud.material;
 
-    // Move with the warp (same speed as rings)
-    cloud.position.z += warpSpeed * 2.8;
+    group.position.z += warpSpeed * 2.8;
+    group.rotation.y += dt * 0.06;
+    group.rotation.x += dt * 0.04;
 
-    // Distance from camera to cloud center
-    const dz   = cloud.position.z - camZ;
-    const dx   = cloud.position.x - cx;
-    const dy   = cloud.position.y - cy;
-    const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
-    const R    = cd.radius;
+    const dz = group.position.z - camZ;
+    const R  = cd.radius;
 
-    // Fade in as we approach, peak opacity when inside, fade out behind
+    // Fade: approach → inside → exit
     let opacity = 0;
-    if (dz < 0 && dz > -R * 3) {
-      // Approaching — fade in
-      opacity = Math.max(0, 1 - Math.abs(dz) / (R * 3));
-    } else if (dz >= 0 && dz < R) {
-      // We're inside or just passed — glow
-      opacity = 1 - dz / R;
+    if (dz < 0 && dz > -R * 4)       opacity = Math.max(0, 1 - Math.abs(dz)/(R*4));
+    else if (dz >= 0 && dz < R * 1.5) opacity = Math.max(0, 1 - dz/(R*1.5));
+
+    const finalOpacity = opacity * (0.3 + sBass*0.4 + sMid*0.15);
+    for (const child of group.children) {
+      child.material.opacity = Math.min(0.65, finalOpacity);
+      child.material.size    = child.material.size * 0.9 + (0.08 + sBass*0.12) * 0.1;
     }
 
-    // Pulse with music
-    mat.opacity = Math.min(0.75, opacity * (0.35 + sBass * 0.45 + sMid * 0.2));
-    mat.size    = 0.22 + sBass * 0.18 + sHi * 0.08;
-
-    // Slow rotation for living feel
-    cloud.rotation.y += dt * 0.08;
-    cloud.rotation.x += dt * 0.05;
-
-    // Respawn ahead when fully behind camera
-    if (cloud.position.z > camZ + R + 5) {
-      const angle  = Math.random() * Math.PI * 2;
-      const offset = 2 + Math.random() * 6;
-      cloud.position.set(
-        cx + Math.cos(angle) * offset,
-        cy + Math.sin(angle) * offset,
-        camZ - 200 - Math.random() * 60
-      );
-      cloud.scale.setScalar(4 + Math.random() * 5);
-      cd.radius = cloud.scale.x;
-      // New color on respawn
-      const newCol = cloudColors[Math.floor(Math.random() * cloudColors.length)];
+    // Respawn ahead
+    if (group.position.z > camZ + R + 4) {
+      const ang = Math.random()*Math.PI*2, off = 2+Math.random()*5;
+      group.position.set(cx+Math.cos(ang)*off, cy+Math.sin(ang)*off, camZ-200-Math.random()*60);
+      const newCol = cloudColors[Math.floor(Math.random()*cloudColors.length)];
       cd.col = newCol;
-      const cColArr = cloud.geometry.attributes.color.array;
-      for (let i = 0; i < PTS_PER_CLOUD; i++) {
-        const br = 0.4 + Math.random() * 0.6;
-        cColArr[i*3]   = newCol[0] * br;
-        cColArr[i*3+1] = newCol[1] * br;
-        cColArr[i*3+2] = newCol[2] * br;
-      }
-      cloud.geometry.attributes.color.needsUpdate = true;
+      for (const child of group.children) child.material.color.copy(newCol);
     }
   }
 
