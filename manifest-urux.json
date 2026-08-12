@@ -1,0 +1,15 @@
+{
+  "name": "URUX",
+  "short_name": "URUX",
+  "description": "URUX — viaje audiovisual interestelar reactivo a la música",
+  "start_url": "/Music_pulse/?app=urux",
+  "scope": "/Music_pulse/",
+  "id": "/Music_pulse/urux",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {"src":"icon.svg?v=urux","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}
