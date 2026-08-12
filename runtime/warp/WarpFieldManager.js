@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { StarTunnelSystem } from './StarTunnelSystem.js';
-import { NebulaBackdrop } from './NebulaBackdrop.js';
+import { StarTunnelSystem } from './StarTunnelSystem.js?v=20260812-6';
+import { NebulaBackdrop } from './NebulaBackdrop.js?v=20260812-6';
 const dustVertex=`attribute float aSize;varying float vFade;void main(){vec4 mv=modelViewMatrix*vec4(position,1.0);vFade=clamp(1.0-(-mv.z/140.0),0.0,1.0);gl_PointSize=aSize*clamp(90.0/max(5.0,-mv.z),0.3,2.5);gl_Position=projectionMatrix*mv;}`;
 const dustFragment=`varying float vFade;uniform float uOpacity;uniform float uWarmth;void main(){float d=length(gl_PointCoord-vec2(.5));float a=smoothstep(.5,.08,d)*uOpacity*(.22+vFade*.78);vec3 cool=vec3(.20,.40,.72),warm=vec3(.55,.25,.10);gl_FragColor=vec4(mix(cool,warm,uWarmth*.18),a);}`;
 export class WarpFieldManager{
