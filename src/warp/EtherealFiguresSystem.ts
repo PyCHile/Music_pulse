@@ -1,1 +1,50 @@
-import * as THREE from'three';import type{AudioFeatures,WarpState}from'../types';const clamp01=(v:number)=>Math.max(0,Math.min(1,v));const PALETTE=[0xdceff5,0xe4e7f4,0xd9eee9,0xe9e2ef,0xf1eadc];type Figure={sprite:THREE.Sprite;material:THREE.SpriteMaterial;seed:number;side:number;z:number;baseY:number;speed:number;scale:number};function smoothstep01(x:number){const t=clamp01(x);return t*t*(3-2*t)}function drawHumanoidMask(ctx:CanvasRenderingContext2D){ctx.fillStyle='white';ctx.beginPath();ctx.ellipse(192,118,31,45,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.moveTo(178,157);ctx.bezierCurveTo(166,177,150,194,139,220);ctx.bezierCurveTo(128,249,127,309,123,396);ctx.bezierCurveTo(142,377,160,364,178,357);ctx.bezierCurveTo(187,353,197,353,206,357);ctx.bezierCurveTo(224,364,242,377,261,396);ctx.bezierCurveTo(257,309,256,249,245,220);ctx.bezierCurveTo(234,194,218,177,206,157);ctx.closePath();ctx.fill();ctx.beginPath();ctx.moveTo(151,202);ctx.bezierCurveTo(128,230,112,279,101,347);ctx.bezierCurveTo(111,332,121,322,132,315);ctx.bezierCurveTo(137,270,143,232,151,202);ctx.fill();ctx.beginPath();ctx.moveTo(233,202);ctx.bezierCurveTo(256,230,272,279,283,347);ctx.bezierCurveTo(273,332,263,322,252,315);ctx.bezierCurveTo(247,270,241,232,233,202);ctx.fill()}function makeFigureTexture(){const w=384,h=640,mask=document.createElement('canvas');mask.width=w;mask.height=h;drawHumanoidMask(mask.getContext('2d')!);const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;const c=canvas.getContext('2d')!;for(const[alpha,blur]of[[.16,32],[.22,18],[.18,8],[.08,2]]as const){c.save();c.globalAlpha=alpha;c.filter=`blur(${blur}px)`;c.drawImage(mask,0,0);c.restore()}const glow=c.createRadialGradient(192,126,7,192,126,95);glow.addColorStop(0,'rgba(255,255,255,.34)');glow.addColorStop(.34,'rgba(223,244,255,.17)');glow.addColorStop(1,'rgba(210,240,255,0)');c.fillStyle=glow;c.fillRect(80,24,224,220);const chest=c.createRadialGradient(192,230,5,192,230,90);chest.addColorStop(0,'rgba(255,255,255,.20)');chest.addColorStop(.45,'rgba(220,242,255,.08)');chest.addColorStop(1,'rgba(220,242,255,0)');c.fillStyle=chest;c.fillRect(90,135,204,210);c.save();c.globalCompositeOperation='lighter';c.lineCap='round';for(let i=0;i<14;i++){const x=148+i*7.2;c.strokeStyle=`rgba(235,249,255,${.025+(i%4)*.008})`;c.lineWidth=2+(i%3)*.8;c.filter='blur(2px)';c.beginPath();c.moveTo(x,185);c.bezierCurveTo(x-12+Math.sin(i)*8,250,x+11-Math.cos(i)*7,335,x-5+Math.sin(i*.8)*12,470);c.stroke()}c.restore();const fade=c.createLinearGradient(0,355,0,640);fade.addColorStop(0,'rgba(255,255,255,1)');fade.addColorStop(.58,'rgba(255,255,255,.48)');fade.addColorStop(1,'rgba(255,255,255,0)');c.save();c.globalCompositeOperation='destination-in';c.fillStyle=fade;c.fillRect(0,0,w,h);c.restore();const tex=new THREE.CanvasTexture(canvas);tex.colorSpace=THREE.SRGBColorSpace;return tex}export class EtherealFiguresSystem{readonly group=new THREE.Group();private readonly texture=makeFigureTexture();private readonly figures:Figure[]=[];private time=0;constructor(count=7){for(let i=0;i<count;i++){const material=new THREE.SpriteMaterial({map:this.texture,color:PALETTE[i%PALETTE.length],transparent:true,opacity:0,depthWrite:false,depthTest:true,blending:THREE.AdditiveBlending});const sprite=new THREE.Sprite(material);sprite.renderOrder=24;this.group.add(sprite);this.figures.push({sprite,material,seed:Math.random(),side:i%2===0?-1:1,z:-22-Math.random()*110,baseY:(Math.random()-.5)*11,speed:.48+Math.random()*.52,scale:3.7+Math.random()*3.9})}}private recycle(f:Figure){f.side=Math.random()<.5?-1:1;f.z=-112-Math.random()*58;f.baseY=(Math.random()-.5)*12;f.speed=.48+Math.random()*.58;f.scale=3.7+Math.random()*4.2;f.seed=Math.random()}update(dt:number,state:WarpState,features:AudioFeatures,vp:{x:number;y:number}){this.time+=dt;const hook=clamp01(state.hookPresence||0),fade=1-(state.finalFade||0),intensity=hook*fade;this.group.position.set(vp.x*3.2,vp.y*2.5,0);for(const f of this.figures){f.z+=(3.5+state.speed*.18)*f.speed*dt;if(f.z>-2.3)this.recycle(f);const depth=clamp01(1-(-f.z/160)),near=Math.pow(depth,1.55),passFade=smoothstep01((depth-.08)/.20)*(1-smoothstep01((depth-.88)/.12)),lateral=(14+29*near)*f.side;f.sprite.position.set(lateral+Math.sin(this.time*.15+f.seed*9)*1.5,f.baseY+Math.sin(this.time*.12+f.seed*13)*1.8,f.z);const scale=f.scale*(.68+near*1.48)*(1+features.mid*.06);f.sprite.scale.set(scale,scale*1.72,1);f.material.opacity=intensity*(.018+.115*near)*passFade*(.78+.22*Math.sin(this.time*.24+f.seed*11));f.material.color.setHex(PALETTE[Math.floor(f.seed*PALETTE.length)%PALETTE.length]);f.material.rotation=f.side*.025*Math.sin(this.time*.16+f.seed*7)}this.group.visible=intensity>.01}dispose(){for(const f of this.figures)f.material.dispose();this.texture.dispose()}}
+import * as THREE from'three';
+import type{AudioFeatures,WarpState}from'../types';
+
+const clamp01=(v:number)=>Math.max(0,Math.min(1,v));
+const gaussian=(x:number,c:number,w:number)=>Math.exp(-.5*Math.pow((x-c)/w,2));
+type Crop={repeatX:number;repeatY:number;offsetX:number;offsetY:number};
+type RefSpec={url:string;aspect:number;width:number;center:number;maxOpacity:number;x:number;y:number;z:number;crop?:Crop};
+type Layer=RefSpec&{material:THREE.SpriteMaterial;sprite:THREE.Sprite;texture:THREE.Texture|null};
+const REFERENCES:RefSpec[]=[
+ {url:'../assets/ethereal/reference-01.b64',aspect:.75,width:17,center:.05,maxOpacity:.34,x:-1.2,y:.3,z:-30},
+ {url:'../assets/ethereal/reference-02.b64',aspect:16/9,width:29,center:.34,maxOpacity:.31,x:.8,y:.2,z:-34},
+ {url:'../assets/ethereal/reference-03.b64',aspect:480/312,width:27,center:.63,maxOpacity:.30,x:-.5,y:.4,z:-32},
+ {url:'../assets/ethereal/reference-04.b64',aspect:16/9,width:28,center:.90,maxOpacity:.18,x:.7,y:.1,z:-35,crop:{repeatX:.88,repeatY:.82,offsetX:.12,offsetY:.15}}
+];
+
+export class EtherealFiguresSystem{
+ readonly group=new THREE.Group();
+ private readonly layers:Layer[]=[];
+ private time=0;
+ private readyCount=0;
+ constructor(){
+  for(const ref of REFERENCES){
+   const material=new THREE.SpriteMaterial({color:0xffffff,transparent:true,opacity:0,depthWrite:false,depthTest:false,blending:THREE.AdditiveBlending,toneMapped:true});
+   const sprite=new THREE.Sprite(material);sprite.position.set(ref.x,ref.y,ref.z);sprite.scale.set(ref.width,ref.width/ref.aspect,1);sprite.renderOrder=26;this.group.add(sprite);
+   const layer:Layer={...ref,material,sprite,texture:null};this.layers.push(layer);void this.loadReference(layer);
+  }
+  this.group.visible=false;
+ }
+ private async loadReference(layer:Layer){
+  try{
+   const response=await fetch(layer.url,{cache:'force-cache'});if(!response.ok)throw new Error(`HTTP ${response.status}`);
+   const b64=(await response.text()).trim();if(!b64)throw new Error('empty image payload');
+   const dataUrl=`data:image/jpeg;base64,${b64}`;
+   const texture=await new Promise<THREE.Texture>((resolve,reject)=>new THREE.TextureLoader().load(dataUrl,resolve,undefined,reject));
+   texture.colorSpace=THREE.SRGBColorSpace;texture.generateMipmaps=false;texture.minFilter=THREE.LinearFilter;texture.magFilter=THREE.LinearFilter;
+   if(layer.crop){texture.wrapS=THREE.ClampToEdgeWrapping;texture.wrapT=THREE.ClampToEdgeWrapping;texture.repeat.set(layer.crop.repeatX,layer.crop.repeatY);texture.offset.set(layer.crop.offsetX,layer.crop.offsetY)}
+   layer.texture=texture;layer.material.map=texture;layer.material.needsUpdate=true;this.readyCount++;
+  }catch(error){console.warn('URUX ethereal reference could not be loaded',layer.url,error)}
+ }
+ update(dt:number,state:WarpState,features:AudioFeatures,vp:{x:number;y:number}){
+  this.time+=dt;
+  const stage=state.journeyStage||'',living=clamp01(state.livingLight||0),ideal=clamp01(state.idealized||0),review=clamp01(state.lifeReview||0),boundary=clamp01(state.boundary||0),ret=clamp01(state.returnForce||0),finalFade=clamp01(state.finalFade||0);
+  const stageEligible=stage==='LIVING_LIGHT'||stage==='IDEALIZED_COSMOS'||stage==='LIFE_REVIEW';
+  const presence=clamp01(Math.max(living*.92,ideal*.98,review*.92,stageEligible?.14:0))*(1-boundary*.94)*(1-ret)*(1-finalFade);
+  const sequence=clamp01(((state.soulProgress||0)-.55)/.30);this.group.position.set((vp?.x||0)*.65,(vp?.y||0)*.50,0);
+  let totalWeight=0;const weights=this.layers.map(layer=>{const w=gaussian(sequence,layer.center,.205);totalWeight+=w;return w}),norm=Math.max(1,totalWeight*.82);
+  for(let i=0;i<this.layers.length;i++){const layer=this.layers[i],weight=weights[i]/norm,loaded=layer.texture?1:0,breathe=1+Math.sin(this.time*.18+i*1.71)*.008,driftX=Math.sin(this.time*.055+i*1.9)*.12,driftY=Math.cos(this.time*.047+i*1.4)*.09;width: {}}
+ }
+ dispose(){for(const layer of this.layers){layer.material.dispose();layer.texture?.dispose()}}
+}
