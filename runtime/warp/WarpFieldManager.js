@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { StarTunnelSystem } from './StarTunnelSystem.js?v=20260812-19';
 import { NebulaBackdrop } from './NebulaBackdrop.js?v=20260812-22';
-import { DeepSpaceSectorSystem } from './DeepSpaceSectorSystem.js?v=20260812-3';
+import { DeepSpaceSectorSystem } from './DeepSpaceSectorSystem.js?v=20260812-4';
 import { GalacticWispSystem } from './GalacticWispSystem.js?v=20260812-3';
 import { CelestialFlybySystem } from './CelestialFlybySystem.js?v=20260812-1';
 import { EtherealFiguresSystem } from './EtherealFiguresSystem.js?v=20260812-png7';
