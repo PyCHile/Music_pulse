@@ -3,7 +3,7 @@ import { StarTunnelSystem } from './StarTunnelSystem.js?v=20260812-19';
 import { NebulaBackdrop } from './NebulaBackdrop.js?v=20260812-22';
 import { DeepSpaceSectorSystem } from './DeepSpaceSectorSystem.js?v=20260812-5';
 import { GalacticWispSystem } from './GalacticWispSystem.js?v=20260812-3';
-import { CelestialFlybySystem } from './CelestialFlybySystem.js?v=20260812-2';
+import { CelestialFlybySystem } from './CelestialFlybySystem.js?v=20260812-3';
 import { EtherealFiguresSystem } from './EtherealFiguresSystem.js?v=20260812-png7';
 const dustVertex=`attribute float aSize;varying float vFade;void main(){vec4 mv=modelViewMatrix*vec4(position,1.0);vFade=clamp(1.0-(-mv.z/140.0),0.0,1.0);gl_PointSize=aSize*clamp(90.0/max(5.0,-mv.z),0.3,2.1);gl_Position=projectionMatrix*mv;}`;
 const dustFragment=`varying float vFade;uniform float uOpacity;void main(){float d=length(gl_PointCoord-vec2(.5));float a=smoothstep(.5,.10,d)*uOpacity*(.20+vFade*.80);gl_FragColor=vec4(vec3(.18,.32,.62),a);}`;
