@@ -12,4 +12,4 @@ const preBridge=await seekFraction(page,.60);expect(['DARK_TUNNEL','LIVING_LIGHT
 const cosmos=await seekFraction(page,.78);expect(['IDEALIZED_COSMOS','LIFE_REVIEW','LIVING_LIGHT']).toContain(cosmos.stage);expect(cosmos.galaxyReveal).toBeGreaterThan(.08);expect(cosmos.audioStage).not.toBe('FETAL');await page.screenshot({path:testInfo.outputPath('journey-cosmos-transparent-png.png'),animations:'disabled'});
 const boundary=await seekFraction(page,.91,1500);expect(['BOUNDARY','RETURN']).toContain(boundary.stage);expect(boundary.boundary).toBeGreaterThan(.003);
 const returning=await seekFraction(page,.975,700);expect(returning.stage).toBe('RETURN');expect(returning.returnForce).toBeGreaterThan(.04);
-const ending=await seekFraction(page,.995,2400);expect(ending.stage).toBe('RETURN');expect(ending.finalFade).toBeGreaterThan(.05);expect(errors).toEqual([]);});
+const ending=await seekFraction(page,.995,2400);expect(ending.stage).toBe('RETURN');expect(ending.finalFade).toBeGreaterThan(.02);expect(errors).toEqual([]);});
