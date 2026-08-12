@@ -3,14 +3,10 @@ uniform float uIntensity;
 uniform float uColorPhase;
 uniform float uWarmth;
 void main(){
-  vec3 blue=vec3(.14,.34,.76);
-  vec3 cyan=vec3(.34,.78,1.08);
-  vec3 violet=vec3(.58,.38,.98);
-  vec3 gold=vec3(1.02,.68,.32);
-  float wave=.5+.5*sin(uColorPhase*6.28318+vAlpha*2.2);
-  vec3 c=mix(blue,cyan,wave*.55);
-  c=mix(c,violet,(1.0-wave)*.28);
-  c=mix(c,gold,uWarmth*.055);
-  c=mix(c,vec3(.78,.90,1.18),clamp(vAlpha,0.0,1.0)*.58);
+  vec3 deepBlue=vec3(.12,.28,.62);
+  vec3 whiteBlue=vec3(.72,.86,1.10);
+  vec3 warm=vec3(.92,.54,.24);
+  vec3 c=mix(deepBlue,whiteBlue,clamp(vAlpha*1.15,0.0,1.0));
+  c=mix(c,warm,uWarmth*.045);
   gl_FragColor=vec4(c*uIntensity,vAlpha);
 }
