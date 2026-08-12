@@ -1,4 +1,4 @@
-# Sueño Interestelar — Music Pulse
+# URUX Interestelar — Music Pulse
 
 Experiencia audiovisual de viaje interestelar continuo. La música controla velocidad, densidad, streaks, profundidad, FOV y energía visual, pero la composición queda bloqueada permanentemente en la familia `INTERSTELLAR_WARP`.
 
