@@ -1,7 +1,7 @@
 {
-  "name": "Sueño Interestelar",
-  "short_name": "Sueño ✦",
-  "description": "Viaje visual hacia el descanso profundo",
+  "name": "URUX Interestelar",
+  "short_name": "URUX",
+  "description": "Viaje visual interestelar reactivo a la música",
   "start_url": "/Music_pulse/",
   "display": "fullscreen",
   "orientation": "any",
