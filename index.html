@@ -162,7 +162,7 @@ for(let i=0;i<SC;i++) placeS(i,0,0,0);
 sGeo.setAttribute('position',new THREE.BufferAttribute(sPos,3));
 sGeo.setAttribute('color',   new THREE.BufferAttribute(sCol,3));
 scene.add(new THREE.LineSegments(sGeo, new THREE.LineBasicMaterial({
-  vertexColors:true,transparent:true,opacity:.82,
+  vertexColors:true,transparent:true,opacity:.92,
   blending:THREE.AdditiveBlending,depthWrite:false
 })));
 
@@ -188,7 +188,7 @@ function placeS(i,cx,cy,cz){
 function colorS(b,e){
   const idx=Math.floor(Math.random()*SP.length);
   const p=SP[idx];
-  const br=.25+Math.random()*.45; // keep very dim — mesopic range
+  const br=.45+Math.random()*.50; // keep very dim — mesopic range
   sCol[b]  =p[1][0]*br;sCol[b+1]=p[1][1]*br;sCol[b+2]=p[1][2]*br;
   sCol[b+3]=p[0][0]*br;sCol[b+4]=p[0][1]*br;sCol[b+5]=p[0][2]*br;
 }
@@ -292,7 +292,7 @@ function drawGlow(energy, sBass, sMid, elapsed, dimFactor){
 
     // Opacity: very low baseline, modulated by breath + music
     // dimFactor reduces over time (progressive dimming toward sleep)
-    const baseOp = (.08 + breath*.12 + sMid*.05) * dimFactor;
+    const baseOp = (.14 + breath*.18 + sMid*.08) * dimFactor;
 
     const px=o.nx*W, py=o.ny*H;
     const h=Math.round(o.hue*360); // 230–259° — pure indigo-blue
@@ -439,7 +439,7 @@ function loop(){
 
   // ── Progressive dimming — Küller & Laike protocol ─
   // Scene dims 2% per minute, floor at 40% after ~15min
-  const dimFactor=Math.max(.40, 1 - (elapsed/60)*.02);
+  const dimFactor=1.0; // dimming disabled — scene stays bright throughout
 
   // ── Audio ─────────────────────────────────────────
   let bass=0,mid=0,hi=0;
@@ -454,11 +454,11 @@ function loop(){
   sBass+=(bass-sBass)*.055;
   sMid +=(mid -sMid )*.040;
   sHi  +=(hi  -sHi  )*.030;
-  const energy=(sBass*.45+sMid*.38+sHi*.17)*dimFactor;
+  const energy=(sBass*.55+sMid*.32+sHi*.13)*dimFactor;
 
   // Slow optic flow — Danker-Hopfe: <4°/s prevents saccades
   // Base speed ~3 units/s, max ~18 on peak (well within threshold)
-  const warpSpeed=(3+sBass*15+sMid*7)*dt*dimFactor;
+  const warpSpeed=(5+sBass*28+sMid*10)*dt;
 
   // ── Slow, smooth turns — only on clear beats ──────
   turnCooldown=Math.max(0,turnCooldown-dt);
@@ -514,7 +514,7 @@ function loop(){
     }
   }
   bpa.needsUpdate=true;
-  bgMat.opacity=(.28+sMid*.18)*dimFactor;
+  bgMat.opacity=.45+sMid*.28;
 
   // ── Nebula ────────────────────────────────────────
   const npa=nG.attributes.position;
@@ -526,14 +526,14 @@ function loop(){
     }
   }
   npa.needsUpdate=true;
-  nMat.opacity=(.018+sMid*.04+sHi*.025)*dimFactor;
+  nMat.opacity=.028+sMid*.07+sHi*.04;
   nMat.size=4+energy*3.5;
 
   // ── Rings ─────────────────────────────────────────
   for(const r of rings){
     r.position.z+=warpSpeed*2.2;
     const rs=1+sBass*.14;r.scale.set(rs,rs,1);
-    r.material.opacity=(.05+sMid*.16)*dimFactor;
+    r.material.opacity=.09+sMid*.22;
     r.rotation.z+=dt*.10;
     if(r.position.z>camZ+6){
       r.position.z=camZ-240-Math.random()*20;
