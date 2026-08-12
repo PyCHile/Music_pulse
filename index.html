@@ -4,6 +4,12 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover"/>
   <title>Interstellar Journey</title>
+  <link rel="manifest" href="manifest.json"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+  <meta name="apple-mobile-web-app-title" content="Interstellar"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="theme-color" content="#000000"/>
   <style>
     *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
     html,body{width:100%;height:100%;overflow:hidden;background:#000;position:fixed;inset:0}
@@ -72,6 +78,7 @@
 <div id="ui">
   <div class="title">Interstellar</div>
   <div class="subtitle">Journey Through Space</div>
+  <div id="pwaHint" style="font-size:.55rem;color:#0d1a26;letter-spacing:.18em;margin-bottom:32px;text-align:center;text-transform:uppercase;max-width:280px;line-height:1.8;display:none">Para pantalla completa sin barras:<br/>Menú ··· → Añadir a pantalla de inicio</div>
   <button id="startBtn">
     <svg viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21"/></svg>
     Iniciar
@@ -103,6 +110,10 @@ const scene = new THREE.Scene();
 scene.fog = new THREE.Fog(0x00000a,60,200);
 const camera = new THREE.PerspectiveCamera(90,innerWidth/innerHeight,.01,500);
 
+// Show install hint if not standalone PWA
+if(!window.matchMedia("(display-mode: fullscreen)").matches && !window.navigator.standalone){
+  document.getElementById("pwaHint").style.display="block";
+}
 function onResize(){
   renderer.setSize(innerWidth,innerHeight);
   camera.aspect=innerWidth/innerHeight;
