@@ -1,0 +1,1 @@
+export class StreakController{getWorldLength(state,depth01){const nearBoost=.42+(1-depth01)*1.25;return Math.max(.5,state.streakLength*nearBoost);}getAlpha(state,depth01,starSeed){const near=1-depth01;return Math.min(1,.08+near*(.32+state.warpIntensity*.56)+starSeed*.10);}}

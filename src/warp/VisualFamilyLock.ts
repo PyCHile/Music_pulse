@@ -1,0 +1,1 @@
+import type{WarpState,VisualFamily}from'../types';export class VisualFamilyLock{readonly family:VisualFamily='INTERSTELLAR_WARP';readonly rules=Object.freeze({forbidThemeSwitch:true,preserveVanishingPoint:true,preserveForwardMotion:true,preserveRadialOpticalFlow:true});sanitize(state:WarpState):WarpState{return{...state,family:this.family};}}

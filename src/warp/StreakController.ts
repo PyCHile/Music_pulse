@@ -1,0 +1,1 @@
+import type{WarpState}from'../types';export class StreakController{getWorldLength(s:WarpState,d:number){return Math.max(.5,s.streakLength*(.42+(1-d)*1.25));}getAlpha(s:WarpState,d:number,seed:number){return Math.min(1,.08+(1-d)*(.32+s.warpIntensity*.56)+seed*.1);}}

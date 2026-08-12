@@ -1,0 +1,1 @@
+import{EffectComposer,Bloom,Vignette}from'@react-three/postprocessing';export function PostProcessing(){return <EffectComposer multisampling={0}><Bloom intensity={0.55} luminanceThreshold={0.38} luminanceSmoothing={0.22} mipmapBlur/><Vignette eskil={false} offset={0.18} darkness={0.62}/></EffectComposer>;}
