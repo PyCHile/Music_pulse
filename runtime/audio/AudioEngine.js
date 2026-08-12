@@ -40,10 +40,10 @@ export class AudioEngine {
       this.fetalLowpass=this.context.createBiquadFilter();
       this.lightLowpass.type='lowpass';
       this.lightLowpass.frequency.value=18000;
-      this.lightLowpass.Q.value=.45;
+      this.lightLowpass.Q.value=.40;
       this.fetalLowpass.type='lowpass';
-      this.fetalLowpass.frequency.value=1650;
-      this.fetalLowpass.Q.value=.55;
+      this.fetalLowpass.frequency.value=1550;
+      this.fetalLowpass.Q.value=.50;
       this.mainGain.gain.value=1;
       this.lightGain.gain.value=0;
       this.fetalGain.gain.value=0;
@@ -91,30 +91,30 @@ export class AudioEngine {
   }
   pause(){this.audio.pause();this.lightAudio.pause();this.fetalAudio.pause();}
   async toggle(){if(this.audio.paused)await this.play();else this.pause();return !this.audio.paused;}
-  async transitionToLight(duration=10){
+  async transitionToLight(duration=24){
     if(this.mixStage!=='MAIN')return;
     await this.ensureReady();
     this.mixStage='LIGHT';
     this.lightAudio.currentTime=0;
     if(this.lightAudio.paused)await this.lightAudio.play().catch(()=>{});
-    this._ramp(this.mainGain.gain,.07,duration);
-    this._ramp(this.lightGain.gain,.92,duration);
-    this._ramp(this.fetalGain.gain,0,Math.min(2,duration));
-    this._expRamp(this.lightLowpass.frequency,18000,Math.min(1.2,duration));
+    this._ramp(this.mainGain.gain,.18,duration);
+    this._ramp(this.lightGain.gain,.76,duration);
+    this._ramp(this.fetalGain.gain,0,Math.min(4,duration));
+    this._expRamp(this.lightLowpass.frequency,14500,Math.min(5,duration));
   }
-  async transitionToFetal(duration=13){
+  async transitionToFetal(duration=22){
     if(this.mixStage==='FETAL'||this.mixStage==='SILENT')return;
     await this.ensureReady();
     this.mixStage='FETAL';
     this.fetalAudio.currentTime=0;
     if(this.fetalAudio.paused)await this.fetalAudio.play().catch(()=>{});
-    this._ramp(this.mainGain.gain,.018,duration);
-    this._ramp(this.lightGain.gain,.075,duration);
-    this._expRamp(this.lightLowpass.frequency,720,duration);
-    this._ramp(this.fetalGain.gain,.82,duration*.72);
-    this._expRamp(this.fetalLowpass.frequency,1250,duration*.72);
+    this._ramp(this.mainGain.gain,.035,duration);
+    this._ramp(this.lightGain.gain,.10,duration);
+    this._expRamp(this.lightLowpass.frequency,1050,duration);
+    this._ramp(this.fetalGain.gain,.74,duration*.86);
+    this._expRamp(this.fetalLowpass.frequency,1180,duration*.86);
   }
-  fadeToSilence(duration=4){
+  fadeToSilence(duration=8){
     if(!this.context||this.mixStage==='SILENT')return;
     this.mixStage='SILENT';
     this._ramp(this.mainGain.gain,0,duration);
