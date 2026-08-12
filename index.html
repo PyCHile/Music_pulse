@@ -3,72 +3,66 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"/>
-  <title>Interstellar Visualizer</title>
+  <title>Interstellar Journey</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
     html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:-apple-system,sans-serif;color:#fff}
     canvas{position:fixed;top:0;left:0;width:100%;height:100%}
 
-    #ui{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;transition:opacity .7s}
+    #ui{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;transition:opacity .8s}
     #ui.gone{opacity:0;pointer-events:none}
 
-    h1{font-size:clamp(1.6rem,6vw,3rem);font-weight:200;letter-spacing:.35em;color:#d4a84b;text-transform:uppercase;margin-bottom:6px}
-    .sub{font-size:.7rem;color:#444;letter-spacing:.25em;margin-bottom:50px}
+    h1{font-size:clamp(1.4rem,5vw,2.8rem);font-weight:200;letter-spacing:.4em;color:#a8c4e8;text-transform:uppercase;margin-bottom:6px}
+    .sub{font-size:.65rem;color:#334;letter-spacing:.3em;margin-bottom:50px}
 
     .load-label{
       display:flex;flex-direction:column;align-items:center;justify-content:center;
       gap:14px;width:80%;max-width:360px;padding:38px 24px;
-      border:1px solid #3a2a08;border-radius:12px;background:#080808;
-      color:#c9a84c;font-size:1rem;letter-spacing:.1em;
+      border:1px solid #1a2a3a;border-radius:12px;background:#020508;
+      color:#5a8fc0;font-size:1rem;letter-spacing:.1em;
       cursor:pointer;position:relative;overflow:hidden;
     }
-    .load-label:active{background:#0f0f0f;border-color:#c9a84c}
-    .load-label input[type="file"]{
-      position:absolute;inset:0;width:100%;height:100%;
-      opacity:0;cursor:pointer;font-size:16px;
-    }
-    .load-label svg{width:40px;height:40px;stroke:#c9a84c;fill:none;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+    .load-label:active{background:#0a1520;border-color:#5a8fc0}
+    .load-label input[type="file"]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:16px;}
+    .load-label svg{width:40px;height:40px;stroke:#5a8fc0;fill:none;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
     .load-label span,.load-label small{pointer-events:none}
-    .load-label small{color:#444;font-size:.68rem;letter-spacing:.12em}
+    .load-label small{color:#234;font-size:.68rem;letter-spacing:.12em}
 
-    /* Overlay "toca para reproducir" — necesario en Chrome */
     #playOverlay{
-      position:fixed;inset:0;z-index:25;
-      display:none;align-items:center;justify-content:center;
-      background:rgba(0,0,0,.75);backdrop-filter:blur(4px);
-      flex-direction:column;gap:20px;
+      position:fixed;inset:0;z-index:25;display:none;align-items:center;justify-content:center;
+      background:rgba(0,0,0,.8);backdrop-filter:blur(6px);flex-direction:column;gap:20px;
     }
     #playOverlay.show{display:flex}
     #playOverlay button{
-      background:#c9a84c;color:#000;border:none;border-radius:8px;
-      font-size:1.2rem;font-weight:700;padding:20px 48px;
-      cursor:pointer;letter-spacing:.1em;-webkit-appearance:none;
-      min-width:200px;min-height:60px;
+      background:linear-gradient(135deg,#1a4a7a,#0a2a4a);color:#a8c4e8;
+      border:1px solid #3a6a9a;border-radius:8px;
+      font-size:1.1rem;font-weight:600;padding:20px 48px;
+      cursor:pointer;letter-spacing:.15em;-webkit-appearance:none;min-height:60px;
     }
-    #playOverlay p{color:#888;font-size:.8rem;letter-spacing:.1em}
+    #playOverlay p{color:#446;font-size:.8rem;letter-spacing:.15em}
 
-    #msg{margin-top:20px;font-size:.82rem;color:#666;text-align:center;max-width:320px;line-height:1.5;min-height:1.4em;padding:0 20px}
+    #msg{margin-top:20px;font-size:.8rem;color:#446;text-align:center;max-width:300px;line-height:1.5;min-height:1.4em}
     #msg.err{color:#e05555}
-    #msg.loading{color:#c9a84c}
+    #msg.loading{color:#5a8fc0}
 
-    #spinner{display:none;width:28px;height:28px;margin-top:14px;border:2px solid #1a1a1a;border-top-color:#c9a84c;border-radius:50%;animation:spin .8s linear infinite}
+    #spinner{display:none;width:26px;height:26px;margin-top:12px;border:2px solid #0a1020;border-top-color:#5a8fc0;border-radius:50%;animation:spin .8s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
 
     #hud{
       position:fixed;bottom:max(28px,env(safe-area-inset-bottom,28px));
       left:50%;transform:translateX(-50%);z-index:30;
       display:flex;align-items:center;gap:20px;
-      background:rgba(0,0,0,.7);border:1px solid #2a1a05;border-radius:60px;
-      padding:13px 30px;opacity:0;pointer-events:none;transition:opacity .5s;
+      background:rgba(0,5,15,.75);border:1px solid #0a2030;border-radius:60px;
+      padding:12px 28px;opacity:0;pointer-events:none;transition:opacity .5s;
       backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);white-space:nowrap;
     }
     #hud.on{opacity:1;pointer-events:all}
-    #hud button{background:none;border:none;color:#c9a84c;font-size:1.4rem;cursor:pointer;padding:4px 8px;-webkit-appearance:none;min-width:44px;min-height:44px}
-    #tname{font-size:.72rem;color:#777;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    #hud button{background:none;border:none;color:#5a8fc0;font-size:1.3rem;cursor:pointer;padding:4px 8px;-webkit-appearance:none;min-width:44px;min-height:44px}
+    #tname{font-size:.7rem;color:#446;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
     #back{position:fixed;top:max(18px,env(safe-area-inset-top,18px));left:18px;z-index:30;
-      background:rgba(0,0,0,.6);border:1px solid #2a1a05;border-radius:20px;
-      color:#666;font-size:.72rem;padding:10px 20px;cursor:pointer;
+      background:rgba(0,5,15,.65);border:1px solid #0a2030;border-radius:20px;
+      color:#446;font-size:.7rem;padding:10px 18px;cursor:pointer;
       opacity:0;pointer-events:none;transition:opacity .5s;
       -webkit-appearance:none;min-height:44px;letter-spacing:.1em}
     #back.on{opacity:1;pointer-events:all}
@@ -79,22 +73,20 @@
 
 <div id="ui">
   <h1>Interstellar</h1>
-  <p class="sub">Particle Audio Visualizer</p>
-
+  <p class="sub">Journey Through Space</p>
   <label class="load-label">
     <input type="file" id="fileInput" accept="audio/*,.mp3,.wav,.m4a,.ogg,.aac"/>
     <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-    <span>Toca para cargar audio</span>
+    <span>Cargar audio</span>
     <small>MP3 · WAV · M4A · OGG</small>
   </label>
   <div id="spinner"></div>
   <div id="msg">Selecciona tu archivo de audio</div>
 </div>
 
-<!-- Chrome requiere un gesto explícito para iniciar audio -->
 <div id="playOverlay">
-  <p>Audio listo</p>
-  <button id="playNowBtn">▶ Reproducir</button>
+  <p>LISTO PARA EL VIAJE</p>
+  <button id="playNowBtn">▶ INICIAR</button>
 </div>
 
 <div id="hud">
@@ -106,143 +98,278 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-// ══════════════════════════════════════════
-// THREE.JS
-// ══════════════════════════════════════════
-const cv=document.getElementById('c');
-const renderer=new THREE.WebGLRenderer({canvas:cv,antialias:false,powerPreference:'high-performance'});
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-renderer.setSize(innerWidth,innerHeight);
-renderer.setClearColor(0x000000);
-const scene=new THREE.Scene();
-const camera=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,.1,100);
-camera.position.z=3.5;
-addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+// ══════════════════════════════════════════════════════
+// RENDERER
+// ══════════════════════════════════════════════════════
+const cv = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({canvas:cv, antialias:false, powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.setClearColor(0x000005);
+const scene  = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x000008, 0.08);
+const camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.01, 300);
+camera.position.set(0, 0, 0);
+addEventListener('resize', () => {
+  camera.aspect = innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
 
-const N=12000;
-function sphere(n){const p=new Float32Array(n*3);for(let i=0;i<n;i++){const th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1),r=1+(Math.random()-.5)*.1;p[i*3]=r*Math.sin(ph)*Math.cos(th);p[i*3+1]=r*Math.sin(ph)*Math.sin(th);p[i*3+2]=r*Math.cos(ph);}return p;}
-function torus(n){const p=new Float32Array(n*3),R=1,r=.4;for(let i=0;i<n;i++){const u=Math.random()*Math.PI*2,v=Math.random()*Math.PI*2,rr=r+(Math.random()-.5)*.07;p[i*3]=(R+rr*Math.cos(v))*Math.cos(u);p[i*3+1]=(R+rr*Math.cos(v))*Math.sin(u);p[i*3+2]=rr*Math.sin(v);}return p;}
-function galaxy(n){const p=new Float32Array(n*3);for(let i=0;i<n;i++){const a=i%3,t=Math.random(),ang=t*Math.PI*3+a*(Math.PI*2/3),rad=t*1.4+.1,sp=.1*(1-t);p[i*3]=rad*Math.cos(ang)+(Math.random()-.5)*sp;p[i*3+1]=(Math.random()-.5)*.12;p[i*3+2]=rad*Math.sin(ang)+(Math.random()-.5)*sp;}return p;}
+// ══════════════════════════════════════════════════════
+// STAR TUNNEL — tube of stars rushing past camera
+// ══════════════════════════════════════════════════════
+const STAR_COUNT = 6000;
+const TUNNEL_RADIUS = 12;
+const TUNNEL_LENGTH = 300;
 
-const shapes=[sphere(N),torus(N),galaxy(N)];
-let si=0,morphTgt=null,morphT=1;
-const geo=new THREE.BufferGeometry();
-const pArr=new Float32Array(shapes[0]),cArr=new Float32Array(N*3);
-for(let i=0;i<N;i++){cArr[i*3]=.6+Math.random()*.4;cArr[i*3+1]=.28+Math.random()*.38;cArr[i*3+2]=.02+Math.random()*.1;}
-geo.setAttribute('position',new THREE.BufferAttribute(pArr,3));
-geo.setAttribute('color',new THREE.BufferAttribute(cArr,3));
-const mat=new THREE.PointsMaterial({size:.007,vertexColors:true,transparent:true,opacity:.9,sizeAttenuation:true,depthWrite:false,blending:THREE.AdditiveBlending});
-const pts=new THREE.Points(geo,mat);
-scene.add(pts);
-setInterval(()=>{if(playing){si=(si+1)%shapes.length;morphTgt=shapes[si];morphT=0;}},22000);
+const starGeo = new THREE.BufferGeometry();
+const starPos = new Float32Array(STAR_COUNT * 3);
+const starCol = new Float32Array(STAR_COUNT * 3);
+const starSeed = new Float32Array(STAR_COUNT); // for individual shimmer
 
-// ══════════════════════════════════════════
+for (let i = 0; i < STAR_COUNT; i++) {
+  resetStar(i, true);
+  starSeed[i] = Math.random() * Math.PI * 2;
+}
+starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+starGeo.setAttribute('color', new THREE.BufferAttribute(starCol, 3));
+
+const starMat = new THREE.PointsMaterial({
+  size: 0.18, vertexColors: true, transparent: true, opacity: 0.9,
+  sizeAttenuation: true, depthWrite: false, blending: THREE.AdditiveBlending
+});
+const stars = new THREE.Points(starGeo, starMat);
+scene.add(stars);
+
+function resetStar(i, initial) {
+  // Cylinder distribution around Z axis
+  const angle = Math.random() * Math.PI * 2;
+  const r = TUNNEL_RADIUS * (0.3 + Math.random() * 0.7);
+  starPos[i*3]   = Math.cos(angle) * r;
+  starPos[i*3+1] = Math.sin(angle) * r;
+  starPos[i*3+2] = initial
+    ? -Math.random() * TUNNEL_LENGTH          // scattered on init
+    : -TUNNEL_LENGTH * 0.5;                   // respawn far ahead
+
+  // Color: mostly white/blue, some warm
+  const warm = Math.random() < 0.15;
+  if (warm) {
+    starCol[i*3]   = 1.0;
+    starCol[i*3+1] = 0.7 + Math.random() * 0.3;
+    starCol[i*3+2] = 0.3 + Math.random() * 0.3;
+  } else {
+    const t = Math.random();
+    starCol[i*3]   = 0.6 + t * 0.4;
+    starCol[i*3+1] = 0.7 + t * 0.3;
+    starCol[i*3+2] = 0.9 + t * 0.1;
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// NEBULA CLOUDS — large translucent blobs
+// ══════════════════════════════════════════════════════
+const NEBULA_COUNT = 1200;
+const nebGeo = new THREE.BufferGeometry();
+const nebPos = new Float32Array(NEBULA_COUNT * 3);
+const nebCol = new Float32Array(NEBULA_COUNT * 3);
+
+const nebulaColors = [
+  [0.2, 0.4, 0.9],  // blue
+  [0.5, 0.1, 0.8],  // purple
+  [0.1, 0.6, 0.5],  // teal
+  [0.8, 0.2, 0.3],  // red
+];
+
+for (let i = 0; i < NEBULA_COUNT; i++) {
+  resetNebula(i, true);
+}
+nebGeo.setAttribute('position', new THREE.BufferAttribute(nebPos, 3));
+nebGeo.setAttribute('color',    new THREE.BufferAttribute(nebCol, 3));
+
+const nebMat = new THREE.PointsMaterial({
+  size: 2.5, vertexColors: true, transparent: true, opacity: 0.06,
+  sizeAttenuation: true, depthWrite: false, blending: THREE.AdditiveBlending
+});
+const nebula = new THREE.Points(nebGeo, nebMat);
+scene.add(nebula);
+
+function resetNebula(i, initial) {
+  const angle = Math.random() * Math.PI * 2;
+  const r = TUNNEL_RADIUS * (0.1 + Math.random() * 1.2);
+  nebPos[i*3]   = Math.cos(angle) * r;
+  nebPos[i*3+1] = Math.sin(angle) * r;
+  nebPos[i*3+2] = initial
+    ? -Math.random() * TUNNEL_LENGTH
+    : -TUNNEL_LENGTH * 0.5;
+
+  const c = nebulaColors[Math.floor(Math.random() * nebulaColors.length)];
+  nebCol[i*3]   = c[0];
+  nebCol[i*3+1] = c[1];
+  nebCol[i*3+2] = c[2];
+}
+
+// ══════════════════════════════════════════════════════
+// WORMHOLE RING — circular rings that zoom past
+// ══════════════════════════════════════════════════════
+const rings = [];
+function createRing(zPos) {
+  const segs = 80;
+  const geo = new THREE.BufferGeometry();
+  const pos = new Float32Array(segs * 3);
+  const hue = Math.random();
+  for (let i = 0; i < segs; i++) {
+    const a = (i / segs) * Math.PI * 2;
+    pos[i*3]   = Math.cos(a) * TUNNEL_RADIUS;
+    pos[i*3+1] = Math.sin(a) * TUNNEL_RADIUS;
+    pos[i*3+2] = 0;
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const mat = new THREE.PointsMaterial({
+    size: 0.12, color: new THREE.Color().setHSL(hue, 0.8, 0.7),
+    transparent: true, opacity: 0.4,
+    blending: THREE.AdditiveBlending, depthWrite: false
+  });
+  const ring = new THREE.Points(geo, mat);
+  ring.position.z = zPos;
+  ring.userData = { speed: 0 };
+  scene.add(ring);
+  rings.push(ring);
+}
+
+// Spawn initial rings
+for (let i = 0; i < 30; i++) {
+  createRing(-i * 10 - 5);
+}
+
+// ══════════════════════════════════════════════════════
 // AUDIO
-// ══════════════════════════════════════════
-let actx=null,analyser=null,freq=null;
-let srcNode=null,audioBuf=null;
-let playing=false,paused=false,pauseAt=0,startAt=0;
+// ══════════════════════════════════════════════════════
+let actx = null, analyser = null, freq = null;
+let srcNode = null, audioBuf = null;
+let playing = false, paused = false, pauseAt = 0, startAt = 0;
 
-const msgEl=document.getElementById('msg');
-const spinner=document.getElementById('spinner');
+// Wind oscillator
+let windGain = null, windOsc = null, windFilter = null;
 
-function setMsg(t,cls=''){msgEl.textContent=t;msgEl.className=cls;}
-function spin(v){spinner.style.display=v?'block':'none';}
+function createWind() {
+  if (!actx) return;
+  // Noise-like wind via multiple detuned oscillators
+  windGain = actx.createGain();
+  windGain.gain.value = 0;
+  windFilter = actx.createBiquadFilter();
+  windFilter.type = 'bandpass';
+  windFilter.frequency.value = 800;
+  windFilter.Q.value = 0.5;
+  windGain.connect(windFilter);
+  windFilter.connect(actx.destination);
 
-document.getElementById('fileInput').addEventListener('change',function(){
-  const file=this.files[0];
-  if(!file)return;
-  this.value='';
+  // Several oscillators for noise texture
+  [180, 320, 550, 900, 1400].forEach(freq => {
+    const o = actx.createOscillator();
+    o.type = 'sawtooth';
+    o.frequency.value = freq + Math.random() * 40;
+    const g = actx.createGain();
+    g.gain.value = 0.015 + Math.random() * 0.01;
+    o.connect(g);
+    g.connect(windGain);
+    o.start();
+  });
+}
 
-  setMsg('Leyendo archivo…','loading');
+function triggerWindBurst(intensity) {
+  if (!windGain) return;
+  const now = actx.currentTime;
+  windGain.gain.cancelScheduledValues(now);
+  windGain.gain.setValueAtTime(windGain.gain.value, now);
+  windGain.gain.linearRampToValueAtTime(intensity * 0.3, now + 0.05);
+  windGain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+}
+
+const msgEl = document.getElementById('msg');
+const spinner = document.getElementById('spinner');
+function setMsg(t, cls='') { msgEl.textContent=t; msgEl.className=cls; }
+function spin(v) { spinner.style.display = v ? 'block' : 'none'; }
+
+document.getElementById('fileInput').addEventListener('change', function() {
+  const file = this.files[0];
+  if (!file) return;
+  this.value = '';
+  setMsg('Leyendo…', 'loading');
   spin(true);
 
-  // Crear AudioContext en el change event (gesto válido en Safari)
-  // En Chrome puede quedar suspended — lo resolvemos con el botón play
-  try{
-    if(actx){try{actx.close();}catch(_){}}
-    actx=new(window.AudioContext||window.webkitAudioContext)();
-  }catch(e){
-    spin(false);setMsg('Web Audio no soportado: '+e.message,'err');return;
+  try {
+    if (actx) { try { actx.close(); } catch(_){} }
+    actx = new (window.AudioContext || window.webkitAudioContext)();
+  } catch(e) {
+    spin(false); setMsg('Web Audio no soportado.', 'err'); return;
   }
 
-  const reader=new FileReader();
-  reader.onload=function(ev){
-    setMsg('Decodificando…','loading');
+  const reader = new FileReader();
+  reader.onload = ev => {
     actx.decodeAudioData(ev.target.result,
-      function(decoded){
+      decoded => {
         spin(false);
-        audioBuf=decoded;
-        const name=file.name.replace(/\.[^.]+$/,'');
-        document.getElementById('tname').textContent=name;
-
-        // Intentar reproducir directo
-        // Si el contexto está suspended (Chrome), mostramos overlay con botón
-        setupNodes();
-        actx.resume().then(()=>{
-          if(actx.state==='running'){
-            startSource(0);
-            showViz();
-          } else {
-            // Chrome bloqueó — mostrar botón de play explícito
-            showPlayOverlay();
-          }
-        }).catch(()=>showPlayOverlay());
+        audioBuf = decoded;
+        document.getElementById('tname').textContent = file.name.replace(/\.[^.]+$/, '');
+        setupAndPlay();
       },
-      function(err){
-        spin(false);
-        setMsg('Error decodificando. Prueba con WAV.','err');
-      }
+      err => { spin(false); setMsg('Error decodificando. Prueba WAV.', 'err'); }
     );
   };
-  reader.onerror=()=>{spin(false);setMsg('Error leyendo archivo.','err');};
+  reader.onerror = () => { spin(false); setMsg('Error leyendo archivo.', 'err'); };
   reader.readAsArrayBuffer(file);
 });
 
-function setupNodes(){
-  if(srcNode){try{srcNode.stop();}catch(_){}}
-  analyser=actx.createAnalyser();
-  analyser.fftSize=1024;
-  analyser.smoothingTimeConstant=.85;
-  freq=new Uint8Array(analyser.frequencyBinCount);
-  srcNode=actx.createBufferSource();
-  srcNode.buffer=audioBuf;
+function setupAndPlay() {
+  setupNodes();
+  actx.resume().then(() => {
+    if (actx.state === 'running') {
+      startSource(0);
+      showViz();
+    } else {
+      document.getElementById('playOverlay').classList.add('show');
+    }
+  }).catch(() => document.getElementById('playOverlay').classList.add('show'));
+}
+
+function setupNodes() {
+  if (srcNode) { try { srcNode.stop(); } catch(_){} }
+  analyser = actx.createAnalyser();
+  analyser.fftSize = 2048;
+  analyser.smoothingTimeConstant = 0.8;
+  freq = new Uint8Array(analyser.frequencyBinCount);
+  srcNode = actx.createBufferSource();
+  srcNode.buffer = audioBuf;
   srcNode.connect(analyser);
   analyser.connect(actx.destination);
+  createWind();
 }
 
-function startSource(offset){
-  srcNode.start(0,offset);
-  startAt=actx.currentTime-offset;
-  playing=true;paused=false;
-  srcNode.onended=()=>{if(!paused)playing=false;};
+function startSource(offset) {
+  srcNode.start(0, offset);
+  startAt = actx.currentTime - offset;
+  playing = true; paused = false;
+  srcNode.onended = () => { if (!paused) playing = false; };
 }
 
-function showPlayOverlay(){
-  document.getElementById('playOverlay').classList.add('show');
-}
-
-// Botón de play explícito — funciona en Chrome porque es un click directo
-document.getElementById('playNowBtn').addEventListener('click',function(){
+document.getElementById('playNowBtn').addEventListener('click', () => {
   document.getElementById('playOverlay').classList.remove('show');
-  setupNodes(); // recrear nodos (los anteriores pueden estar usados)
-  actx.resume().then(()=>{
-    startSource(0);
-    showViz();
-  });
+  setupNodes();
+  actx.resume().then(() => { startSource(0); showViz(); });
 });
 
-function showViz(){
+function showViz() {
   document.getElementById('ui').classList.add('gone');
   document.getElementById('hud').classList.add('on');
   document.getElementById('back').classList.add('on');
-  document.getElementById('pauseBtn').textContent='⏸';
+  document.getElementById('pauseBtn').textContent = '⏸';
 }
 
-function stopAll(){
-  if(srcNode){try{srcNode.stop();}catch(_){}srcNode=null;}
-  if(actx){try{actx.close();}catch(_){}actx=null;}
-  playing=false;paused=false;analyser=null;
+function stopAll() {
+  if (srcNode) { try { srcNode.stop(); } catch(_){} srcNode = null; }
+  if (actx) { try { actx.close(); } catch(_){} actx = null; }
+  playing = false; paused = false; analyser = null;
   document.getElementById('hud').classList.remove('on');
   document.getElementById('back').classList.remove('on');
   document.getElementById('playOverlay').classList.remove('show');
@@ -250,58 +377,195 @@ function stopAll(){
   setMsg('Selecciona tu archivo de audio');
 }
 
-document.getElementById('pauseBtn').addEventListener('click',()=>{
-  if(!actx||!srcNode)return;
-  if(paused){
+document.getElementById('pauseBtn').addEventListener('click', () => {
+  if (!actx || !srcNode) return;
+  if (paused) {
     setupNodes();
-    actx.resume().then(()=>{startSource(pauseAt);document.getElementById('pauseBtn').textContent='⏸';});
-  }else{
-    pauseAt=actx.currentTime-startAt;
-    try{srcNode.stop();}catch(_){}
-    playing=false;paused=true;
-    document.getElementById('pauseBtn').textContent='▶';
+    actx.resume().then(() => { startSource(pauseAt); document.getElementById('pauseBtn').textContent='⏸'; });
+  } else {
+    pauseAt = actx.currentTime - startAt;
+    try { srcNode.stop(); } catch(_){}
+    playing = false; paused = true;
+    document.getElementById('pauseBtn').textContent = '▶';
   }
 });
-document.getElementById('stopBtn').addEventListener('click',stopAll);
-document.getElementById('back').addEventListener('click',stopAll);
+document.getElementById('stopBtn').addEventListener('click', stopAll);
+document.getElementById('back').addEventListener('click', stopAll);
 
-// ══════════════════════════════════════════
+// ══════════════════════════════════════════════════════
 // RENDER LOOP
-// ══════════════════════════════════════════
-let t=0,dragX=0,dragY=0,lx=0,ly=0;
-cv.addEventListener('touchstart',e=>{lx=e.touches[0].clientX;ly=e.touches[0].clientY;},{passive:true});
-cv.addEventListener('touchmove',e=>{dragX+=(e.touches[0].clientX-lx)*.005;dragY+=(e.touches[0].clientY-ly)*.003;lx=e.touches[0].clientX;ly=e.touches[0].clientY;},{passive:true});
-cv.addEventListener('mousemove',e=>{dragX=(e.clientX/innerWidth-.5)*.8;dragY=(e.clientY/innerHeight-.5)*.4;});
+// ══════════════════════════════════════════════════════
+let t = 0;
+let baseSpeed = 8;       // units/sec forward speed
+let camYaw = 0, camPitch = 0;
+let targetYaw = 0, targetPitch = 0;
+let lastBass = 0, lastMid = 0;
+let ringSpawnTimer = 0;
+let turnTimer = 0;
+let turnInterval = 4 + Math.random() * 4; // seconds between turns
+let windTriggered = false;
 
-const pa=geo.attributes.position,ca=geo.attributes.color;
-function loop(){
-  requestAnimationFrame(loop);t+=.004;
-  let bass=0,mid=0,hi=0;
-  if(analyser&&playing){
+// Touch drag
+let lx = 0, ly = 0;
+cv.addEventListener('touchstart', e => { lx = e.touches[0].clientX; ly = e.touches[0].clientY; }, {passive:true});
+cv.addEventListener('touchmove', e => {
+  targetYaw   += (e.touches[0].clientX - lx) * 0.003;
+  targetPitch += (e.touches[0].clientY - ly) * 0.002;
+  lx = e.touches[0].clientX; ly = e.touches[0].clientY;
+}, {passive:true});
+cv.addEventListener('mousemove', e => {
+  targetYaw   = (e.clientX / innerWidth - 0.5) * 0.6;
+  targetPitch = (e.clientY / innerHeight - 0.5) * 0.3;
+});
+
+let prevTime = performance.now();
+
+function loop() {
+  requestAnimationFrame(loop);
+  const now = performance.now();
+  const dt = Math.min((now - prevTime) / 1000, 0.05);
+  prevTime = now;
+  t += dt;
+
+  // ── Audio analysis ──────────────────────────────
+  let bass = 0, mid = 0, hi = 0, energy = 0;
+  if (analyser && playing) {
     analyser.getByteFrequencyData(freq);
-    const L=freq.length;
-    for(let i=0;i<L*.08;i++)bass+=freq[i];bass/=(L*.08*255);
-    for(let i=L*.08|0;i<L*.4;i++)mid+=freq[i];mid/=(L*.32*255);
-    for(let i=L*.4|0;i<L*.75;i++)hi+=freq[i];hi/=(L*.35*255);
+    const L = freq.length;
+    for (let i = 0; i < L * 0.05; i++) bass += freq[i]; bass /= (L * 0.05 * 255);
+    for (let i = L*0.05|0; i < L*0.25; i++) mid  += freq[i]; mid  /= (L * 0.20 * 255);
+    for (let i = L*0.25|0; i < L*0.70; i++) hi   += freq[i]; hi   /= (L * 0.45 * 255);
+    energy = bass * 0.6 + mid * 0.3 + hi * 0.1;
   }
-  if(morphTgt&&morphT<1)morphT=Math.min(1,morphT+.001+bass*.008);
-  const from=shapes[(si-1+shapes.length)%shapes.length],to=shapes[si];
-  const pulse=1+bass*.5,breath=1+.025*Math.sin(t*.7);
-  for(let i=0;i<N;i++){
-    let x,y,z;
-    if(morphTgt&&morphT<1){const e=morphT<.5?4*morphT*morphT*morphT:1-Math.pow(-2*morphT+2,3)/2;x=from[i*3]+(to[i*3]-from[i*3])*e;y=from[i*3+1]+(to[i*3+1]-from[i*3+1])*e;z=from[i*3+2]+(to[i*3+2]-from[i*3+2])*e;}
-    else{x=to[i*3];y=to[i*3+1];z=to[i*3+2];}
-    if(bass>.5){const s=(bass-.5)*.25;x+=(Math.random()-.5)*s;y+=(Math.random()-.5)*s;z+=(Math.random()-.5)*s;}
-    pa.array[i*3]=x*pulse*breath;pa.array[i*3+1]=y*pulse*breath;pa.array[i*3+2]=z*pulse*breath;
-    const br=1+mid*.9;
-    ca.array[i*3]=Math.min(1,(.55+(i%7/6)*.45)*br);
-    ca.array[i*3+1]=Math.min(1,(.22+(i%5/4)*.35)*br);
-    ca.array[i*3+2]=Math.min(1,.02+hi*.22*br);
+
+  // Smooth
+  const sBass = lastBass + (bass - lastBass) * 0.15;
+  const sMid  = lastMid  + (mid  - lastMid)  * 0.12;
+  lastBass = sBass; lastMid = sMid;
+
+  // ── Travel speed — driven by music energy ───────
+  const speed = (baseSpeed + energy * 25) * dt;
+
+  // ── Auto camera turns every few seconds ─────────
+  turnTimer += dt;
+  if (turnTimer > turnInterval) {
+    turnTimer = 0;
+    turnInterval = 3 + Math.random() * 5;
+    targetYaw   += (Math.random() - 0.5) * 0.5;
+    targetPitch += (Math.random() - 0.5) * 0.25;
+    targetPitch  = Math.max(-0.35, Math.min(0.35, targetPitch));
+    // Wind on turn
+    if (actx && playing) triggerWindBurst(0.5 + energy * 0.5);
   }
-  pa.needsUpdate=true;ca.needsUpdate=true;
-  pts.rotation.y=t*.07+dragX;pts.rotation.x=Math.sin(t*.04)*.1+dragY;pts.rotation.z=t*.015;
-  mat.size=.007+bass*.007;
-  renderer.render(scene,camera);
+
+  // Wind burst on strong bass hit
+  if (sBass > 0.6 && !windTriggered && actx && playing) {
+    triggerWindBurst(sBass * 0.4);
+    windTriggered = true;
+  }
+  if (sBass < 0.4) windTriggered = false;
+
+  // Smooth camera
+  camYaw   += (targetYaw   - camYaw)   * 3 * dt;
+  camPitch += (targetPitch - camPitch) * 3 * dt;
+
+  // Camera rotation: forward = -Z, yaw/pitch applied
+  camera.rotation.order = 'YXZ';
+  camera.rotation.y = camYaw + Math.sin(t * 0.3) * 0.04;
+  camera.rotation.x = camPitch + Math.sin(t * 0.2) * 0.02;
+  camera.rotation.z = Math.sin(t * 0.15) * 0.03 + sBass * 0.05;
+
+  // Camera moves in the direction it's facing
+  const dir = new THREE.Vector3(0, 0, -1).applyEuler(camera.rotation);
+  camera.position.addScaledVector(dir, speed);
+
+  // Keep camera inside tunnel (soft boundary)
+  const camR = Math.sqrt(camera.position.x**2 + camera.position.y**2);
+  if (camR > TUNNEL_RADIUS * 0.6) {
+    camera.position.x *= 0.98;
+    camera.position.y *= 0.98;
+  }
+
+  // ── Move stars (relative to camera) ─────────────
+  const camZ = camera.position.z;
+  const starAttr = starGeo.attributes.position;
+  for (let i = 0; i < STAR_COUNT; i++) {
+    const sz = starAttr.array[i*3+2];
+    // Star is behind camera — respawn ahead
+    if (sz > camZ + 5) {
+      const angle = Math.random() * Math.PI * 2;
+      const r = TUNNEL_RADIUS * (0.2 + Math.random() * 0.8);
+      starAttr.array[i*3]   = camera.position.x + Math.cos(angle) * r;
+      starAttr.array[i*3+1] = camera.position.y + Math.sin(angle) * r;
+      starAttr.array[i*3+2] = camZ - TUNNEL_LENGTH * 0.5 - Math.random() * 20;
+
+      // Brighten on high energy
+      const e2 = 0.6 + energy * 0.4;
+      starCol[i*3]   = Math.min(1, starCol[i*3]   * e2 + sMid * 0.3);
+      starCol[i*3+1] = Math.min(1, starCol[i*3+1] * e2);
+      starCol[i*3+2] = Math.min(1, starCol[i*3+2] * e2);
+    }
+
+    // Shimmer
+    const shimmer = 0.85 + 0.15 * Math.sin(t * 3 + starSeed[i]);
+    starCol[i*3]   *= shimmer + sMid * 0.1;
+    starCol[i*3+1] *= shimmer;
+    starCol[i*3+2] *= shimmer;
+  }
+  starAttr.needsUpdate = true;
+  starGeo.attributes.color.needsUpdate = true;
+
+  // ── Move nebula ──────────────────────────────────
+  const nebAttr = nebGeo.attributes.position;
+  for (let i = 0; i < NEBULA_COUNT; i++) {
+    if (nebAttr.array[i*3+2] > camZ + 10) {
+      resetNebula(i, false);
+      nebAttr.array[i*3+2] = camZ - TUNNEL_LENGTH * 0.45;
+    }
+  }
+  nebAttr.needsUpdate = true;
+
+  // Nebula brightness from mid/hi
+  nebMat.opacity = 0.04 + sMid * 0.08 + hi * 0.06;
+  nebMat.size    = 2.5 + energy * 3;
+
+  // ── Rings — fly past camera ──────────────────────
+  for (let r of rings) {
+    r.position.z += speed * 2.5;
+    // Scale ring based on bass — pulsing
+    const rs = 1 + sBass * 0.3;
+    r.scale.set(rs, rs, 1);
+    r.material.opacity = 0.15 + sMid * 0.4;
+    // Rotate ring
+    r.rotation.z += dt * 0.3 + sBass * 0.5 * dt;
+    if (r.position.z > camZ + 8) {
+      r.position.z = camZ - 280 - Math.random() * 20;
+      // New color on respawn
+      r.material.color.setHSL(Math.random(), 0.8, 0.6 + energy * 0.3);
+    }
+  }
+
+  // Spawn extra rings on bass hit
+  ringSpawnTimer += dt;
+  if (sBass > 0.55 && ringSpawnTimer > 0.3) {
+    ringSpawnTimer = 0;
+    // Flash existing ring colors
+    for (const r of rings) {
+      r.material.color.setHSL(Math.random(), 1.0, 0.8);
+    }
+  }
+
+  // ── Star size pulse ──────────────────────────────
+  starMat.size = 0.12 + sBass * 0.25 + hi * 0.08;
+
+  // ── FOV warp on energy ──────────────────────────
+  camera.fov = 75 + energy * 20 + sBass * 10;
+  camera.updateProjectionMatrix();
+
+  // ── Fog density from energy ──────────────────────
+  scene.fog.density = 0.05 + sMid * 0.04;
+
+  renderer.render(scene, camera);
 }
 loop();
 </script>
