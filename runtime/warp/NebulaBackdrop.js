@@ -1,10 +1,90 @@
 import * as THREE from 'three';
+
 const vertexShader=`varying vec3 vDir;void main(){vDir=normalize(position);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`;
+
 const fragmentShader=`
 precision highp float;
 varying vec3 vDir;
-uniform float uTime;uniform float uTravel;uniform float uEnergy;uniform float uCrescendo;uniform float uVisibility;uniform float uTunnelDrive;uniform float uLivingLight;uniform float uGalaxyReveal;uniform float uIdealized;uniform float uLifeReview;uniform float uBoundary;uniform float uReturn;uniform float uFinalFade;uniform float uAudioHeartPulse;uniform float uHeartLightFade;
+uniform float uTime;uniform float uTravel;uniform float uEnergy;uniform float uCrescendo;uniform float uVisibility;uniform float uTunnelDrive;uniform float uLivingLight;uniform float uGalaxyReveal;uniform float uIdealized;uniform float uLifeReview;uniform float uBoundary;uniform float uReturn;uniform float uFinalFade;uniform float uAudioHeartPulse;uniform float uHeartLightFade;uniform float uRaySteps;
 uniform float uNarrativeBlend;uniform float uNarrativeDarkZone;uniform float uNarrativeFilaments;uniform vec2 uNarrativeCore;uniform vec3 uNarrativeColor0;uniform vec3 uNarrativeColor1;uniform vec3 uNarrativeColor2;
-float hash31(vec3 p){p=fract(p*.1031);p+=dot(p,p.yzx+33.33);return fract((p.x+p.y)*p.z);}float hash21(vec2 p){vec3 p3=fract(vec3(p.xyx)*.1031);p3+=dot(p3,p3.yzx+33.33);return fract((p3.x+p3.y)*p3.z);}float noise3(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);float n000=hash31(i),n100=hash31(i+vec3(1,0,0)),n010=hash31(i+vec3(0,1,0)),n110=hash31(i+vec3(1,1,0)),n001=hash31(i+vec3(0,0,1)),n101=hash31(i+vec3(1,0,1)),n011=hash31(i+vec3(0,1,1)),n111=hash31(i+vec3(1,1,1));float nx00=mix(n000,n100,f.x),nx10=mix(n010,n110,f.x),nx01=mix(n001,n101,f.x),nx11=mix(n011,n111,f.x);return mix(mix(nx00,nx10,f.y),mix(nx01,nx11,f.y),f.z);}float fbm(vec3 p){float v=0.0,a=.53;for(int i=0;i<5;i++){v+=noise3(p)*a;p=p*2.03+vec3(7.1,-5.2,3.7);a*=.47;}return v;}float gauss2(vec2 p,vec2 c,float k){vec2 q=p-c;return exp(-dot(q,q)*k);}float spike(float x,float y,float w,float l){return smoothstep(w,0.0,abs(x))*smoothstep(l,0.0,abs(y));}float ridge(float v){return 1.0-abs(v*2.0-1.0);}
-void main(){vec3 d=normalize(vDir);float forward=smoothstep(.08,1.0,-d.z);vec2 screen=d.xy/max(.34,abs(d.z));vec3 p=d*2.78+vec3(uTravel*.0013,uTravel*.00046,-uTravel*.0022);float a=fbm(p*.67+vec3(0,uTime*.00030,0)),b=fbm(p*1.31+vec3(4.7,-3.2,uTime*.00055)),c=fbm(p*2.58+vec3(-6.1,5.4,-2.7)),e=fbm(p*4.65+vec3(8.4,-7.1,3.8)),fine=fbm(p*7.4+vec3(-12.1,4.3,uTime*.00082));float primaryShape=gauss2(screen,vec2(.19,.12),.66)+gauss2(screen,vec2(-.28,-.15),1.12)*.46;float primary=smoothstep(.31,.68,a*.48+b*.30+c*.16+fine*.06)*clamp(primaryShape,0.0,1.0);float wisps=smoothstep(.48,.72,b*.47+c*.31+e*.15+fine*.07)*(gauss2(screen,vec2(-.60,.24),1.78)+gauss2(screen,vec2(.58,-.32),1.62)+gauss2(screen,vec2(-.04,.58),2.08))*.46;float cloud=clamp(primary+wisps,0.0,1.0);float filamentSeed=ridge(b)*.34+ridge(c)*.27+ridge(e)*.19+ridge(fine)*.20;float filament=smoothstep(mix(.64,.49,uNarrativeFilaments),mix(.82,.70,uNarrativeFilaments),filamentSeed)*cloud;float dustField=fbm(p*1.82+vec3(11.8,-8.0,5.2)),dustCut=fbm(p*3.35+vec3(-9.0,4.2,6.4));float dustCurve=abs(screen.y*.90+.095*sin(screen.x*5.2+b*2.4)-.035);float ribbon=(1.0-smoothstep(.045,.18,dustCurve))*smoothstep(.14,.82,cloud);float dustLane=max(smoothstep(.50,.73,dustField)*smoothstep(.12,.68,cloud),ribbon*.72);float darkPocket=smoothstep(.60,.82,dustCut)*cloud;float violetMask=smoothstep(.42,.70,fbm(p*1.18+vec3(6,-4.9,8.2)))*cloud,amberMask=smoothstep(.48,.76,fbm(p*.98+vec3(-2.6,7.4,1.9)))*cloud*(1.0-violetMask*.42);vec3 deep=vec3(.00035,.0007,.0025),midnight=vec3(.0035,.009,.033),navy=vec3(.012,.038,.115),electric=vec3(.030,.185,.485),violet=vec3(.175,.045,.355),amber=vec3(.215,.065,.018),gold=vec3(.520,.205,.052),ivory=vec3(1.0,.95,.86),paleBlue=vec3(.62,.80,1.0),warmWhite=vec3(1.0,.97,.91);vec3 gas=mix(navy,electric,filament);gas=mix(gas,violet,violetMask*.72);gas=mix(gas,amber,amberMask*.46);gas+=gold*amberMask*filament*.07;vec3 narrativeGas=mix(uNarrativeColor0,uNarrativeColor1,clamp(filament+violetMask*.35,0.0,1.0));narrativeGas=mix(narrativeGas,uNarrativeColor2,clamp(amberMask*.55+filament*.30,0.0,1.0));gas=mix(gas,narrativeGas,uNarrativeBlend*.82);vec3 col=mix(deep,midnight,.82)+gas*cloud*.42;float narrativeDark=mix(1.0,.42+(.58*(1.0-uNarrativeDarkZone)),uNarrativeBlend);col*=narrativeDark;col*=1.0-dustLane*mix(.82,.94,uNarrativeDarkZone*uNarrativeBlend);col*=1.0-darkPocket*mix(.50,.72,uNarrativeDarkZone*uNarrativeBlend);float narrativeCore=gauss2(screen,uNarrativeCore,4.8)*forward*uNarrativeBlend;col+=uNarrativeColor2*narrativeCore*(.035+.065*(1.0-uNarrativeDarkZone));float radial=length(d.xy);float preAura=exp(-radial*radial*4.2)*forward*uLivingLight,orbGate=smoothstep(.76,.99,uLivingLight),core=exp(-radial*radial*35.0)*forward*uLivingLight*orbGate,aura=exp(-radial*radial*7.8)*forward*uLivingLight*(.18+.82*orbGate);col+=mix(paleBlue,warmWhite,uLivingLight)*preAura*.052+warmWhite*core*.56+paleBlue*aura*.085;float fetalPresence=clamp(uHeartLightFade,0.0,1.0),fetalPulse=clamp(uAudioHeartPulse,0.0,1.0)*fetalPresence;col+=warmWhite*exp(-radial*radial*mix(40.0,27.0,fetalPulse))*forward*fetalPresence*(.22+fetalPulse*.34);float pi=3.14159265359;vec2 uv=vec2(atan(d.z,d.x)/(2.0*pi)+.5,asin(clamp(d.y,-1.0,1.0))/pi+.5),starUv=uv*vec2(1340,670),cell=floor(starUv),f=fract(starUv)-.5,off=(vec2(hash21(cell+2.3),hash21(cell+9.7))-.5)*.72;float rnd=hash21(cell+17.1),r=length(f-off),starCore=smoothstep(.052,0.0,r)*step(.9942,rnd),bright=step(.99994,rnd),cross=(spike(f.x-off.x,f.y-off.y,.015,.34)+spike(f.y-off.y,f.x-off.x,.015,.34))*bright;vec3 starColor=mix(vec3(.72,.82,1.0),vec3(1.0,.96,.88),hash21(cell+31.2));col+=starColor*(starCore*.22+cross*.28);float bp=fract(uTime/10.0),breath=bp<.4?smoothstep(0.0,.4,bp):1.0-smoothstep(.4,1.0,bp);col*=.97+.06*breath;col*=uVisibility;col=mix(col,vec3(0.0),uFinalFade*(1.0-fetalPresence*.92));gl_FragColor=vec4(col,1.0);}`;
-export class NebulaBackdrop{constructor(){this.travel=0;this.geometry=new THREE.SphereGeometry(220,48,30);this.material=new THREE.ShaderMaterial({vertexShader,fragmentShader,side:THREE.BackSide,depthWrite:false,depthTest:false,transparent:false,uniforms:{uTime:{value:0},uTravel:{value:0},uEnergy:{value:.12},uCrescendo:{value:0},uVisibility:{value:.20},uTunnelDrive:{value:0},uLivingLight:{value:0},uGalaxyReveal:{value:0},uIdealized:{value:0},uLifeReview:{value:0},uBoundary:{value:0},uReturn:{value:0},uFinalFade:{value:0},uAudioHeartPulse:{value:0},uHeartLightFade:{value:0},uNarrativeBlend:{value:0},uNarrativeDarkZone:{value:.6},uNarrativeFilaments:{value:.3},uNarrativeCore:{value:new THREE.Vector2(0,0)},uNarrativeColor0:{value:new THREE.Color('#0d1b4b')},uNarrativeColor1:{value:new THREE.Color('#6a0572')},uNarrativeColor2:{value:new THREE.Color('#ffffff')}}});this.mesh=new THREE.Mesh(this.geometry,this.material);this.mesh.frustumCulled=false;this.mesh.renderOrder=-1000;}get visibility(){return this.material.uniforms.uVisibility.value||0;}update(dt,state,features){this.travel+=Math.max(0,state.speed)*dt;this.material.uniforms.uTime.value+=dt;this.material.uniforms.uTravel.value=this.travel;this.material.uniforms.uEnergy.value=features.energy||0;this.material.uniforms.uCrescendo.value=features.crescendo||0;const tunnel=state.tunnelDrive||0,reveal=state.galaxyReveal||0,light=state.livingLight||0,nebula=state.nebulaPresence||0;this.material.uniforms.uVisibility.value=Math.min(.38,.14+nebula*.07+tunnel*.035+(features.mid||0)*.008+reveal*.055+light*.020);this.material.uniforms.uTunnelDrive.value=tunnel;this.material.uniforms.uLivingLight.value=light;this.material.uniforms.uGalaxyReveal.value=reveal;this.material.uniforms.uIdealized.value=state.idealized||0;this.material.uniforms.uLifeReview.value=state.lifeReview||0;this.material.uniforms.uBoundary.value=state.boundary||0;this.material.uniforms.uReturn.value=state.returnForce||0;this.material.uniforms.uFinalFade.value=state.finalFade||0;this.material.uniforms.uAudioHeartPulse.value=state.audioHeartPulse||0;this.material.uniforms.uHeartLightFade.value=state.heartLightFade||0;}dispose(){this.geometry.dispose();this.material.dispose();}}
+
+float hash31(vec3 p){p=fract(p*.1031);p+=dot(p,p.yzx+33.33);return fract((p.x+p.y)*p.z);} 
+float hash21(vec2 p){vec3 p3=fract(vec3(p.xyx)*.1031);p3+=dot(p3,p3.yzx+33.33);return fract((p3.x+p3.y)*p3.z);} 
+float noise3(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);float n000=hash31(i),n100=hash31(i+vec3(1,0,0)),n010=hash31(i+vec3(0,1,0)),n110=hash31(i+vec3(1,1,0)),n001=hash31(i+vec3(0,0,1)),n101=hash31(i+vec3(1,0,1)),n011=hash31(i+vec3(0,1,1)),n111=hash31(i+vec3(1,1,1));float nx00=mix(n000,n100,f.x),nx10=mix(n010,n110,f.x),nx01=mix(n001,n101,f.x),nx11=mix(n011,n111,f.x);return mix(mix(nx00,nx10,f.y),mix(nx01,nx11,f.y),f.z);} 
+float fbm(vec3 p){float v=0.0,a=.52;for(int i=0;i<5;i++){v+=noise3(p)*a;p=p*2.02+vec3(7.1,-5.2,3.7);a*=.48;}return v;} 
+float ridge(float v){return 1.0-abs(v*2.0-1.0);} 
+float hg(float c,float g){float g2=g*g;return (1.0-g2)/(12.56637*pow(max(.05,1.0+g2-2.0*g*c),1.5));}
+float gauss2(vec2 p,vec2 c,float k){vec2 q=p-c;return exp(-dot(q,q)*k);} 
+
+vec4 densityField(vec3 p){
+ vec3 drift=vec3(uTravel*.00034,uTravel*.00011,-uTravel*.00052);
+ vec3 q=p+drift+vec3(0.0,uTime*.0032,0.0);
+ vec3 warp=vec3(fbm(q*.19+vec3(4.2,-1.7,6.1)),fbm(q*.21+vec3(-2.8,5.4,1.3)),fbm(q*.18+vec3(7.0,2.2,-4.6)))*2.0-1.0;
+ vec3 w=q+warp*(1.05+.35*uNarrativeFilaments);
+ float macro=fbm(w*.34);
+ float middle=fbm(w*.72+vec3(5.4,-2.1,3.3));
+ float detail=fbm(w*1.58+vec3(-6.0,4.7,2.2));
+ float filament=ridge(fbm(w*(1.42+uNarrativeFilaments*.58)+warp*.55));
+ float body=smoothstep(.39,.69,macro*.67+middle*.24+detail*.09);
+ float filamentMask=smoothstep(mix(.73,.52,uNarrativeFilaments),mix(.89,.72,uNarrativeFilaments),filament)*body;
+ float dustNoise=fbm(w*.92+vec3(11.2,-8.4,5.7));
+ float dustRidge=ridge(fbm(w*1.86+vec3(-8.0,3.2,9.0)));
+ float dust=smoothstep(.50,.76,dustNoise*.72+dustRidge*.28)*body;
+ float emissionNoise=fbm(w*.56+vec3(-3.1,8.0,4.6));
+ float emission=smoothstep(.55,.80,emissionNoise*.58+filamentMask*.72)*body;
+ float carved=1.0-smoothstep(.54,.81,fbm(w*.46+vec3(14.0,-3.0,-7.0)))*mix(.35,.82,uNarrativeDarkZone);
+ float density=body*carved*(.52+filamentMask*.48);
+ return vec4(density,dust,emission,filamentMask);
+}
+
+void main(){
+ vec3 rd=normalize(vDir);float forward=smoothstep(.02,1.0,-rd.z);vec2 screen=rd.xy/max(.30,abs(rd.z));
+ float steps=max(12.0,uRaySteps),stepSize=8.4/steps,t=.35;vec3 accum=vec3(0.0);float trans=1.0;
+ vec3 cold=vec3(.018,.045,.115),violet=vec3(.18,.045,.27),warm=vec3(.52,.115,.028),white=vec3(.96,.90,.82);
+ vec3 c0=mix(cold,uNarrativeColor0,uNarrativeBlend),c1=mix(violet,uNarrativeColor1,uNarrativeBlend),c2=mix(warm,uNarrativeColor2,uNarrativeBlend);
+ vec3 lightDir=normalize(vec3(-.38,.28,-.88));float phase=hg(dot(rd,lightDir),.42);
+ float coreField=gauss2(screen,uNarrativeCore,3.4)*uNarrativeBlend;
+ for(int i=0;i<28;i++){
+  if(float(i)>=steps)break;
+  vec3 p=rd*t;
+  vec4 f=densityField(p);
+  float density=f.x*(.58+.32*uGalaxyReveal+.18*uTunnelDrive);
+  float dust=f.y*mix(.75,1.65,uNarrativeDarkZone);
+  float emissive=f.z*(.42+.58*uCrescendo)+coreField*.16;
+  float extinction=density*(.72+dust*1.65);
+  float alpha=1.0-exp(-extinction*stepSize*.82);
+  float scatter=density*(.13+phase*2.2)*(1.0-dust*.62);
+  vec3 gas=mix(c0,c1,clamp(f.w*.72+f.z*.22,0.0,1.0));gas=mix(gas,c2,clamp(f.z*.72+coreField*.28,0.0,1.0));
+  vec3 emission=gas*emissive*.48+white*emissive*emissive*.11;
+  vec3 inscatter=gas*scatter*.34;
+  accum+=(emission+inscatter)*trans*alpha;
+  trans*=1.0-alpha;
+  if(trans<.035)break;
+  t+=stepSize;
+ }
+ float darkPocket=smoothstep(.56,.82,fbm(vec3(screen*1.15,uTime*.0018)+vec3(4.0,-2.0,7.0)))*mix(.18,.62,uNarrativeDarkZone);
+ accum*=1.0-darkPocket;
+ accum*=forward;
+ float radial=length(rd.xy);float preAura=exp(-radial*radial*4.0)*forward*uLivingLight,orb=smoothstep(.74,.99,uLivingLight),core=exp(-radial*radial*34.0)*forward*uLivingLight*orb,aura=exp(-radial*radial*7.6)*forward*uLivingLight*(.18+.82*orb);
+ accum+=mix(vec3(.62,.80,1.0),vec3(1.0,.97,.91),uLivingLight)*preAura*.035+vec3(1.0,.97,.91)*core*.40+vec3(.62,.80,1.0)*aura*.055;
+ float fetalPresence=clamp(uHeartLightFade,0.0,1.0),fetalPulse=clamp(uAudioHeartPulse,0.0,1.0)*fetalPresence;accum+=vec3(1.0,.97,.91)*exp(-radial*radial*mix(42.0,28.0,fetalPulse))*forward*fetalPresence*(.17+fetalPulse*.24);
+ float pi=3.14159265359;vec2 uv=vec2(atan(rd.z,rd.x)/(2.0*pi)+.5,asin(clamp(rd.y,-1.0,1.0))/pi+.5),starUv=uv*vec2(1160.0,580.0),cell=floor(starUv),fp=fract(starUv)-.5;float rnd=hash21(cell+17.1),sr=length(fp-(vec2(hash21(cell+2.3),hash21(cell+9.7))-.5)*.70),star=smoothstep(.035,0.0,sr)*step(.9972,rnd);accum+=mix(vec3(.68,.78,1.0),vec3(1.0,.91,.76),hash21(cell+31.2))*star*.11;
+ accum*=uVisibility;accum=mix(accum,vec3(0.0),uFinalFade*(1.0-fetalPresence*.92));
+ gl_FragColor=vec4(accum,1.0);
+}`;
+
+export class NebulaBackdrop{
+ constructor(){
+  this.travel=0;
+  const mobile=/iPad|iPhone|Android/i.test(navigator.userAgent||'')||innerWidth<800;
+  this.geometry=new THREE.SphereGeometry(220,mobile?48:72,mobile?30:48);
+  this.material=new THREE.ShaderMaterial({vertexShader,fragmentShader,side:THREE.BackSide,depthWrite:false,depthTest:false,transparent:false,uniforms:{uTime:{value:0},uTravel:{value:0},uEnergy:{value:.12},uCrescendo:{value:0},uVisibility:{value:.20},uTunnelDrive:{value:0},uLivingLight:{value:0},uGalaxyReveal:{value:0},uIdealized:{value:0},uLifeReview:{value:0},uBoundary:{value:0},uReturn:{value:0},uFinalFade:{value:0},uAudioHeartPulse:{value:0},uHeartLightFade:{value:0},uRaySteps:{value:mobile?18:28},uNarrativeBlend:{value:0},uNarrativeDarkZone:{value:.6},uNarrativeFilaments:{value:.3},uNarrativeCore:{value:new THREE.Vector2(0,0)},uNarrativeColor0:{value:new THREE.Color('#0d1b4b')},uNarrativeColor1:{value:new THREE.Color('#6a0572')},uNarrativeColor2:{value:new THREE.Color('#d07a35')}}});
+  this.mesh=new THREE.Mesh(this.geometry,this.material);this.mesh.frustumCulled=false;this.mesh.renderOrder=-1000;
+ }
+ get visibility(){return this.material.uniforms.uVisibility.value||0;}
+ update(dt,state,features){
+  this.travel+=Math.max(0,state.speed)*dt;const u=this.material.uniforms;u.uTime.value+=dt;u.uTravel.value=this.travel;u.uEnergy.value=features.energy||0;u.uCrescendo.value=features.crescendo||0;
+  const tunnel=state.tunnelDrive||0,reveal=state.galaxyReveal||0,light=state.livingLight||0,nebula=state.nebulaPresence||0;u.uVisibility.value=Math.min(.42,.16+nebula*.11+tunnel*.055+(features.mid||0)*.014+reveal*.085+light*.030);u.uTunnelDrive.value=tunnel;u.uLivingLight.value=light;u.uGalaxyReveal.value=reveal;u.uIdealized.value=state.idealized||0;u.uLifeReview.value=state.lifeReview||0;u.uBoundary.value=state.boundary||0;u.uReturn.value=state.returnForce||0;u.uFinalFade.value=state.finalFade||0;u.uAudioHeartPulse.value=state.audioHeartPulse||0;u.uHeartLightFade.value=state.heartLightFade||0;
+ }
+ dispose(){this.geometry.dispose();this.material.dispose();}
+}
