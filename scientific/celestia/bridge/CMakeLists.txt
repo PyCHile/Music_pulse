@@ -12,6 +12,7 @@ if(NOT DEFINED CELESTIA_BUILD_DIR)
 endif()
 
 find_package(Eigen3 3.3 CONFIG REQUIRED NO_MODULE)
+find_package(Threads REQUIRED)
 find_library(CELESTIA_LIBRARY
   NAMES celestia celestia-1.7
   PATHS "${CELESTIA_BUILD_DIR}/src/celestia"
@@ -21,16 +22,24 @@ if(NOT CELESTIA_LIBRARY)
   message(FATAL_ERROR "libcelestia was not found under ${CELESTIA_BUILD_DIR}/src/celestia")
 endif()
 
-add_executable(urux-celestia-bridge bridge.cpp)
-target_include_directories(urux-celestia-bridge PRIVATE
-  "${CELESTIA_SOURCE_DIR}/src"
-  "${CELESTIA_BUILD_DIR}"
-)
-target_link_libraries(urux-celestia-bridge PRIVATE Eigen3::Eigen "${CELESTIA_LIBRARY}")
-set_target_properties(urux-celestia-bridge PROPERTIES
-  BUILD_RPATH "${CELESTIA_BUILD_DIR}/src/celestia"
-  INSTALL_RPATH "$ORIGIN/../lib"
-)
+function(urux_link_celestia target)
+  target_include_directories(${target} PRIVATE
+    "${CELESTIA_SOURCE_DIR}/src"
+    "${CELESTIA_BUILD_DIR}"
+  )
+  target_link_libraries(${target} PRIVATE Eigen3::Eigen "${CELESTIA_LIBRARY}")
+  set_target_properties(${target} PROPERTIES
+    BUILD_RPATH "${CELESTIA_BUILD_DIR}/src/celestia"
+    INSTALL_RPATH "$ORIGIN/../lib"
+  )
+endfunction()
 
-install(TARGETS urux-celestia-bridge RUNTIME DESTINATION bin)
+add_executable(urux-celestia-bridge bridge.cpp)
+urux_link_celestia(urux-celestia-bridge)
+
+add_executable(urux-celestia-sidecar ../sidecar/server.cpp)
+urux_link_celestia(urux-celestia-sidecar)
+target_link_libraries(urux-celestia-sidecar PRIVATE Threads::Threads)
+
+install(TARGETS urux-celestia-bridge urux-celestia-sidecar RUNTIME DESTINATION bin)
 install(FILES "${CELESTIA_LIBRARY}" DESTINATION lib)
