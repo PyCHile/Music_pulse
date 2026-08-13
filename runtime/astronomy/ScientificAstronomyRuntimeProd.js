@@ -1,0 +1,1 @@
+export const scientificAstronomy={ready:true,readyPromise:Promise.resolve(true),snapshot:()=>({ready:true,mode:'static-precomputed',renderLoop:false}),stars:()=>[],bodies:()=>[],body:()=>null,emissionLines:()=>[]};
