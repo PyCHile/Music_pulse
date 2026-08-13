@@ -1,0 +1,52 @@
+{
+  "schema": "urux-celestia-native-v2",
+  "generatedAt": "2026-08-13T08:03:16.335100+00:00",
+  "source": "CelestiaProject/Celestia",
+  "sourceRef": "84153ded046fbea46c9f411dd0232e5426373ead",
+  "contentSource": "CelestiaProject/CelestiaContent",
+  "contentRef": "e4d5d2754b6224f04e440e53b189f9ee96b6d1fe",
+  "nativeBuildVerified": true,
+  "sidecarBinaryVerified": true,
+  "runtimeActive": false,
+  "serviceUrl": null,
+  "sharedLibrary": {
+    "path": "/home/runner/work/Music_pulse/Music_pulse/build/celestia/src/celestia/libcelestia.so.1.7.0",
+    "bytes": 4504264
+  },
+  "sidecarBinary": {
+    "path": "/home/runner/work/Music_pulse/Music_pulse/build/urux-celestia-sidecar",
+    "bytes": 65200
+  },
+  "compiledSubsystems": [
+    "cel3ds",
+    "celastro",
+    "celengine",
+    "celephem",
+    "celestia-core",
+    "celimage",
+    "celmath",
+    "celmodel",
+    "celrender",
+    "celttf",
+    "celutil",
+    "celscript",
+    "celx",
+    "tools"
+  ],
+  "optionalSubsystems": {
+    "spice": false,
+    "ffmpeg": false,
+    "miniaudio": false,
+    "avif": false
+  },
+  "browserEmbedding": "not-direct",
+  "integrationMode": "cloudflare-native-container-sidecar",
+  "verifiedEndpoints": [
+    "/ready",
+    "/v1/capabilities",
+    "/v1/content",
+    "/v1/astro",
+    "/v1/orbit"
+  ],
+  "note": "Literal libcelestia and the URUX native sidecar binary were compiled and /ready was executed successfully. Production runtime is marked active only by the live Worker diagnostic."
+}
