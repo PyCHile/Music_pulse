@@ -1,0 +1,24 @@
+import * as THREE from 'three';
+import { KTX2Loader } from 'three/addons/loaders/KTX2Loader.js';
+import { runtimeCapabilities } from '../capabilities/RuntimeCapabilityRegistry.js';
+
+const THREE_BASE='https://cdn.jsdelivr.net/npm/three@0.185.1/';
+const BASIS_PATH=`${THREE_BASE}examples/jsm/libs/basis/`;
+const KTX2_PROBE=`${THREE_BASE}examples/textures/ktx2/2d_etc1s.ktx2`;
+const PROFILES={
+  earth:{id:'earth',source:'three.js Earth dataset',albedo:`${THREE_BASE}examples/textures/planets/earth_atmos_2048.jpg`,normal:`${THREE_BASE}examples/textures/planets/earth_normal_2048.jpg`,roughness:.76,normalScale:.78,measured:{albedo:true,normal:true,roughness:false,height:false,clouds:false,night:false,atmosphere:false}},
+  jupiter:{id:'jupiter',source:'NASA/JPL-Caltech',albedo:'https://assets.science.nasa.gov/dynamicimage/assets/science/cds/3d/resources/image/jupiter/preview.webp?w=2048',normal:null,roughness:.86,normalScale:0,measured:{albedo:true,normal:false,roughness:false,height:false,clouds:false,night:false,atmosphere:false}},
+  saturn:{id:'saturn',source:'SpaceKit astronomical texture',albedo:'https://typpo.github.io/spacekit/examples/saturn/th_saturn.png',normal:null,roughness:.82,normalScale:0,measured:{albedo:true,normal:false,roughness:false,height:false,clouds:false,night:false,atmosphere:false}}
+};
+const stageProfile={DESPRENDIMIENTO:'earth',TUNEL:'jupiter',LUZ:'jupiter',MEMORIA:'earth',FRONTERA:'saturn',RETORNO:'earth'};
+
+export class AstronomicalTextureManager{
+  constructor(renderer){this.renderer=renderer;this.textureLoader=new THREE.TextureLoader();this.ktx2=new KTX2Loader().setTranscoderPath(BASIS_PATH).setWorkerLimit(1);this.cache=new Map();this.ready=false;this.ktx2Verified=false;this.lastProfile=null;this.stats={ktx2:false,ktx2Verified:false,pbrProfiles:Object.keys(PROFILES).length,lastProfile:null,lastError:null};this.init();}
+  init(){try{this.ktx2.detectSupport(this.renderer);this.ready=true;runtimeCapabilities.mark('ktx2',true,{loader:'KTX2Loader',basisTranscoder:BASIS_PATH,verified:false});runtimeCapabilities.mark('pbr-astronomy',true,{profiles:Object.keys(PROFILES),slots:['albedo','normal','roughness','height','clouds','night','atmosphere'],truthMode:'measured-vs-derived'});this.stats.ktx2=true;void this.verifyKTX2();}catch(error){this.stats.lastError=String(error);runtimeCapabilities.mark('ktx2',false,{error:String(error)});}}
+  async verifyKTX2(){if(!this.ready||this.ktx2Verified)return this.ktx2Verified;try{const probe=await this.ktx2.loadAsync(KTX2_PROBE);this.ktx2Verified=true;this.stats.ktx2Verified=true;runtimeCapabilities.mark('ktx2',true,{loader:'KTX2Loader',basisTranscoder:BASIS_PATH,verified:true});probe.dispose();return true;}catch(error){this.stats.lastError=`ktx2_probe:${String(error)}`;runtimeCapabilities.mark('ktx2',true,{loader:'KTX2Loader',basisTranscoder:BASIS_PATH,verified:false,probeError:String(error)});return false;}}
+  profileFor(encounter={}){return PROFILES[stageProfile[encounter.narrativeStage]||'earth'];}
+  async load(url,color=true){if(!url)return null;if(this.cache.has(url))return this.cache.get(url);const promise=(url.toLowerCase().includes('.ktx2')?this.ktx2.loadAsync(url):this.textureLoader.loadAsync(url)).then(t=>{if(color)t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=Math.min(4,this.renderer?.capabilities?.getMaxAnisotropy?.()||1);t.wrapS=THREE.RepeatWrapping;return t;}).catch(error=>{this.cache.delete(url);throw error;});this.cache.set(url,promise);return promise;}
+  async enhancePlanet(root,encounter={}){const mesh=root?.userData?.surfaceMesh;if(!mesh?.material)return false;const profile=this.profileFor(encounter);this.lastProfile=profile.id;this.stats.lastProfile=profile.id;try{const [albedo,normal]=await Promise.all([this.load(profile.albedo,true),profile.normal?this.load(profile.normal,false):Promise.resolve(null)]);if(!root.parent)return false;const mat=mesh.material;if(albedo)mat.map=albedo;if(normal){mat.normalMap=normal;mat.normalScale.set(profile.normalScale,profile.normalScale);}mat.roughness=profile.roughness;mat.metalness=.005;mat.needsUpdate=true;root.userData.astronomyProfile={id:profile.id,source:profile.source,measured:{...profile.measured},loaded:{albedo:Boolean(albedo),normal:Boolean(normal)}};root.userData.enhancements=root.userData.enhancements||[];root.userData.enhancements.push(`albedo astronómico ${profile.id}`,normal?'normal map astronómico':'microdetalle shader/procedural',`PBR roughness ${profile.roughness}`);return true;}catch(error){this.stats.lastError=String(error);console.warn(`[URUX] astronomical profile ${profile.id} unavailable`,error);return false;}}
+  get profiles(){return PROFILES;}
+  dispose(){this.ktx2.dispose();for(const p of this.cache.values())Promise.resolve(p).then(t=>t?.dispose?.()).catch(()=>{});this.cache.clear();}
+}
