@@ -1,6 +1,11 @@
 name: URUX Astronomy Assets
 
 on:
+  push:
+    paths:
+      - "science/**"
+      - "requirements-astro.txt"
+      - ".github/workflows/astronomy-assets.yml"
   workflow_dispatch:
     inputs:
       target:
