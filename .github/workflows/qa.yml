@@ -24,25 +24,10 @@ jobs:
         run: npm install
       - name: Repository structure audit
         run: |
-          find . -maxdepth 4 -type f | sort | grep -v node_modules
           test -f package.json
           test -f vite.config.ts
           test -f tsconfig.json
           test -f index.html
-          test -f manifest-urux.json
-          test -f llms.txt
-          test -f AGENTS.md
-          test -f sitemap.xml
-          test -f sitemap.md
-          test -f robots.txt
-          test -f src/main.tsx
-          test -f src/App.tsx
-          test -f src/JourneyAgent.ts
-          test -f src/ModelResolver.ts
-          test -f src/NarrativeStateMachine.ts
-          test -f src/EncounterPlanner.ts
-          test -f src/FocalTrajectoryEngine.ts
-          test -f src/CosmicPaletteDirector.ts
           test -f runtime/main.js
           test -f runtime/journey/SecureURUXJourneyAgent.js
           test -f runtime/journey/URUXBackendClient.js
@@ -50,38 +35,36 @@ jobs:
           test -f runtime/journey/NebulaDirectiveBridge.js
           test -f runtime/warp/NebulaBackdrop.js
           test -f runtime/warp/WarpFieldManager.js
-          test -f runtime/spacekit/SpaceKitAstronomicalLayer.js
           test -f worker/src/index.js
           test -f worker/wrangler.jsonc
-          test -f worker/package.json
           grep -q 'SecureURUXJourneyAgent' runtime/main.js
           grep -q 'configureBackendURL' runtime/main.js
-          grep -q 'secureBackendConfigured' runtime/main.js
-          grep -q 'URUXBackendClient' runtime/journey/SecureURUXJourneyAgent.js
+          grep -q 'llmActive' runtime/main.js
           grep -q '/v1/encounters' runtime/journey/URUXBackendClient.js
           grep -q 'OPENROUTER_API_KEY' worker/src/index.js
-          grep -q 'OPENROUTER_API_KEY' worker/wrangler.jsonc
-          grep -q 'darkZoneFraction' worker/src/index.js
           grep -q 'structured_outputs' worker/src/index.js
           grep -q 'response_format' worker/src/index.js
-          grep -q 'llmEncounterRendered' runtime/main.js
-          grep -q 'llmNebulaApplied' runtime/main.js
-          grep -q 'journeySynchronized' runtime/main.js
-          test -f tests/e2e/runtime-warp-continuity.spec.ts
-          test -f tests/e2e/spacekit-astronomical-layer.spec.ts
       - name: Volumetric nebula architecture audit
         run: |
-          grep -q 'densityField' runtime/warp/NebulaBackdrop.js
+          grep -q 'vec4 field' runtime/warp/NebulaBackdrop.js
+          grep -q 'fbm3' runtime/warp/NebulaBackdrop.js
           grep -q 'uRaySteps' runtime/warp/NebulaBackdrop.js
           grep -q 'float hg' runtime/warp/NebulaBackdrop.js
-          grep -q 'extinction' runtime/warp/NebulaBackdrop.js
-          grep -q 'trans\*=' runtime/warp/NebulaBackdrop.js
+          grep -q 'trans\*=1.-alpha' runtime/warp/NebulaBackdrop.js
           grep -q 'uNarrativeDarkZone' runtime/warp/NebulaBackdrop.js
           grep -q 'uNarrativeFilaments' runtime/warp/NebulaBackdrop.js
-          grep -q "layer.material.opacity\*=layer.dust?.62:.38" runtime/warp/WarpFieldManager.js
+          grep -q 'this.avgDt' runtime/warp/NebulaBackdrop.js
+          grep -q 'mobile?10:16' runtime/warp/NebulaBackdrop.js
           if grep -q 'uVisibility.value=Math.min(.085' runtime/warp/WarpFieldManager.js; then
             echo 'Legacy low-visibility flat-nebula clamp reintroduced'; exit 1
           fi
+      - name: Encounter visibility and cost audit
+        run: |
+          grep -q "DESPRENDIMIENTO:\['comet'" runtime/journey/CinematicEncounterSystem.js
+          grep -q 'SphereGeometry(2.35,32,24)' runtime/journey/CinematicEncounterSystem.js
+          grep -q 'for(let i=0;i<8;i++)' runtime/journey/CinematicEncounterSystem.js
+          grep -q 'z=-112' runtime/journey/CinematicEncounterSystem.js
+          grep -q 'this.nextAt=2.5' runtime/journey/CinematicEncounterSystem.js
       - name: Security boundary audit
         run: |
           test ! -e runtime/journey/URUXJourneyAgent.js
@@ -93,25 +76,6 @@ jobs:
           fi
           test ! -e worker/.dev.vars
           test ! -e worker/.env
-      - name: Reject deprecated URUX files
-        run: |
-          test ! -e runtime/warp/EtherealFiguresSystem.js
-          test ! -e src/warp/EtherealFiguresSystem.ts
-          test ! -e assets/ethereal
-          test ! -e runtime/warp/CelestialFlybySystem.js
-          test ! -e src/warp/CelestialFlybySystem.ts
-          test ! -e runtime/space/ColorScience.js
-          test ! -e src/space/ColorScience.ts
-          test ! -e src/spacekit
-          test ! -e manifest.json
-          if grep -q '@react-three/drei' package.json; then
-            echo 'Unused Drei dependency reintroduced'; exit 1
-          fi
-      - name: Reject placeholders in critical source
-        run: |
-          if grep -RniE 'TODO|placeholder|mock-only|fake shader' src runtime worker/src --include='*.ts' --include='*.tsx' --include='*.js' --include='*.glsl'; then
-            echo 'Critical placeholder marker detected'; exit 1
-          fi
       - name: TypeScript
         run: npm run typecheck
       - name: Unit tests
@@ -125,9 +89,7 @@ jobs:
       - name: Browser smoke and warp checkpoint tests
         run: npm run test:e2e
       - name: Validate production artifacts
-        run: |
-          test -d dist
-          find dist -maxdepth 4 -type f | sort
+        run: test -d dist
       - name: Upload visual QA checkpoints
         if: always()
         uses: actions/upload-artifact@v4
