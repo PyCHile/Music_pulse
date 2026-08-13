@@ -3,5 +3,7 @@ const boot={version:'resolviendo',build:'—',releasedAt:null,startedAt:new Date
 try{if('caches'in window){const keys=await caches.keys();await Promise.all(keys.map(k=>caches.delete(k)));boot.cacheCleared=true;}else boot.cacheCleared=true;}catch(e){boot.cacheError=String(e);}
 try{if('serviceWorker'in navigator){const regs=await navigator.serviceWorker.getRegistrations();await Promise.all(regs.map(r=>r.unregister()));boot.serviceWorkersCleared=true;}else boot.serviceWorkersCleared=true;}catch(e){boot.serviceWorkerError=String(e);}
 let manifest={version:`live-${Date.now()}`,build:'fallback',releasedAt:null};try{const r=await fetch(`./version.json?t=${Date.now()}`,{cache:'no-store'});if(r.ok)manifest=await r.json();}catch(e){boot.versionError=String(e);}Object.assign(boot,manifest);
-const v=encodeURIComponent(boot.version);await import(`./runtime/main.js?v=${v}`);await import(`./runtime/journey/AIStatusOverlayBootstrap.js?v=${v}`);
+const v=encodeURIComponent(boot.version);
+const loadModule=src=>new Promise((resolve,reject)=>{const s=document.createElement('script');s.type='module';s.src=src;s.onload=()=>resolve();s.onerror=()=>reject(new Error(`module_load_failed:${src}`));document.head.appendChild(s);});
+try{await loadModule(`./runtime/main.js?v=${v}`);await loadModule(`./runtime/journey/AIStatusOverlayBootstrap.js?v=${v}`);boot.modulesLoaded=true;}catch(e){boot.moduleError=String(e);console.error('[URUX] bootstrap module load failed',e);document.getElementById('status').textContent='Error de carga del runtime';}
 </script></body></html>
