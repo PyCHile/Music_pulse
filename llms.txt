@@ -1,10 +1,18 @@
 # URUX
 
-URUX es una experiencia visual que representa el tránsito cósmico del alma.
-Proyecto: Data Governance Mesh con arquitectura agentica.
+> URUX es una experiencia visual espacial que representa el tránsito cósmico del alma mediante un Journey Director narrativo sobre Three.js.
+
+Proyecto: Data Governance Mesh con arquitectura agéntica.
 Contacto: habidomix@gmail.com
 
-## Estructura del proyecto
-- /index.html — experiencia Three.js principal
-- /AGENTS.md — instrucciones para agentes de IA
-- /sitemap.xml — mapa del sitio
+## Experiencia
+- [URUX — experiencia principal](https://pychile.github.io/Music_pulse/) — Journey Director cósmico con Three.js, audio reactivo y planificación narrativa.
+
+## Documentación para agentes
+- [AGENTS.md](https://pychile.github.io/Music_pulse/AGENTS.md) — arquitectura, estados narrativos, convenciones y restricciones para agentes de IA.
+- [Sitemap Markdown](https://pychile.github.io/Music_pulse/sitemap.md) — jerarquía legible del proyecto.
+- [Sitemap XML](https://pychile.github.io/Music_pulse/sitemap.xml) — mapa de URLs para crawlers.
+
+## Código principal
+- [index.html](https://pychile.github.io/Music_pulse/index.html) — entrada pública de la experiencia.
+- [Runtime Journey Director](https://github.com/PyCHile/Music_pulse/blob/main/runtime/journey/URUXJourneyAgent.js) — implementación activa del agente narrativo.
