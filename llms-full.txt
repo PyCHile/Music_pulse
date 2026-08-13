@@ -1,0 +1,53 @@
+# URUX — Full Agent Context
+
+> URUX es una experiencia visual espacial y audiovisual que representa el tránsito del alma a través del cosmos. La experiencia no funciona como un screensaver: cada encuentro visual está asociado a una etapa narrativa.
+
+## Arquitectura activa
+
+URUXJourneyAgent → OpenRouterModelResolver → NarrativeStateMachine → EncounterPlanner → FocalTrajectoryEngine → CosmicPaletteDirector → Three.js
+
+El runtime publicado por GitHub Pages carga `runtime/main.js`, que integra `runtime/journey/URUXJourneyAgent.js` con el motor visual existente. La carpeta `src/` contiene la implementación TypeScript equivalente y participa en typecheck/build/QA.
+
+## Estados semánticos
+
+1. DESPRENDIMIENTO
+2. TUNEL
+3. LUZ
+4. MEMORIA
+5. FRONTERA
+6. RETORNO
+
+Las transiciones cromáticas y atmosféricas usan crossfade de 8 a 12 segundos. Cada estado restringe los tipos de encuentros permitidos y define un perfil de nebulosa con zonas oscuras obligatorias.
+
+## OpenRouterModelResolver
+
+El resolver consulta `https://openrouter.ai/api/v1/models`, conserva modelos con sufijo `:free` que soportan structured outputs y response format, los ordena alfabéticamente y selecciona uno de manera determinista mediante SHA-256 sobre `URUX + version + JSON.stringify(listaFiltrada)`. El modelo elegido se persiste como `urux_model_id`.
+
+## EncounterPlanner
+
+Las llamadas LLM nunca ocurren en el render loop. Se generan batches de 3 a 6 encuentros. Existe un intervalo mínimo de 20 segundos entre solicitudes y un presupuesto local máximo de 50 solicitudes diarias. Los batches se validan antes de entrar al buffer: etapa, tipos permitidos, IDs únicos, vectores, posiciones, escalas, velocidad, duración, colores y `darkZoneFraction >= 0.3`.
+
+Si OpenRouter devuelve 429 o 503, el runtime respeta `Retry-After` cuando está disponible. Una respuesta que no sea JSON válido o no cumpla el contrato es descartada.
+
+## Fallback autónomo
+
+Si no existe una API key local, OpenRouter está caído, el modelo deja de estar disponible o el buffer queda vacío, FocalTrajectoryEngine genera encuentros procedurales coherentes con el estado narrativo. El render continúa a 60 fps sin depender de red.
+
+## Seguridad de API
+
+No existe ninguna API key embebida en el repositorio ni en el bundle público. Para una sesión local, el runtime expone `window.URUXJourney.configureOpenRouterKey(key)` y almacena la credencial únicamente en el navegador del usuario. También expone `clearOpenRouterKey()` y diagnósticos de estado.
+
+## Diagnósticos
+
+`window.URUXJourney.diagnostics` informa la etapa semántica actual, cantidad de encuentros pendientes, modelo persistido, solicitudes utilizadas en el día, solicitudes restantes y si el LLM está configurado.
+
+`window.__MUSIC_PULSE_QA__` incorpora `semanticJourneyStage` y `journeyDiagnostics` para pruebas de navegador.
+
+## Recursos
+
+- https://pychile.github.io/Music_pulse/
+- https://pychile.github.io/Music_pulse/llms.txt
+- https://pychile.github.io/Music_pulse/AGENTS.md
+- https://pychile.github.io/Music_pulse/sitemap.xml
+- https://pychile.github.io/Music_pulse/sitemap.md
+- https://github.com/PyCHile/Music_pulse
