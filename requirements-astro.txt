@@ -1,0 +1,7 @@
+astropy
+astroquery
+aplpy
+reproject
+spectral-cube
+matplotlib
+numpy
