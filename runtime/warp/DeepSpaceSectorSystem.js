@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-import { generateSpiralPosition, generateCloudPosition, applyDifferentialRotation, webgpuGalaxyHash, DEFAULT_WEBGPU_GALAXY_CONFIG } from '../thirdparty/WebGPUGalaxyModel.js?v=20260812-1';
+import { generateSpiralPosition, generateCloudPosition, webgpuGalaxyHash, DEFAULT_WEBGPU_GALAXY_CONFIG } from '../thirdparty/WebGPUGalaxyModel.js?v=20260812-1';
 import { normalizedStellarRadiance, celestiaEnhancedTemperatureColor } from '../thirdparty/CelestiaPhotometry.js?v=20260812-1';
-import { parseSpectrumText, spectrumToSRGB, rgbToHex } from '../thirdparty/TrueColorToolsColor.js?v=20260812-1';
+import { parseSpectrumText, spectrumToSRGB } from '../thirdparty/TrueColorToolsColor.js?v=20260812-1';
 
 const clamp01=v=>Math.max(0,Math.min(1,v));
 const smooth01=x=>{const t=clamp01(x);return t*t*(3-2*t);};
@@ -31,6 +31,11 @@ function galaxyConfig(spec){
  return {...DEFAULT_WEBGPU_GALAXY_CONFIG,galaxyRadius:23,galaxyThickness:6.4,spiralTightness:1.12+(spec.seed%5)*.065,armCount:spec.arms,armWidth:6.2,randomness:1.18,rotationSpeed:.042};
 }
 
+function rotateXZInPlace(position,rotationSpeed,deltaTime){
+ const x=position[0],z=position[2],distance=Math.hypot(x,z),rotationFactor=1/(distance*.1+1),angle=-rotationSpeed*rotationFactor*deltaTime,c=Math.cos(angle),s=Math.sin(angle);
+ position[0]=x*c-z*s;position[2]=x*s+z*c;
+}
+
 function makeStarCluster(spec){
  const count=680,cfg=galaxyConfig(spec),positions=new Float32Array(count*3),sizes=new Float32Array(count),colors=new Float32Array(count*3);
  for(let i=0;i<count;i++){
@@ -45,16 +50,17 @@ function makeStarCluster(spec){
  geometry.setAttribute('position',new THREE.BufferAttribute(positions,3));
  geometry.setAttribute('aSize',new THREE.BufferAttribute(sizes,1));
  geometry.setAttribute('aColor',new THREE.BufferAttribute(colors,3));
- const vertex=`attribute float aSize;attribute vec3 aColor;varying vec3 vColor;void main(){vColor=aColor;vec4 mv=modelViewMatrix*vec4(position,1.0);gl_PointSize=aSize*clamp(128.0/max(7.0,-mv.z),.48,4.2);gl_Position=projectionMatrix*mv;}`;
+ const vertex=`attribute float aSize;attribute vec3 aColor;varying vec3 vColor;uniform float uSpinTime;uniform float uRotationSpeed;void main(){vColor=aColor;vec3 p=position;float distanceXZ=length(p.xz);float rotationFactor=1.0/(distanceXZ*.1+1.0);float angle=-uRotationSpeed*rotationFactor*uSpinTime;float c=cos(angle),s=sin(angle);vec3 rp=vec3(p.x*c-p.z*s,p.y,p.x*s+p.z*c);vec4 mv=modelViewMatrix*vec4(rp,1.0);gl_PointSize=aSize*clamp(128.0/max(7.0,-mv.z),.48,4.2);gl_Position=projectionMatrix*mv;}`;
  const fragment=`varying vec3 vColor;uniform float uOpacity;void main(){vec2 p=gl_PointCoord-vec2(.5);float d=length(p);float core=smoothstep(.46,.025,d),halo=smoothstep(.51,.14,d);gl_FragColor=vec4(vColor,(core+halo*.18)*uOpacity);}`;
- const material=new THREE.ShaderMaterial({vertexShader:vertex,fragmentShader:fragment,transparent:true,depthWrite:false,depthTest:false,blending:THREE.AdditiveBlending,uniforms:{uOpacity:{value:0}}});
+ const material=new THREE.ShaderMaterial({vertexShader:vertex,fragmentShader:fragment,transparent:true,depthWrite:false,depthTest:false,blending:THREE.AdditiveBlending,uniforms:{uOpacity:{value:0},uSpinTime:{value:0},uRotationSpeed:{value:cfg.rotationSpeed}}});
  const points=new THREE.Points(geometry,material);points.frustumCulled=false;points.renderOrder=-820;
- return{points,geometry,material,config:cfg,positions,count};
+ return{points,geometry,material,config:cfg,count};
 }
 
 export class DeepSpaceSectorSystem{
  constructor(){
   this.group=new THREE.Group();this.maxPresence=0;this.activeSectorCount=0;this.cloudReady=false;this.physicalPaletteReady=false;this.cloudTexture=null;this.sectors=[];
+  this.mobile=/iPad|iPhone|iPod|Android/i.test(navigator.userAgent||'')||innerWidth<800;
   this.spectralColors=FALLBACK_SPECTRAL.map(tonePhysical);
   for(const spec of SECTORS){
    const group=new THREE.Group(),layers=[],cfg=galaxyConfig(spec);
@@ -64,19 +70,19 @@ export class DeepSpaceSectorSystem{
     const sprite=new THREE.Sprite(material);
     const width=(17+model.size*24)*(role==='core'?.72:1),aspect=.58+webgpuGalaxyHash(seed+9)*.50;
     const localPosition=[model.position[0]*.96,model.position[1]*2.25,model.position[2]*.72];
-    sprite.position.set(...localPosition);sprite.scale.set(width,width*aspect,1);sprite.material.rotation=model.rotation;sprite.renderOrder=role==='core'?-808:-850;group.add(sprite);
+    sprite.position.set(localPosition[0],localPosition[1],localPosition[2]);sprite.scale.set(width,width*aspect,1);sprite.material.rotation=model.rotation;sprite.renderOrder=role==='core'?-808:-850;group.add(sprite);
     layers.push({sprite,material,baseOpacity:role==='core'?.052:(.035+(1-model.normalizedRadius)*.045),rotationSpeed:(i%2?1:-1)*(.00012+webgpuGalaxyHash(seed+10)*.00018),dust:false,role,localPosition});
    }
    for(let i=0;i<12;i++){
     const model=generateCloudPosition(100+i,cfg),seed=spec.seed*2000+i,material=new THREE.SpriteMaterial({map:null,color:0x030207,transparent:true,opacity:0,depthWrite:false,depthTest:false,blending:THREE.NormalBlending,toneMapped:false}),sprite=new THREE.Sprite(material);
     const width=20+model.size*29,localPosition=[model.position[0]*.82,model.position[1]*2.05,model.position[2]*.66];
-    sprite.position.set(...localPosition);sprite.scale.set(width,width*(.55+webgpuGalaxyHash(seed+3)*.36),1);sprite.material.rotation=model.rotation;sprite.renderOrder=-826;group.add(sprite);
+    sprite.position.set(localPosition[0],localPosition[1],localPosition[2]);sprite.scale.set(width,width*(.55+webgpuGalaxyHash(seed+3)*.36),1);sprite.material.rotation=model.rotation;sprite.renderOrder=-826;group.add(sprite);
     layers.push({sprite,material,baseOpacity:.07+(1-model.normalizedRadius)*.085,rotationSpeed:(i%2?1:-1)*.00009,dust:true,role:'dust',localPosition});
    }
    const cluster=makeStarCluster(spec);group.add(cluster.points);group.visible=false;this.group.add(group);this.sectors.push({spec,group,layers,cluster});
   }
-  this.loadWebGPUCloud();
-  this.loadTrueColorNebulaSpectra();
+  /* Mobile already has the volumetric nebula. Avoid remote texture/spectrum decode during audio playback. */
+  if(!this.mobile){this.loadWebGPUCloud();this.loadTrueColorNebulaSpectra();}
  }
 
  loadWebGPUCloud(){
@@ -108,14 +114,11 @@ export class DeepSpaceSectorSystem{
    sector.group.position.set(x,y,z);
    const scale=.72+approach*2.18;sector.group.scale.setScalar(scale);
    sector.group.rotation.x=.17+Math.sin(sector.spec.seed)*.10;sector.group.rotation.z=.11*Math.sin(sector.spec.seed*.71);
-
-   const pos=sector.cluster.positions;
-   for(let i=0;i<sector.cluster.count;i++){const k=i*3,r=applyDifferentialRotation([pos[k],pos[k+1],pos[k+2]],sector.cluster.config.rotationSpeed,dt);pos[k]=r[0];pos[k+1]=r[1];pos[k+2]=r[2];}
-   sector.cluster.geometry.attributes.position.needsUpdate=true;
+   sector.cluster.material.uniforms.uSpinTime.value+=dt;
 
    const base=this.spectralColors[sector.spec.spectrum]||FALLBACK_SPECTRAL[sector.spec.spectrum],starTone=celestiaEnhancedTemperatureColor(sector.spec.starK*.78),secondary=mix3(base,starTone,.28);
    for(const layer of sector.layers){
-    layer.localPosition=applyDifferentialRotation(layer.localPosition,sector.cluster.config.rotationSpeed*.72,dt);layer.sprite.position.set(...layer.localPosition);layer.sprite.material.rotation+=dt*layer.rotationSpeed;
+    rotateXZInPlace(layer.localPosition,sector.cluster.config.rotationSpeed*.72,dt);layer.sprite.position.set(layer.localPosition[0],layer.localPosition[1],layer.localPosition[2]);layer.sprite.material.rotation+=dt*layer.rotationSpeed;
     if(layer.dust){layer.material.color.setRGB(.018,.012,.018);layer.material.opacity=(this.cloudReady?1:0)*Math.min(.20,layer.baseOpacity*env*(.78+approach*.22)*nearFade);}
     else{
      const color=layer.role==='secondary'?secondary:base;layer.material.color.setRGB(color[0],color[1],color[2]);
