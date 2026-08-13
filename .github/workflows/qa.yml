@@ -25,27 +25,16 @@ jobs:
 
       - name: Repository structure audit
         run: |
-          test -f package.json
-          test -f vite.config.ts
-          test -f tsconfig.json
-          test -f index.html
-          test -f version.json
-          test -f runtime/main.js
-          test -f runtime/capabilities/RuntimeCapabilityRegistry.js
-          test -f runtime/journey/SecureURUXJourneyAgent.js
-          test -f runtime/journey/URUXBackendClient.js
-          test -f runtime/journey/CinematicEncounterSystem.js
-          test -f runtime/journey/CinematicEncounterSystemV42.js
-          test -f runtime/journey/NebulaDirectiveBridge.js
-          test -f runtime/particles/ThreeNebulaParticleFX.js
-          test -f runtime/assets/AstronomicalTextureManager.js
-          test -f runtime/performance/WebGPUComputeEnhancer.js
-          test -f runtime/warp/VolumetricNebulaRaymarcher.js
-          test -f runtime/warp/WarpFieldManager.js
-          test -f runtime/astronomy/ScientificAstronomyRuntime.js
-          test -f worker/src/index-v2.js
-          test -f worker/src/windmill.js
-          test -f worker/wrangler.jsonc
+          for f in \
+            package.json vite.config.ts tsconfig.json index.html version.json \
+            runtime/main.js runtime/capabilities/RuntimeCapabilityRegistry.js \
+            runtime/journey/SecureURUXJourneyAgent.js runtime/journey/URUXBackendClient.js \
+            runtime/journey/CinematicEncounterSystem.js runtime/journey/CinematicEncounterSystemV42.js \
+            runtime/journey/NebulaDirectiveBridge.js runtime/particles/ThreeNebulaParticleFX.js \
+            runtime/assets/AstronomicalTextureManager.js runtime/performance/WebGPUComputeEnhancer.js \
+            runtime/warp/VolumetricNebulaRaymarcher.js runtime/warp/WarpFieldManager.js \
+            runtime/astronomy/ScientificAstronomyRuntime.js worker/src/index-v2.js worker/src/windmill.js \
+            worker/wrangler.jsonc; do test -f "$f"; done
           grep -q 'SecureURUXJourneyAgent' runtime/main.js
           grep -q 'configureBackendURL' runtime/main.js
           grep -q 'llmActive' runtime/main.js
@@ -59,27 +48,11 @@ jobs:
       - name: Volumetric nebula architecture audit
         run: |
           FILE=runtime/warp/VolumetricNebulaRaymarcher.js
-          grep -q 'densityField' "$FILE"
-          grep -q 'simplex3' "$FILE"
-          grep -q 'worley3' "$FILE"
-          grep -q 'fbm' "$FILE"
-          grep -q 'psrdPeriodic' "$FILE"
-          grep -q 'uExtinction' "$FILE"
-          grep -q 'uScattering' "$FILE"
-          grep -q 'uEmission' "$FILE"
-          grep -q 'float hg' "$FILE"
-          grep -q 'shadowTransmittance' "$FILE"
-          grep -q 'uShadowSteps' "$FILE"
-          grep -q 'uShadowStrength' "$FILE"
+          for symbol in densityField simplex3 worley3 fbm psrdPeriodic uExtinction uScattering uEmission 'float hg' shadowTransmittance uShadowSteps uShadowStrength uNarrativeDarkZone uNarrativeFilaments this.avgDt; do grep -q "$symbol" "$FILE"; done
           grep -q 'trans\*=1.0-alpha' "$FILE"
-          grep -q 'uNarrativeDarkZone' "$FILE"
-          grep -q 'uNarrativeFilaments' "$FILE"
-          grep -q 'this.avgDt' "$FILE"
-          grep -q "selfShadowing:true" "$FILE"
+          grep -q 'selfShadowing:true' "$FILE"
           grep -q 'VolumetricNebulaRaymarcher' runtime/warp/WarpFieldManager.js
-          if grep -q 'uVisibility.value=Math.min(.085' runtime/warp/WarpFieldManager.js; then
-            echo 'Legacy low-visibility flat-nebula clamp reintroduced'; exit 1
-          fi
+          if grep -q 'uVisibility.value=Math.min(.085' runtime/warp/WarpFieldManager.js; then echo 'Legacy low-visibility flat-nebula clamp reintroduced'; exit 1; fi
 
       - name: Particle, PBR and postprocessing audit
         run: |
@@ -89,33 +62,17 @@ jobs:
           grep -q "type==='debris'" runtime/particles/ThreeNebulaParticleFX.js
           grep -q "from 'postprocessing'" runtime/scene/InterstellarWarpScene.js
           grep -q 'BloomEffect' runtime/scene/InterstellarWarpScene.js
-          grep -q 'KTX2Loader' runtime/assets/AstronomicalTextureManager.js
-          grep -q 'earth_night_4096' runtime/assets/AstronomicalTextureManager.js
-          grep -q 'earth_bump_roughness_clouds_4096' runtime/assets/AstronomicalTextureManager.js
-          grep -q 'roughnessMap' runtime/assets/AstronomicalTextureManager.js
-          grep -q 'bumpMap' runtime/assets/AstronomicalTextureManager.js
-          grep -q 'emissiveMap' runtime/assets/AstronomicalTextureManager.js
+          for symbol in KTX2Loader earth_night_4096 earth_bump_roughness_clouds_4096 roughnessMap bumpMap emissiveMap; do grep -q "$symbol" runtime/assets/AstronomicalTextureManager.js; done
 
       - name: WebGPU progressive enhancement audit
         run: |
-          grep -q 'requestAdapter' runtime/performance/WebGPUComputeEnhancer.js
-          grep -q 'createComputePipeline' runtime/performance/WebGPUComputeEnhancer.js
-          grep -q 'dispatchWorkgroups' runtime/performance/WebGPUComputeEnhancer.js
-          grep -q 'MAP_READ' runtime/performance/WebGPUComputeEnhancer.js
-          grep -q 'applyToRaymarcher' runtime/performance/WebGPUComputeEnhancer.js
+          for symbol in requestAdapter createComputePipeline dispatchWorkgroups MAP_READ applyToRaymarcher; do grep -q "$symbol" runtime/performance/WebGPUComputeEnhancer.js; done
           grep -q "runtimeCapabilities.mark('webgpu-compute',true" runtime/performance/WebGPUComputeEnhancer.js
 
       - name: Scientific stack and static Celestia audit
         run: |
-          test -f requirements-astro.txt
           for pkg in astropy astroquery aplpy reproject matplotlib numpy spectral-cube; do grep -qi "$pkg" requirements-astro.txt; done
-          test -f science/build_astronomy_assets.py
-          test -f science/augment_astronomy_assets.py
-          test -f science/export_celestia_static_runtime.py
-          test -f native/celestia/build.sh
-          test -f scientific/celestia/sidecar/server.cpp
-          test -f windmill/f/urux/validate_encounter.ts
-          test -f windmill/f/urux/direct_journey.ts
+          for f in science/build_astronomy_assets.py science/augment_astronomy_assets.py science/export_celestia_static_runtime.py native/celestia/build.sh scientific/celestia/sidecar/server.cpp windmill/f/urux/validate_encounter.ts windmill/f/urux/direct_journey.ts; do test -f "$f"; done
           grep -q 'WCSAxes' science/build_astronomy_assets.py
           grep -q 'reproject_interp' science/build_astronomy_assets.py
           grep -q 'reproject_adaptive' science/build_astronomy_assets.py
@@ -133,22 +90,32 @@ jobs:
           grep -q 'this.nextAt=2.5' runtime/journey/CinematicEncounterSystem.js
           grep -q 'maxActive=2' runtime/journey/CinematicEncounterSystem.js
           grep -q 'setTimeout(()=>resolve({done:false}),3000)' runtime/journey/SecureURUXJourneyAgent.js
-          if grep -q 'AbortController' runtime/journey/SecureURUXJourneyAgent.js; then
-            echo 'Journey agent must not abort LLM inference at the 3 second visual timeout'; exit 1
-          fi
+          if grep -q 'AbortController' runtime/journey/SecureURUXJourneyAgent.js; then echo 'Journey agent must not abort LLM inference at the 3 second visual timeout'; exit 1; fi
 
       - name: Security boundary audit
         run: |
           test ! -e runtime/journey/URUXJourneyAgent.js
-          if grep -RniE 'urux_openrouter_api_key|Authorization:.*Bearer|openrouter\.ai/api/v1/chat/completions|openrouter\.ai/api/v1/models' src runtime --include='*.ts' --include='*.tsx' --include='*.js'; then
-            echo 'Direct OpenRouter access or provider credential handling detected in frontend code'; exit 1
-          fi
-          if grep -RniE 'OPENROUTER_API_KEY\s*[:=]\s*["'"'][^"'"']+' worker --exclude='wrangler.jsonc' --exclude='README.md'; then
-            echo 'Possible hard-coded OpenRouter secret detected'; exit 1
-          fi
+          python - <<'PY'
+          import pathlib,re,sys
+          frontend=[]
+          for root in ('src','runtime'):
+              for p in pathlib.Path(root).rglob('*'):
+                  if p.suffix in {'.js','.ts','.tsx'}:
+                      text=p.read_text(errors='ignore')
+                      if re.search(r'urux_openrouter_api_key|Authorization\s*:\s*.*Bearer|openrouter\.ai/api/v1/(chat/completions|models)',text,re.I):
+                          frontend.append(str(p))
+          if frontend:
+              print('Direct provider/credential handling detected in frontend:',frontend);sys.exit(1)
+          hardcoded=[]
+          for p in pathlib.Path('worker').rglob('*.js'):
+              text=p.read_text(errors='ignore')
+              if re.search(r'OPENROUTER_API_KEY\s*[:=]\s*[\'\"][^\'\"]+[\'\"]',text):hardcoded.append(str(p))
+          if hardcoded:
+              print('Possible hard-coded OpenRouter secret:',hardcoded);sys.exit(1)
+          PY
           test ! -e worker/.dev.vars
           test ! -e worker/.env
-          ! grep -R 'requestAnimationFrame\|renderer.render\|composer.render' windmill/f/urux
+          if grep -R -E 'requestAnimationFrame|renderer\.render|composer\.render' windmill/f/urux; then echo 'Windmill entered render loop'; exit 1; fi
 
       - name: TypeScript
         run: npm run typecheck
