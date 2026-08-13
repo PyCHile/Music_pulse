@@ -1,0 +1,8 @@
+import * as THREE from 'three';
+const CLOUD='https://cdn.jsdelivr.net/gh/dgreenheck/webgpu-galaxy@main/public/cloud.png';
+const COLORS=['#315fa8','#8252b5','#d06a36','#385b87','#9b5f82'];
+export class CloudNebulaLayer{
+ constructor(){this.group=new THREE.Group();this.layers=[];this.ready=false;const pos=[[-28,16,-112,108,74],[32,-12,-126,118,82],[-6,-28,-142,136,86],[12,26,-158,126,78],[-38,-18,-176,132,90]];for(let i=0;i<pos.length;i++){const m=new THREE.SpriteMaterial({transparent:true,opacity:0,depthWrite:false,depthTest:false,blending:i===2?THREE.AdditiveBlending:THREE.NormalBlending,color:new THREE.Color(COLORS[i]),toneMapped:i!==2});const s=new THREE.Sprite(m),p=pos[i];s.position.set(p[0],p[1],p[2]);s.scale.set(p[3],p[4],1);s.material.rotation=(i-2)*.37;this.group.add(s);this.layers.push({s,m,base:.038+i*.006,spin:(i%2?1:-1)*(.0007+i*.00012)});}const load=()=>new THREE.TextureLoader().load(CLOUD,t=>{t.colorSpace=THREE.SRGBColorSpace;t.minFilter=THREE.LinearMipmapLinearFilter;t.magFilter=THREE.LinearFilter;for(const l of this.layers){l.m.map=t;l.m.needsUpdate=true;}this.texture=t;this.ready=true;});if('requestIdleCallback'in window)requestIdleCallback(load,{timeout:2500});else setTimeout(load,900);}
+ update(dt,state){const n=state.nebulaPresence||0,r=state.galaxyReveal||0,l=state.livingLight||0,t=state.tunnelDrive||0,fade=1-(state.finalFade||0);const k=Math.min(1,.54+n*.52+r*.36+l*.18+t*.16)*fade;for(let i=0;i<this.layers.length;i++){const q=this.layers[i];q.m.opacity=this.ready?Math.min(.095,q.base*k*(1+.14*Math.sin((state.soulProgress||0)*18+i))):0;q.m.rotation+=q.spin*dt*60;q.s.position.z+=Math.sin((state.soulProgress||0)*8+i)*dt*.08;}}
+ dispose(){for(const l of this.layers)l.m.dispose();this.texture?.dispose();}
+}
