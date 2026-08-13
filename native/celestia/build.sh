@@ -32,13 +32,14 @@ if [[ ! -f "$SIDE_SRC" || ! -f "$SIM_PROBE_SRC" ]]; then echo "Celestia integrat
 
 g++ -std=c++17 -O2 -DNDEBUG -I"$SRC/src" -I"$BUILD" -I/usr/include/eigen3 \
   "$SIDE_SRC" -L"$LIBDIR" -Wl,-rpath,"$LIBDIR" -lcelestia -pthread -o "$SIDECAR"
-g++ -std=c++17 -O2 -DNDEBUG -I"$SRC/src" -I"$BUILD" -I/usr/include/eigen3 \
+# CelestiaCore's class layout is conditional on CELX. The probe MUST compile
+# with the same feature macro as libcelestia (ENABLE_CELX=ON), otherwise the
+# constructor ABI is incompatible and can overwrite the stack object.
+g++ -std=c++17 -O2 -DNDEBUG -DCELX -I"$SRC/src" -I"$BUILD" -I/usr/include/eigen3 -I/usr/include/lua5.4 \
   "$SIM_PROBE_SRC" -L"$LIBDIR" -Wl,-rpath,"$LIBDIR" -lcelestia -pthread -o "$SIM_PROBE"
 
 python "$ROOT/science/index_celestia_content.py" "$CONTENT" "$OUT/celestia-content-index.json" --source-ref "$CONTENT_REF"
 
-# Build an ephemeral Celestia data root: official CelestiaContent provides all
-# astronomy resources while the upstream source/build provides base cfg/scripts.
 CELESTIA_RUNTIME="$ROOT/build/celestia-runtime"
 rm -rf "$CELESTIA_RUNTIME" && mkdir -p "$CELESTIA_RUNTIME"
 for dir in data models textures extras-standard extras fonts; do
@@ -49,8 +50,6 @@ for file in demo.cel guide.cel start.cel controls.txt COPYING; do
 done
 cp "$BUILD/celestia.cfg" "$CELESTIA_RUNTIME/celestia.cfg"
 
-# Literal high-level engine verification: initialize CelestiaCore -> Simulation
-# -> Universe and query the loaded star, deep-sky and solar-system catalogs.
 LD_LIBRARY_PATH="$LIBDIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" \
   "$SIM_PROBE" "$CELESTIA_RUNTIME" "$CELESTIA_RUNTIME/celestia.cfg" "$OUT/celestia-simulation.json"
 
@@ -84,9 +83,10 @@ import json,pathlib,sys
 from datetime import datetime,timezone
 out=pathlib.Path(sys.argv[1]);lib=pathlib.Path(sys.argv[2]);source_ref=sys.argv[3];content_ref=sys.argv[4];sidecar=pathlib.Path(sys.argv[5]);simulation_path=pathlib.Path(sys.argv[6]);sim=json.loads(simulation_path.read_text())
 payload={
- "schema":"urux-celestia-native-v6","generatedAt":datetime.now(timezone.utc).isoformat(),
+ "schema":"urux-celestia-native-v7","generatedAt":datetime.now(timezone.utc).isoformat(),
  "source":"CelestiaProject/Celestia","sourceRef":source_ref,"contentSource":"CelestiaProject/CelestiaContent","contentRef":content_ref,
  "nativeBuildVerified":True,"sidecarBinaryVerified":True,"ephemeralSidecarExecuted":True,"simulationInitialized":bool(sim.get('simulationInitialized')),"staticRuntimeActive":True,"runtimeActive":False,"serviceUrl":None,
+ "abi":{"celx":True,"probeMatchesLibrary":True},
  "sharedLibrary":{"path":str(lib),"bytes":lib.stat().st_size},"sidecarBinary":{"path":str(sidecar),"bytes":sidecar.stat().st_size},
  "compiledSubsystems":["cel3ds","celastro","celengine","celephem","celestia-core","celimage","celmath","celmodel","celrender","celttf","celutil","celscript","celx","tools"],
  "executedHighLevelAPIs":["CelestiaCore::initSimulation","CelestiaCore::getSimulation","Simulation::getUniverse","Simulation::findObjectFromPath","Selection::getVelocity","StarDatabase::size","DSODatabase::size","SolarSystemCatalog::size"],
@@ -96,7 +96,7 @@ payload={
  "browserEmbedding":"static-precompute","integrationMode":"github-actions-static-precompute",
  "staticAssets":["celestia-simulation.json","celestia-static-runtime.json","celestia-content-index.json"],
  "verifiedEndpoints":["/health","/v1/capabilities","/v1/constants","/v1/photometry","/v1/equatorial","/v1/anomaly","/v1/obliquity"],
- "rendering":{"celestiaNativeRenderer":False,"reason":"Three.js + postprocessing is the existing URUX renderer and is better integrated for this interactive experience; Celestia native OpenGL rendering would replace, not augment, that superior project-specific pipeline."},
+ "rendering":{"celestiaNativeRenderer":False,"reason":"Three.js + postprocessing is the existing URUX renderer and is better integrated for this interactive experience; Celestia native OpenGL rendering would replace, not augment, that project-specific pipeline."},
  "note":"Literal libcelestia is compiled and both CelestiaCore/Simulation/Universe plus native astronomy functions are executed in GitHub Actions. Results are exported as static Pages assets, requiring no permanent server or paid container."
 }
 out.write_text(json.dumps(payload,indent=2),encoding='utf-8');print(json.dumps(payload,indent=2))
