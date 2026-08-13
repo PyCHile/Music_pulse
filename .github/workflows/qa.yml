@@ -48,6 +48,8 @@ jobs:
           test -f runtime/journey/URUXBackendClient.js
           test -f runtime/journey/CinematicEncounterSystem.js
           test -f runtime/journey/NebulaDirectiveBridge.js
+          test -f runtime/warp/NebulaBackdrop.js
+          test -f runtime/warp/WarpFieldManager.js
           test -f runtime/spacekit/SpaceKitAstronomicalLayer.js
           test -f worker/src/index.js
           test -f worker/wrangler.jsonc
@@ -67,6 +69,19 @@ jobs:
           grep -q 'journeySynchronized' runtime/main.js
           test -f tests/e2e/runtime-warp-continuity.spec.ts
           test -f tests/e2e/spacekit-astronomical-layer.spec.ts
+      - name: Volumetric nebula architecture audit
+        run: |
+          grep -q 'densityField' runtime/warp/NebulaBackdrop.js
+          grep -q 'uRaySteps' runtime/warp/NebulaBackdrop.js
+          grep -q 'float hg' runtime/warp/NebulaBackdrop.js
+          grep -q 'extinction' runtime/warp/NebulaBackdrop.js
+          grep -q 'trans\*=' runtime/warp/NebulaBackdrop.js
+          grep -q 'uNarrativeDarkZone' runtime/warp/NebulaBackdrop.js
+          grep -q 'uNarrativeFilaments' runtime/warp/NebulaBackdrop.js
+          grep -q "layer.material.opacity\*=layer.dust?.62:.38" runtime/warp/WarpFieldManager.js
+          if grep -q 'uVisibility.value=Math.min(.085' runtime/warp/WarpFieldManager.js; then
+            echo 'Legacy low-visibility flat-nebula clamp reintroduced'; exit 1
+          fi
       - name: Security boundary audit
         run: |
           test ! -e runtime/journey/URUXJourneyAgent.js
