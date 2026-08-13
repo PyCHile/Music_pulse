@@ -1,8 +1,8 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "urux-journey-api",
-  "main": "src/index.js",
-  "compatibility_date": "2026-08-12",
+  "main": "src/index-v2.js",
+  "compatibility_date": "2026-08-13",
   "workers_dev": true,
   "vars": {
     "ALLOWED_ORIGIN": "https://pychile.github.io"
