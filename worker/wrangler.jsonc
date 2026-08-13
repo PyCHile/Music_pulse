@@ -7,6 +7,9 @@
   "vars": {
     "ALLOWED_ORIGIN": "https://pychile.github.io"
   },
+  "secrets": {
+    "required": ["OPENROUTER_API_KEY"]
+  },
   "ratelimits": [
     {
       "name": "URUX_RATE_LIMITER",
