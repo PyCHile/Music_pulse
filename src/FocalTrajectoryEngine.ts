@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import type { Encounter } from './EncounterPlanner';
+import type { NarrativeStage } from './NarrativeStateMachine';
 
 interface ActiveEncounter { encounter: Encounter; object: THREE.Object3D; age: number; velocity: THREE.Vector3; }
 
@@ -7,6 +8,8 @@ export class FocalTrajectoryEngine {
   readonly group = new THREE.Group();
   private active: ActiveEncounter[] = [];
   private autonomousClock = 0;
+  private nextAutonomousAt = 2.5;
+  private autonomousSequence = 0;
 
   spawn(encounter: Encounter): void {
     const object = this.createObject(encounter);
@@ -18,7 +21,6 @@ export class FocalTrajectoryEngine {
   }
 
   update(dt: number): void {
-    this.autonomousClock += dt;
     for (let i = this.active.length - 1; i >= 0; i--) {
       const item = this.active[i];
       item.age += dt;
@@ -35,10 +37,35 @@ export class FocalTrajectoryEngine {
     }
   }
 
-  updateAutonomous(dt: number): void {
+  updateAutonomous(dt: number, stage: NarrativeStage): void {
     this.autonomousClock += dt;
     this.group.rotation.z = Math.sin(this.autonomousClock * .05) * .008;
     this.group.position.x = Math.sin(this.autonomousClock * .09) * .06;
+
+    if (this.autonomousClock < this.nextAutonomousAt || this.active.length >= 2) return;
+    this.autonomousSequence += 1;
+    const phase = this.autonomousSequence * 1.61803398875;
+    const type = stage.encounterTypes[this.autonomousSequence % stage.encounterTypes.length] ?? 'light_filament';
+    const x = Math.sin(phase * 2.1) * .72;
+    const y = Math.cos(phase * 1.37) * .52;
+    const lateral = Math.sin(phase * .91) * .15;
+
+    this.spawn({
+      id: `procedural-${stage.id.toLowerCase()}-${this.autonomousSequence}`,
+      narrativeStage: stage.id,
+      objectType: type,
+      spawnDepth: 0,
+      spawnPosition: { x, y },
+      focalApproach: this.autonomousSequence % 3 !== 0,
+      trajectoryVector: { x: lateral, y: -lateral * .35, z: 1 },
+      scale: .55 + Math.abs(Math.sin(phase)) * .9,
+      speed: .42 + Math.abs(Math.cos(phase * .7)) * .42,
+      palette: stage.paletteHint,
+      luminosity: .28 + Math.abs(Math.sin(phase * .44)) * .42,
+      durationSeconds: 10 + Math.abs(Math.cos(phase)) * 8,
+    });
+
+    this.nextAutonomousAt = this.autonomousClock + 5.5 + Math.abs(Math.sin(phase)) * 4.5;
   }
 
   dispose(): void {
