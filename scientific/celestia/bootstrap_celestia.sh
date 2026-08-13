@@ -4,12 +4,14 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 VENDOR_DIR="${URUX_VENDOR_DIR:-$ROOT/.vendor}"
 SRC_DIR="$VENDOR_DIR/celestia"
-BUILD_DIR="${URUX_CELESTIA_BUILD_DIR:-$ROOT/.build/celestia}"
+BUILD_ROOT="${URUX_CELESTIA_BUILD_DIR:-$ROOT/.build/celestia}"
+UPSTREAM_BUILD="$BUILD_ROOT/upstream"
+BRIDGE_BUILD="$BUILD_ROOT/bridge"
 INSTALL_DIR="${URUX_CELESTIA_INSTALL_DIR:-$ROOT/.local/celestia}"
 CELESTIA_REPO="https://github.com/CelestiaProject/Celestia.git"
 CELESTIA_COMMIT="84153ded046fbea46c9f411dd0232e5426373ead"
 
-mkdir -p "$VENDOR_DIR" "$BUILD_DIR" "$INSTALL_DIR"
+mkdir -p "$VENDOR_DIR" "$UPSTREAM_BUILD" "$BRIDGE_BUILD" "$INSTALL_DIR"
 
 if [[ ! -d "$SRC_DIR/.git" ]]; then
   git clone --filter=blob:none "$CELESTIA_REPO" "$SRC_DIR"
@@ -25,18 +27,32 @@ LIBAVIF="${URUX_CELESTIA_ENABLE_LIBAVIF:-OFF}"
 MINIAUDIO="${URUX_CELESTIA_ENABLE_MINIAUDIO:-OFF}"
 MESHOPT="${URUX_CELESTIA_USE_MESHOPTIMIZER:-OFF}"
 
-cmake -S "$ROOT/scientific/celestia/bridge" -B "$BUILD_DIR" \
+cmake -S "$SRC_DIR" -B "$UPSTREAM_BUILD" \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DENABLE_CELX=ON \
+  -DENABLE_TOOLS=ON \
+  -DENABLE_QT6=OFF \
+  -DENABLE_SDL=OFF \
+  -DENABLE_WIN=OFF \
+  -DENABLE_TESTS=OFF \
+  -DENABLE_GLES=OFF \
+  -DENABLE_LTO=ON \
+  -DENABLE_SPICE="$SPICE" \
+  -DENABLE_FFMPEG="$FFMPEG" \
+  -DENABLE_LIBAVIF="$LIBAVIF" \
+  -DENABLE_MINIAUDIO="$MINIAUDIO" \
+  -DUSE_MESHOPTIMIZER="$MESHOPT"
+
+# This builds Celestia's literal shared library plus the upstream scientific tools.
+cmake --build "$UPSTREAM_BUILD" --parallel
+
+cmake -S "$ROOT/scientific/celestia/bridge" -B "$BRIDGE_BUILD" \
   -DCELESTIA_SOURCE_DIR="$SRC_DIR" \
-  -DURUX_CELESTIA_ENABLE_SPICE="$SPICE" \
-  -DURUX_CELESTIA_ENABLE_FFMPEG="$FFMPEG" \
-  -DURUX_CELESTIA_ENABLE_LIBAVIF="$LIBAVIF" \
-  -DURUX_CELESTIA_ENABLE_MINIAUDIO="$MINIAUDIO" \
-  -DURUX_CELESTIA_USE_MESHOPTIMIZER="$MESHOPT" \
+  -DCELESTIA_BUILD_DIR="$UPSTREAM_BUILD" \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
-
-cmake --build "$BUILD_DIR" --parallel
-cmake --install "$BUILD_DIR"
+cmake --build "$BRIDGE_BUILD" --parallel
+cmake --install "$BRIDGE_BUILD"
 
 BRIDGE="$INSTALL_DIR/bin/urux-celestia-bridge"
 if [[ ! -x "$BRIDGE" ]]; then
@@ -54,6 +70,7 @@ cat > "$ROOT/assets/astronomy/celestia-manifest.json" <<JSON
   "literalSharedLibrary": true,
   "bridge": "urux-celestia-bridge",
   "components": ["cel3ds","celastro","celengine","celephem","celestia","celimage","celmath","celmodel","celrender","celscript","celttf","celutil","tools"],
+  "scientificFeatures": ["catalog loading","star database","deep-sky database","simulation","observer frames","VSOP87","TASS17","JPL ephemerides","precession","nutation","custom orbits","custom rotations","CELX scripting","spectrum2rgb","stardb tools","galaxy tools","atmosphere tools"],
   "features": {
     "CELX": true,
     "SPICE": "$SPICE",
