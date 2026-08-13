@@ -22,49 +22,121 @@ jobs:
           node-version: 22
       - name: Install dependencies
         run: npm install
+
       - name: Repository structure audit
         run: |
           test -f package.json
           test -f vite.config.ts
           test -f tsconfig.json
           test -f index.html
+          test -f version.json
           test -f runtime/main.js
+          test -f runtime/capabilities/RuntimeCapabilityRegistry.js
           test -f runtime/journey/SecureURUXJourneyAgent.js
           test -f runtime/journey/URUXBackendClient.js
           test -f runtime/journey/CinematicEncounterSystem.js
+          test -f runtime/journey/CinematicEncounterSystemV42.js
           test -f runtime/journey/NebulaDirectiveBridge.js
-          test -f runtime/warp/NebulaBackdrop.js
+          test -f runtime/particles/ThreeNebulaParticleFX.js
+          test -f runtime/assets/AstronomicalTextureManager.js
+          test -f runtime/performance/WebGPUComputeEnhancer.js
+          test -f runtime/warp/VolumetricNebulaRaymarcher.js
           test -f runtime/warp/WarpFieldManager.js
-          test -f worker/src/index.js
+          test -f runtime/astronomy/ScientificAstronomyRuntime.js
+          test -f worker/src/index-v2.js
+          test -f worker/src/windmill.js
           test -f worker/wrangler.jsonc
           grep -q 'SecureURUXJourneyAgent' runtime/main.js
           grep -q 'configureBackendURL' runtime/main.js
           grep -q 'llmActive' runtime/main.js
           grep -q '/v1/encounters' runtime/journey/URUXBackendClient.js
-          grep -q 'OPENROUTER_API_KEY' worker/src/index.js
-          grep -q 'structured_outputs' worker/src/index.js
-          grep -q 'response_format' worker/src/index.js
+          grep -q 'capabilities:this.lastCapabilities' runtime/journey/URUXBackendClient.js
+          grep -q 'OPENROUTER_API_KEY' worker/src/index-v2.js
+          grep -q 'structured_outputs' worker/src/index-v2.js
+          grep -q 'response_format' worker/src/index-v2.js
+          grep -q 'KNOWN_CAPABILITIES' worker/src/index-v2.js
+
       - name: Volumetric nebula architecture audit
         run: |
-          grep -q 'vec4 field' runtime/warp/NebulaBackdrop.js
-          grep -q 'fbm3' runtime/warp/NebulaBackdrop.js
-          grep -q 'uRaySteps' runtime/warp/NebulaBackdrop.js
-          grep -q 'float hg' runtime/warp/NebulaBackdrop.js
-          grep -q 'trans\*=1.-alpha' runtime/warp/NebulaBackdrop.js
-          grep -q 'uNarrativeDarkZone' runtime/warp/NebulaBackdrop.js
-          grep -q 'uNarrativeFilaments' runtime/warp/NebulaBackdrop.js
-          grep -q 'this.avgDt' runtime/warp/NebulaBackdrop.js
-          grep -q 'mobile?10:16' runtime/warp/NebulaBackdrop.js
+          FILE=runtime/warp/VolumetricNebulaRaymarcher.js
+          grep -q 'densityField' "$FILE"
+          grep -q 'simplex3' "$FILE"
+          grep -q 'worley3' "$FILE"
+          grep -q 'fbm' "$FILE"
+          grep -q 'psrdPeriodic' "$FILE"
+          grep -q 'uExtinction' "$FILE"
+          grep -q 'uScattering' "$FILE"
+          grep -q 'uEmission' "$FILE"
+          grep -q 'float hg' "$FILE"
+          grep -q 'shadowTransmittance' "$FILE"
+          grep -q 'uShadowSteps' "$FILE"
+          grep -q 'uShadowStrength' "$FILE"
+          grep -q 'trans\*=1.0-alpha' "$FILE"
+          grep -q 'uNarrativeDarkZone' "$FILE"
+          grep -q 'uNarrativeFilaments' "$FILE"
+          grep -q 'this.avgDt' "$FILE"
+          grep -q "selfShadowing:true" "$FILE"
+          grep -q 'VolumetricNebulaRaymarcher' runtime/warp/WarpFieldManager.js
           if grep -q 'uVisibility.value=Math.min(.085' runtime/warp/WarpFieldManager.js; then
             echo 'Legacy low-visibility flat-nebula clamp reintroduced'; exit 1
           fi
+
+      - name: Particle, PBR and postprocessing audit
+        run: |
+          grep -q "import('three-nebula')" runtime/particles/ThreeNebulaParticleFX.js
+          grep -q 'SpriteRenderer' runtime/particles/ThreeNebulaParticleFX.js
+          grep -q "type==='comet'" runtime/particles/ThreeNebulaParticleFX.js
+          grep -q "type==='debris'" runtime/particles/ThreeNebulaParticleFX.js
+          grep -q "from 'postprocessing'" runtime/scene/InterstellarWarpScene.js
+          grep -q 'BloomEffect' runtime/scene/InterstellarWarpScene.js
+          grep -q 'KTX2Loader' runtime/assets/AstronomicalTextureManager.js
+          grep -q 'earth_night_4096' runtime/assets/AstronomicalTextureManager.js
+          grep -q 'earth_bump_roughness_clouds_4096' runtime/assets/AstronomicalTextureManager.js
+          grep -q 'roughnessMap' runtime/assets/AstronomicalTextureManager.js
+          grep -q 'bumpMap' runtime/assets/AstronomicalTextureManager.js
+          grep -q 'emissiveMap' runtime/assets/AstronomicalTextureManager.js
+
+      - name: WebGPU progressive enhancement audit
+        run: |
+          grep -q 'requestAdapter' runtime/performance/WebGPUComputeEnhancer.js
+          grep -q 'createComputePipeline' runtime/performance/WebGPUComputeEnhancer.js
+          grep -q 'dispatchWorkgroups' runtime/performance/WebGPUComputeEnhancer.js
+          grep -q 'MAP_READ' runtime/performance/WebGPUComputeEnhancer.js
+          grep -q 'applyToRaymarcher' runtime/performance/WebGPUComputeEnhancer.js
+          grep -q "runtimeCapabilities.mark('webgpu-compute',true" runtime/performance/WebGPUComputeEnhancer.js
+
+      - name: Scientific stack and static Celestia audit
+        run: |
+          test -f requirements-astro.txt
+          for pkg in astropy astroquery aplpy reproject matplotlib numpy spectral-cube; do grep -qi "$pkg" requirements-astro.txt; done
+          test -f science/build_astronomy_assets.py
+          test -f science/augment_astronomy_assets.py
+          test -f science/export_celestia_static_runtime.py
+          test -f native/celestia/build.sh
+          test -f scientific/celestia/sidecar/server.cpp
+          test -f windmill/f/urux/validate_encounter.ts
+          test -f windmill/f/urux/direct_journey.ts
+          grep -q 'WCSAxes' science/build_astronomy_assets.py
+          grep -q 'reproject_interp' science/build_astronomy_assets.py
+          grep -q 'reproject_adaptive' science/build_astronomy_assets.py
+          grep -q 'reproject_exact' science/build_astronomy_assets.py
+          grep -q 'SpectralCube' science/build_astronomy_assets.py
+          grep -q 'astroquery.eso' science/augment_astronomy_assets.py
+          grep -q 'astroquery.nist' science/augment_astronomy_assets.py
+          grep -q 'github-actions-static-precompute' native/celestia/build.sh
+
       - name: Encounter visibility and cost audit
         run: |
           grep -q "DESPRENDIMIENTO:\['comet'" runtime/journey/CinematicEncounterSystem.js
-          grep -q 'SphereGeometry(2.35,32,24)' runtime/journey/CinematicEncounterSystem.js
-          grep -q 'for(let i=0;i<8;i++)' runtime/journey/CinematicEncounterSystem.js
+          grep -q 'SphereGeometry(2.35' runtime/journey/CinematicEncounterSystem.js
           grep -q 'z=-112' runtime/journey/CinematicEncounterSystem.js
           grep -q 'this.nextAt=2.5' runtime/journey/CinematicEncounterSystem.js
+          grep -q 'maxActive=2' runtime/journey/CinematicEncounterSystem.js
+          grep -q 'setTimeout(()=>resolve({done:false}),3000)' runtime/journey/SecureURUXJourneyAgent.js
+          if grep -q 'AbortController' runtime/journey/SecureURUXJourneyAgent.js; then
+            echo 'Journey agent must not abort LLM inference at the 3 second visual timeout'; exit 1
+          fi
+
       - name: Security boundary audit
         run: |
           test ! -e runtime/journey/URUXJourneyAgent.js
@@ -76,6 +148,8 @@ jobs:
           fi
           test ! -e worker/.dev.vars
           test ! -e worker/.env
+          ! grep -R 'requestAnimationFrame\|renderer.render\|composer.render' windmill/f/urux
+
       - name: TypeScript
         run: npm run typecheck
       - name: Unit tests
@@ -83,7 +157,10 @@ jobs:
       - name: Production build
         run: npm run build
       - name: Worker syntax check
-        run: node --check worker/src/index.js
+        run: |
+          node --check worker/src/index-v2.js
+          node --check worker/src/windmill.js
+          node --check worker/src/celestia-sidecar.js
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
       - name: Browser smoke and warp checkpoint tests
