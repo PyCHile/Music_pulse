@@ -6,8 +6,7 @@ on:
       - "native/celestia/**"
       - "native/celestia-sidecar/**"
       - "science/index_celestia_content.py"
-      - "wrangler.jsonc"
-      - "worker/src/entry.js"
+      - "science/export_celestia_static_runtime.py"
       - ".github/workflows/celestia-native.yml"
   workflow_dispatch:
 
@@ -48,29 +47,40 @@ jobs:
             libepoxy-dev libeigen3-dev libfmt-dev libpng-dev libjpeg-dev \
             libfreetype6-dev gperf libboost-dev liblua5.4-dev gettext
 
-      - name: Build complete Celestia shared library, tools and sidecar
+      - name: Build complete Celestia shared library and precompute static runtime
         env:
           CELESTIA_SOURCE_REF: 84153ded046fbea46c9f411dd0232e5426373ead
           CELESTIA_CONTENT_REF: e4d5d2754b6224f04e440e53b189f9ee96b6d1fe
           CELESTIA_BUILD_JOBS: "2"
+          URUX_SIDECAR_TOKEN: "github-actions-only-urux-celestia-token-20260813"
         run: bash native/celestia/build.sh
 
-      - name: Verify native manifest and executed sidecar
+      - name: Verify native Celestia and static runtime export
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
-          p=Path('runtime/assets/astronomy/celestia-native-manifest.json')
-          d=json.loads(p.read_text())
-          assert d['nativeBuildVerified'] is True
-          assert d['sidecarBinaryVerified'] is True
-          assert d['runtimeActive'] is False
-          assert 'celengine' in d['compiledSubsystems']
-          assert 'celephem' in d['compiledSubsystems']
-          assert 'celrender' in d['compiledSubsystems']
-          assert '/ready' in d['verifiedEndpoints']
+          manifest=Path('runtime/assets/astronomy/celestia-native-manifest.json')
+          runtime=Path('runtime/assets/astronomy/celestia-static-runtime.json')
+          content=Path('runtime/assets/astronomy/celestia-content-index.json')
+          assert manifest.exists() and runtime.exists() and content.exists()
+          m=json.loads(manifest.read_text())
+          r=json.loads(runtime.read_text())
+          c=json.loads(content.read_text())
+          assert m['nativeBuildVerified'] is True
+          assert m['sidecarBinaryVerified'] is True
+          assert m['ephemeralSidecarExecuted'] is True
+          assert m['staticRuntimeActive'] is True
+          assert m['integrationMode'] == 'github-actions-static-precompute'
+          for module in ('celengine','celephem','celrender','celscript','celx'):
+              assert module in m['compiledSubsystems']
+          assert r['native'] is True
+          assert r['photometryLut'] and r['equatorialLut'] and r['anomalyLut'] and r['obliquityLut']
+          assert c['resourceFamilies']['solarSystem'] > 0
+          assert c['resourceFamilies']['stars'] > 0
+          assert c['resourceFamilies']['deepSky'] > 0
           assert Path('build/urux-celestia-sidecar').exists()
-          print(json.dumps(d, indent=2))
+          print(json.dumps({'manifest':m,'usage':r['usage'],'resources':c['resourceFamilies']}, indent=2))
           PY
 
       - name: Upload literal Celestia native build
@@ -82,18 +92,21 @@ jobs:
             build/urux-celestia-sidecar
             runtime/assets/astronomy/celestia-native-manifest.json
             runtime/assets/astronomy/celestia-content-index.json
+            runtime/assets/astronomy/celestia-static-runtime.json
           if-no-files-found: error
           retention-days: 14
 
-      - name: Commit verified Celestia metadata
+      - name: Commit static Celestia products for GitHub Pages
         run: |
           git config user.name "urux-celestia-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add runtime/assets/astronomy/celestia-native-manifest.json runtime/assets/astronomy/celestia-content-index.json
+          git add runtime/assets/astronomy/celestia-native-manifest.json \
+                  runtime/assets/astronomy/celestia-content-index.json \
+                  runtime/assets/astronomy/celestia-static-runtime.json
           if git diff --cached --quiet; then
-            echo "No Celestia metadata changes"
+            echo "No Celestia static asset changes"
           else
-            git commit -m "build: verify literal Celestia engine and sidecar"
+            git commit -m "data: refresh literal Celestia static runtime"
             git pull --rebase --autostash origin main
             git push origin HEAD:main
           fi
