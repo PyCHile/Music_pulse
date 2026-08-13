@@ -1,0 +1,54 @@
+name: URUX Windmill Integration
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "windmill/**"
+      - "worker/src/windmill.js"
+      - ".github/workflows/windmill-integration.yml"
+
+jobs:
+  windmill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch official Windmill self-host compose
+        run: |
+          mkdir -p .windmill-ci
+          curl -fsSL https://raw.githubusercontent.com/windmill-labs/windmill/main/docker-compose.yml -o .windmill-ci/docker-compose.yml
+          curl -fsSL https://raw.githubusercontent.com/windmill-labs/windmill/main/Caddyfile -o .windmill-ci/Caddyfile
+          curl -fsSL https://raw.githubusercontent.com/windmill-labs/windmill/main/.env -o .windmill-ci/.env
+
+      - name: Start literal Windmill Community Edition
+        working-directory: .windmill-ci
+        run: docker compose up -d
+
+      - name: Verify Windmill API health
+        run: |
+          python - <<'PY'
+          import json,time,urllib.request
+          last=None
+          for _ in range(90):
+              try:
+                  with urllib.request.urlopen('http://127.0.0.1/api/health/status',timeout=3) as r:
+                      body=r.read().decode()
+                  print(body)
+                  break
+              except Exception as exc:
+                  last=exc;time.sleep(2)
+          else: raise SystemExit(f'Windmill did not become healthy: {last}')
+          PY
+
+      - name: Validate URUX Windmill scripts are render-loop independent
+        run: |
+          grep -q "noRenderLoopCalls:true" windmill/f/urux/direct_journey.ts
+          grep -q "never runs in Three.js render loop" windmill/f/urux/validate_encounter.ts
+          ! grep -R "requestAnimationFrame\|renderer.render\|composer.render" windmill/f/urux
+
+      - name: Stop ephemeral Windmill
+        if: always()
+        working-directory: .windmill-ci
+        run: docker compose down -v
