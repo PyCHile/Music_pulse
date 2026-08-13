@@ -1,0 +1,73 @@
+{
+  "schema": "urux-earth-pbr-v1",
+  "generatedAt": "2026-08-13T08:38:27.534847+00:00",
+  "source": "Three.js r185 Earth example; upstream page credits Solar System Scope (resized/merged)",
+  "basisUniversal": true,
+  "ktx2": true,
+  "codec": "UASTC LDR",
+  "mipmaps": true,
+  "channels": {
+    "albedo": "earth_day_4096",
+    "nightLights": "earth_night_4096",
+    "normal": "earth_normal_2048",
+    "packedBumpRoughnessClouds": {
+      "file": "earth_bump_roughness_clouds_4096",
+      "R": "height/bump",
+      "G": "roughness",
+      "B": "cloud strength"
+    },
+    "clouds": "earth_clouds_1024",
+    "atmosphereReference": "earth_atmos_2048",
+    "atmosphereRuntime": "Fresnel + light-direction procedural shell (existing URUX function)"
+  },
+  "files": {
+    "ktx2/earth_atmos_2048.ktx2": {
+      "bytes": 1754817,
+      "sha256": "a2e9a05d87fe496146d9c1d1d651daf6547bb0b680d5d19c4d7b3e62d712444b"
+    },
+    "ktx2/earth_bump_roughness_clouds_4096.ktx2": {
+      "bytes": 9118242,
+      "sha256": "88d6026aee0f7904b611df2ae9e304284b2b04f7b62023fb609982d30ef1b461"
+    },
+    "ktx2/earth_clouds_1024.ktx2": {
+      "bytes": 401052,
+      "sha256": "d297872031a4448ce0aa1a18e26435fb537d79c5d9d4554b7ce88dea9327d50e"
+    },
+    "ktx2/earth_day_4096.ktx2": {
+      "bytes": 3809730,
+      "sha256": "6e564d276f30283fe0edd71e0be419fbf1c2282a897746eaa157a505d0f82e6f"
+    },
+    "ktx2/earth_night_4096.ktx2": {
+      "bytes": 1530839,
+      "sha256": "b30cbec210d7d4fde44a71e50a2801e79c847f75926b8043ab99fc05d8a42f33"
+    },
+    "ktx2/earth_normal_2048.ktx2": {
+      "bytes": 1556945,
+      "sha256": "2912bd550ededaa3178460dd549fc4a322776e885af56c73daa17ac08e4470e1"
+    },
+    "source/earth_atmos_2048.jpg": {
+      "bytes": 512606,
+      "sha256": "2faa400d1eade3bc44caf6750d1b772bd9bbb6d87362c02bc7c3304e78fa0a9d"
+    },
+    "source/earth_bump_roughness_clouds_4096.jpg": {
+      "bytes": 1508389,
+      "sha256": "0796f4211c209d1afe9e26a06a283cdc21434430a780a25457b2417568a8591e"
+    },
+    "source/earth_clouds_1024.png": {
+      "bytes": 260222,
+      "sha256": "7d3b82ef6b3feb506fc06f02a744aed3d864e23e7417075005f4082a7ff935a4"
+    },
+    "source/earth_day_4096.jpg": {
+      "bytes": 473093,
+      "sha256": "cd7712d3e891425d9948ea5ac18d3bb1e7e834ea038188587897e689a7b35d0f"
+    },
+    "source/earth_night_4096.jpg": {
+      "bytes": 267061,
+      "sha256": "17a868f79c7be40fa1f557e6114d7889d907f18f7a3fce51f33b0b830ef50242"
+    },
+    "source/earth_normal_2048.jpg": {
+      "bytes": 336774,
+      "sha256": "3fc43e9639c34e8223c4a871e3bdf5b2d52ee79f7e89ce3f28cba45d4cac031a"
+    }
+  }
+}
