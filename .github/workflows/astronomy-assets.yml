@@ -1,0 +1,71 @@
+name: URUX Astronomy Assets
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Astronomical target resolved by SIMBAD
+        required: false
+        default: "M 42"
+  schedule:
+    - cron: "17 6 * * 1"
+
+permissions:
+  contents: write
+
+jobs:
+  astronomy-assets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      URUX_ASTRONOMY_TARGET: ${{ github.event.inputs.target || 'M 42' }}
+      URUX_ASTRONOMY_PIXELS: "256"
+      URUX_ASTRONOMY_RADIUS_DEG: "0.25"
+      URUX_ENABLE_SPECTRAL_CUBE: "1"
+    steps:
+      - name: Checkout URUX
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-astro.txt
+
+      - name: Install astronomy stack
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-astro.txt
+
+      - name: Execute Astropy/Astroquery/APLpy/Reproject/SpectralCube pipeline
+        run: python science/build_astronomy_assets.py
+
+      - name: Verify generated manifest
+        run: |
+          test -f runtime/assets/astronomy/manifest.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('runtime/assets/astronomy/manifest.json')
+          d=json.loads(p.read_text())
+          print(json.dumps(d.get('capabilities',{}), indent=2))
+          if not d.get('capabilities',{}).get('astroquery.simbad'):
+              raise SystemExit('SIMBAD capability failed')
+          if not d.get('capabilities',{}).get('astroquery.jplhorizons'):
+              raise SystemExit('JPL Horizons capability failed')
+          PY
+
+      - name: Commit compact scientific outputs
+        run: |
+          git config user.name "urux-astronomy-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add runtime/assets/astronomy
+          if git diff --cached --quiet; then
+            echo "No astronomy asset changes"
+          else
+            git commit -m "data: refresh URUX astronomy assets"
+            git push
+          fi
