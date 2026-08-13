@@ -30,8 +30,19 @@ jobs:
           test -f tsconfig.json
           test -f index.html
           test -f manifest-urux.json
+          test -f llms.txt
+          test -f AGENTS.md
+          test -f sitemap.xml
+          test -f sitemap.md
+          test -f robots.txt
           test -f src/main.tsx
           test -f src/App.tsx
+          test -f src/JourneyAgent.ts
+          test -f src/ModelResolver.ts
+          test -f src/NarrativeStateMachine.ts
+          test -f src/EncounterPlanner.ts
+          test -f src/FocalTrajectoryEngine.ts
+          test -f src/CosmicPaletteDirector.ts
           test -f src/audio/AudioEngine.ts
           test -f src/audio/AudioReactiveEngine.ts
           test -f src/audio/MusicalStateAnalyzer.ts
@@ -43,7 +54,11 @@ jobs:
           test -f src/warp/StreakController.ts
           test -f src/performance/AdaptiveQualityManager.ts
           test -f runtime/main.js
+          test -f runtime/journey/URUXJourneyAgent.js
           test -f runtime/spacekit/SpaceKitAstronomicalLayer.js
+          grep -q 'URUXJourneyAgent' runtime/main.js
+          grep -q 'semanticJourneyStage' runtime/main.js
+          grep -q 'darkZoneFraction' runtime/journey/URUXJourneyAgent.js
           test -f tests/e2e/runtime-warp-continuity.spec.ts
           test -f tests/e2e/spacekit-astronomical-layer.spec.ts
       - name: Reject deprecated URUX files
