@@ -41,10 +41,9 @@ def augment_eso(manifest):
         eso=Eso();eso.ROW_LIMIT=64
         instruments=eso.list_instruments(cache=False)
         records=[]
-        # MUSE is deliberately used as a high-value optical IFU probe. If the
-        # target has no public rows the capability is still recorded honestly.
+        clean_target=TARGET.replace("'","").strip()
         try:
-            table=eso.query_instrument('muse',column_filters={'target':f"like '%{TARGET.replace("'",'')}%'"},columns=['dp_id','target','ra','dec','exp_start'],cache=False)
+            table=eso.query_instrument('muse',column_filters={'target':f"like '%{clean_target}%'"},columns=['dp_id','target','ra','dec','exp_start'],cache=False)
             if table is not None:
                 cols=[c for c in ['dp_id','target','ra','dec','exp_start'] if c in table.colnames]
                 records=[{c:simple(row[c]) for c in cols} for row in table[:64]]
