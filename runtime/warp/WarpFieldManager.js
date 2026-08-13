@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { StarTunnelSystem } from './StarTunnelSystem.js?v=20260812-19';
-import { NebulaBackdrop } from './NebulaBackdrop.js?v=20260812-22';
+import { NebulaBackdrop } from './NebulaBackdrop.js?v=20260812-23';
 import { DeepSpaceSectorSystem } from './DeepSpaceSectorSystem.js?v=20260812-5';
 import { GalacticWispSystem } from './GalacticWispSystem.js?v=20260812-3';
 const dustVertex=`attribute float aSize;varying float vFade;void main(){vec4 mv=modelViewMatrix*vec4(position,1.0);vFade=clamp(1.0-(-mv.z/140.0),0.0,1.0);gl_PointSize=aSize*clamp(90.0/max(5.0,-mv.z),0.3,2.1);gl_Position=projectionMatrix*mv;}`;
