@@ -82,6 +82,7 @@ int main(int argc, char** argv) {
     }
 
     constexpr double epoch = 2451545.0;
+    constexpr double secondsPerJulianDay = 86400.0;
     sim->setTime(epoch);
     sim->update(0.0);
 
@@ -91,12 +92,13 @@ int main(int argc, char** argv) {
 
     std::ostringstream json;
     json << std::setprecision(15)
-         << "{\n  \"schema\":\"urux-celestia-simulation-v1\",\n"
+         << "{\n  \"schema\":\"urux-celestia-simulation-v2\",\n"
          << "  \"native\":true,\n"
          << "  \"engine\":\"Celestia 1.7.0\",\n"
          << "  \"api\":\"CelestiaCore + Simulation + Universe\",\n"
          << "  \"simulationInitialized\":true,\n"
          << "  \"epochJD\":" << epoch << ",\n"
+         << "  \"velocityNativeUnit\":\"km per Julian day\",\n"
          << "  \"catalogCounts\":{\"stars\":" << stars->size()
          << ",\"deepSky\":" << dsos->size()
          << ",\"solarSystems\":" << solar->size() << "},\n"
@@ -111,10 +113,12 @@ int main(int argc, char** argv) {
         json << "    {\"name\":\"" << esc(name) << "\",\"found\":" << (sel.empty() ? "false" : "true");
         if (!sel.empty()) {
             ++found;
-            const auto velocity = sel.getVelocity(epoch);
+            const auto velocityPerDay = sel.getVelocity(epoch);
+            const auto velocityPerSecond = velocityPerDay / secondsPerJulianDay;
             json << ",\"type\":\"" << typeName(sel.getType()) << "\""
                  << ",\"radiusKm\":" << sel.radius()
-                 << ",\"velocityKmPerSec\":[" << velocity.x() << ',' << velocity.y() << ',' << velocity.z() << ']';
+                 << ",\"velocityKmPerJulianDay\":[" << velocityPerDay.x() << ',' << velocityPerDay.y() << ',' << velocityPerDay.z() << ']'
+                 << ",\"velocityKmPerSecDerived\":[" << velocityPerSecond.x() << ',' << velocityPerSecond.y() << ',' << velocityPerSecond.z() << ']';
         }
         json << '}';
     }
