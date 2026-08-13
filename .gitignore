@@ -8,3 +8,9 @@ worker/.dev.vars
 worker/.dev.vars.*
 worker/.env
 worker/.env.*
+.venv-astronomy/
+.vendor/
+.build/
+.local/
+scientific/__pycache__/
+**/__pycache__/
