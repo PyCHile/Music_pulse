@@ -20,8 +20,7 @@ export class OpenRouterModelResolver {
     const data = new TextEncoder().encode(`URUX${this.version}${serialized}`);
     const digest = await crypto.subtle.digest('SHA-256', data);
     const hex = [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
-    const tail = hex.slice(-8);
-    const index = Number.parseInt(tail, 16) % models.length;
+    const index = Number.parseInt(hex.slice(-8), 16) % models.length;
     const selected = models[index].id;
     localStorage.setItem(STORAGE_KEY, selected);
     return selected;
@@ -33,7 +32,10 @@ export class OpenRouterModelResolver {
     const body = (await response.json()) as { data?: OpenRouterModel[] };
     return (body.data ?? [])
       .filter((model) => model.id.endsWith(':free'))
-      .filter((model) => model.supported_parameters?.includes('response_format'))
+      .filter((model) => {
+        const params = model.supported_parameters ?? [];
+        return params.includes('structured_outputs') && params.includes('response_format');
+      })
       .sort((a, b) => a.id.localeCompare(b.id));
   }
 }
