@@ -13,11 +13,12 @@ export class URUXJourneyAgent {
   private readonly planner = new EncounterPlanner(() => this.resolver.resolve(), () => localStorage.getItem('urux_openrouter_api_key'));
   private encounterClock = 0;
   private started = false;
+  private unsubscribeTransition: (() => void) | null = null;
 
   constructor(private readonly scene: THREE.Scene) {
     this.scene.add(this.trajectoryEngine.group);
     this.paletteDirector.beginTransition(this.stateMachine.current, 10);
-    this.stateMachine.onTransition((stage) => {
+    this.unsubscribeTransition = this.stateMachine.onTransition((stage) => {
       this.paletteDirector.beginTransition(stage, 10);
       void this.planner.refill(stage, true);
     });
@@ -34,22 +35,24 @@ export class URUXJourneyAgent {
     this.encounterClock += dt;
 
     if (this.planner.pending < 1) void this.planner.refill(snapshot.stage);
+
     if (this.encounterClock >= 8) {
       const encounter = this.planner.consume();
       if (encounter) {
         this.trajectoryEngine.spawn(encounter);
         this.encounterClock = 0;
-      } else {
-        this.trajectoryEngine.updateAutonomous(dt);
       }
     }
 
+    if (this.planner.pending < 1) this.trajectoryEngine.updateAutonomous(dt, snapshot.stage);
     this.paletteDirector.applyNebula(this.planner.nebulaUpdate);
     this.paletteDirector.update(this.scene, dt);
     this.trajectoryEngine.update(dt);
   }
 
   dispose(): void {
+    this.unsubscribeTransition?.();
+    this.unsubscribeTransition = null;
     this.scene.remove(this.trajectoryEngine.group);
     this.trajectoryEngine.dispose();
   }
