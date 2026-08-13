@@ -25,7 +25,7 @@ LIB="$(find "$BUILD" -type f \( -name 'libcelestia.so*' -o -name 'libcelestia.dy
 if [[ -z "$LIB" ]]; then echo "Full Celestia shared library was not produced" >&2; exit 4; fi
 LIBDIR="$(dirname "$LIB")"
 SIDECAR="$ROOT/build/urux-celestia-sidecar"
-SIDE_SRC="$ROOT/scientific/celestia/sidecar/server.cpp"
+SIDE_SRC="$ROOT/scientific/celestia/sidecar/server_v2.cpp"
 if [[ ! -f "$SIDE_SRC" ]]; then echo "Maintained Celestia sidecar source not found: $SIDE_SRC" >&2; exit 5; fi
 
 g++ -std=c++17 -O2 -DNDEBUG \
@@ -72,7 +72,7 @@ import json, pathlib, sys
 from datetime import datetime, timezone
 out=pathlib.Path(sys.argv[1]);lib=pathlib.Path(sys.argv[2]);source_ref=sys.argv[3];content_ref=sys.argv[4];sidecar=pathlib.Path(sys.argv[5])
 payload={
- "schema":"urux-celestia-native-v4","generatedAt":datetime.now(timezone.utc).isoformat(),
+ "schema":"urux-celestia-native-v5","generatedAt":datetime.now(timezone.utc).isoformat(),
  "source":"CelestiaProject/Celestia","sourceRef":source_ref,"contentSource":"CelestiaProject/CelestiaContent","contentRef":content_ref,
  "nativeBuildVerified":True,"sidecarBinaryVerified":True,"ephemeralSidecarExecuted":True,"staticRuntimeActive":True,"runtimeActive":False,"serviceUrl":None,
  "sharedLibrary":{"path":str(lib),"bytes":lib.stat().st_size},"sidecarBinary":{"path":str(sidecar),"bytes":sidecar.stat().st_size},
