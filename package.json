@@ -1,7 +1,7 @@
 {
   "name": "music-pulse-interstellar-warp",
   "private": true,
-  "version": "2.3.0",
+  "version": "2.3.1",
   "license": "GPL-2.0-or-later",
   "type": "module",
   "scripts": {
@@ -13,15 +13,14 @@
     "test:e2e": "playwright test",
     "qa": "npm run typecheck && npm run test && npm run build && npm run test:e2e",
     "science:bootstrap": "bash scientific/bootstrap_science.sh",
-    "science:assets": "python3 scientific/astronomy_pipeline.py --output assets/astronomy",
+    "science:assets": "python3 science/build_astronomy_assets.py",
     "celestia:bootstrap": "bash scientific/celestia/bootstrap_celestia.sh",
-    "qa:science": "python3 -m compileall scientific && python3 scientific/verify_science_stack.py",
+    "qa:science": "python3 -m compileall science scientific && python3 scientific/verify_science_stack.py",
     "worker:dev": "wrangler dev --config ./wrangler.jsonc",
     "worker:deploy": "wrangler deploy --config ./wrangler.jsonc",
     "deploy": "npm run worker:deploy"
   },
   "dependencies": {
-    "@cloudflare/containers": "0.3.7",
     "@react-three/fiber": "^9.7.0",
     "@react-three/postprocessing": "^3.0.5",
     "postprocessing": "6.39.4",
