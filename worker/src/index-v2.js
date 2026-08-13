@@ -1,0 +1,161 @@
+import { windmillStatus, runValidation, runAgentWorkflow } from './windmill.js';
+import {
+  celestiaSidecarStatus, celestiaHealth, celestiaCapabilities, celestiaConstants,
+  celestiaPhotometry, celestiaEquatorial, celestiaAnomaly, celestiaObliquity
+} from './celestia-sidecar.js';
+
+const VERSION='1.6.0';
+const ALLOWED_STAGES={
+  DESPRENDIMIENTO:{paletteHint:['#02030a','#07152d','#17265e'],encounterTypes:['debris','void_pulse','light_filament']},
+  TUNEL:{paletteHint:['#02020a','#0d1b4b','#4b0082'],encounterTypes:['debris','comet','light_filament','void_pulse']},
+  LUZ:{paletteHint:['#13051e','#6a0572','#d946a8','#ffffff'],encounterTypes:['light_filament','planet','comet']},
+  MEMORIA:{paletteHint:['#08061c','#37206f','#a23885','#ffb25c'],encounterTypes:['planet','vessel','light_filament','debris']},
+  FRONTERA:{paletteHint:['#02030b','#18244b','#6d3b7e','#ffd08a'],encounterTypes:['void_pulse','vessel','light_filament']},
+  RETORNO:{paletteHint:['#050916','#183d6d','#8c5f9e','#fff4d6'],encounterTypes:['comet','debris','light_filament','planet']}
+};
+const OBJECT_TYPES=['planet','comet','debris','light_filament','vessel','void_pulse'];
+const MODE_ORDER=['json_schema','json_object','prompt_json'];
+const KNOWN_CAPABILITIES=new Set([
+  'three','webgl2','webgpu-compute','spacekit','three-nebula','postprocessing','ktx2','pbr-astronomy',
+  'shader-noise','volumetric-raymarch','celestia-photometry','celestia-native-build','celestia-static-runtime',
+  'celestia-literal','astropy-stack','astroquery','gaia-catalog','eso-catalog','wcs-science','reproject','aplpy',
+  'spectral-cube','truecolor-tools','truecolor-spectra','webgpu-galaxy-model','nasa-jpl-catalog'
+]);
+
+const SCHEMA={name:'urux_encounter_batch',strict:true,schema:{type:'object',additionalProperties:false,required:['encounters','nebulaUpdate'],properties:{
+  encounters:{type:'array',minItems:3,maxItems:6,items:{type:'object',additionalProperties:false,required:['id','narrativeStage','objectType','spawnDepth','spawnPosition','focalApproach','trajectoryVector','scale','speed','palette','luminosity','durationSeconds'],properties:{
+    id:{type:'string'},narrativeStage:{type:'string',enum:Object.keys(ALLOWED_STAGES)},objectType:{type:'string',enum:OBJECT_TYPES},spawnDepth:{type:'number'},
+    spawnPosition:{type:'object',additionalProperties:false,required:['x','y'],properties:{x:{type:'number'},y:{type:'number'}}},
+    focalApproach:{type:'boolean'},trajectoryVector:{type:'object',additionalProperties:false,required:['x','y','z'],properties:{x:{type:'number'},y:{type:'number'},z:{type:'number'}}},
+    scale:{type:'number'},speed:{type:'number'},palette:{type:'array',minItems:1,maxItems:6,items:{type:'string'}},luminosity:{type:'number'},durationSeconds:{type:'number'}
+  }}},
+  nebulaUpdate:{type:'object',additionalProperties:false,required:['darkZoneFraction','filamentDensity','luminousCore','chromaticRange'],properties:{
+    darkZoneFraction:{type:'number',minimum:.3,maximum:1},filamentDensity:{type:'number',minimum:0,maximum:1},
+    luminousCore:{type:'object',additionalProperties:false,required:['x','y'],properties:{x:{type:'number'},y:{type:'number'}}},
+    chromaticRange:{type:'array',minItems:1,maxItems:8,items:{type:'string'}}
+  }}
+}}};
+
+const finite=v=>typeof v==='number'&&Number.isFinite(v);
+const hex=v=>typeof v==='string'&&/^#[0-9a-fA-F]{6}$/.test(v);
+const cleanCapabilities=value=>Array.isArray(value)?[...new Set(value.filter(v=>typeof v==='string'&&KNOWN_CAPABILITIES.has(v)))].slice(0,32):[];
+
+function cors(origin,env){const allowed=(env.ALLOWED_ORIGIN||'https://pychile.github.io').split(',').map(x=>x.trim());return allowed.includes(origin)?{'Access-Control-Allow-Origin':origin,'Vary':'Origin','Access-Control-Allow-Methods':'GET,POST,OPTIONS','Access-Control-Allow-Headers':'Content-Type','Access-Control-Max-Age':'86400'}:{};}
+function json(data,status=200,headers={}){return new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff',...headers}});}
+async function rateLimit(env,key,retryAfter=20){if(!env.URUX_RATE_LIMITER)return null;const limited=await env.URUX_RATE_LIMITER.limit({key});return limited.success?null:retryAfter;}
+async function readPayload(request,maxBytes=32768){const text=await request.text();if(text.length>maxBytes)throw new Error('payload_too_large');try{return text?JSON.parse(text):{};}catch{throw new Error('invalid_json');}}
+
+async function keyUsage(env){const r=await fetch('https://openrouter.ai/api/v1/key',{headers:{Accept:'application/json',Authorization:`Bearer ${env.OPENROUTER_API_KEY}`},cache:'no-store'});if(!r.ok)throw new Error(`key_http_${r.status}`);const body=await r.json(),d=body.data||{};return{usage:d.usage??0,usageDaily:d.usage_daily??0,usageMonthly:d.usage_monthly??0,isFreeTier:Boolean(d.is_free_tier),limitRemaining:d.limit_remaining??null,label:d.label||null};}
+async function eligibleModels(env){const r=await fetch('https://openrouter.ai/api/v1/models?output_modalities=text',{headers:{Accept:'application/json',Authorization:`Bearer ${env.OPENROUTER_API_KEY}`},cache:'no-store'});if(!r.ok)throw new Error(`models_http_${r.status}`);const body=await r.json();return(body.data||[]).filter(m=>m.id?.endsWith(':free')).map(m=>{const p=m.supported_parameters||[];let mode='prompt_json';if(p.includes('structured_outputs')&&p.includes('response_format'))mode='json_schema';else if(p.includes('response_format'))mode='json_object';return{id:m.id,mode};}).sort((a,b)=>a.id.localeCompare(b.id));}
+async function deterministicCandidate(group,all,mode){if(!group.length)return null;const bytes=new TextEncoder().encode(`URUX${VERSION}${mode}${JSON.stringify(all)}`),digest=await crypto.subtle.digest('SHA-256',bytes),h=[...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');return group[parseInt(h.slice(-8),16)%group.length];}
+async function candidatePlan(models){const plan=[];for(const mode of MODE_ORDER){const group=models.filter(m=>m.mode===mode),selected=await deterministicCandidate(group,models,mode);if(selected)plan.push(selected);}return plan;}
+
+function validate(batch,stage){
+  if(!batch||!Array.isArray(batch.encounters)||batch.encounters.length<3||batch.encounters.length>6)return false;
+  const spec=ALLOWED_STAGES[stage],n=batch.nebulaUpdate;
+  if(!n||!finite(n.darkZoneFraction)||n.darkZoneFraction<.3||n.darkZoneFraction>1||!finite(n.filamentDensity)||n.filamentDensity<0||n.filamentDensity>1||!n.luminousCore||!finite(n.luminousCore.x)||!finite(n.luminousCore.y)||!Array.isArray(n.chromaticRange)||!n.chromaticRange.length||!n.chromaticRange.every(hex))return false;
+  const ids=new Set();
+  for(const e of batch.encounters){
+    if(!e||typeof e.id!=='string'||!e.id.trim()||ids.has(e.id)||e.narrativeStage!==stage||!spec.encounterTypes.includes(e.objectType)||e.spawnDepth!==0||!e.spawnPosition||!finite(e.spawnPosition.x)||!finite(e.spawnPosition.y)||Math.abs(e.spawnPosition.x)>1.5||Math.abs(e.spawnPosition.y)>1.5||!e.trajectoryVector||!finite(e.trajectoryVector.x)||!finite(e.trajectoryVector.y)||!finite(e.trajectoryVector.z)||Math.abs(e.trajectoryVector.x)+Math.abs(e.trajectoryVector.y)+Math.abs(e.trajectoryVector.z)<.001||!finite(e.scale)||e.scale<=0||e.scale>8||!finite(e.speed)||e.speed<=0||e.speed>4||!finite(e.luminosity)||e.luminosity<0||e.luminosity>3||!finite(e.durationSeconds)||e.durationSeconds<3||e.durationSeconds>45||!Array.isArray(e.palette)||!e.palette.length||!e.palette.every(hex))return false;
+    ids.add(e.id);
+  }
+  return true;
+}
+
+function capabilityGuidance(caps){
+  const lines=[];
+  if(caps.includes('pbr-astronomy'))lines.push('planet puede beneficiarse localmente de PBR astronómico, mapas de superficie, luces nocturnas y atmósfera');
+  if(caps.includes('three-nebula'))lines.push('comet/debris puede beneficiarse localmente de plasma, polvo, fragmentación y partículas alineadas a trajectoryVector');
+  if(caps.includes('volumetric-raymarch'))lines.push('nebulaUpdate controla un volumen real con extinción, scattering, emisión y self-shadowing');
+  if(caps.includes('postprocessing'))lines.push('luminosity y paleta pueden explotar bloom/tone mapping ya existente sin pedir efectos inexistentes');
+  if(caps.includes('truecolor-spectra'))lines.push('prioriza cromática físicamente plausible sobre colores decorativos arbitrarios');
+  if(caps.includes('celestia-literal')||caps.includes('nasa-jpl-catalog')||caps.includes('gaia-catalog'))lines.push('prioriza escalas, orientación y comportamiento astronómico plausibles');
+  return lines.length?lines.join('; '):'usa únicamente trayectoria, escala, velocidad, luminosidad, paleta y nebulosa ya disponibles';
+}
+
+function systemPrompt(stage,capabilities){
+  const s=ALLOWED_STAGES[stage],caps=cleanCapabilities(capabilities);
+  return `Eres el director narrativo del tránsito cósmico de URUX. Generas únicamente decisiones que el runtime Three.js puede ejecutar. Responde ÚNICAMENTE JSON válido, sin markdown ni texto adicional, siguiendo exactamente el schema encounters + nebulaUpdate. Genera 3 a 6 encounters. narrativeStage=${stage}; spawnDepth=0; objectType solo: ${s.encounterTypes.join(', ')}. spawnPosition x/y entre -1.5 y 1.5; trajectoryVector no nulo; scale >0 <=8; speed >0 <=4; luminosity 0..3; durationSeconds 3..45; darkZoneFraction >=0.3 <=1; colores #RRGGBB. Paleta base: ${s.paletteHint.join(', ')}. CAPACIDADES VERIFICADAS EN ESTE DISPOSITIVO: ${caps.length?caps.join(', '):'ninguna adicional'}. REGLA DURA: no inventes shaders, texturas, librerías, motores, efectos ni capacidades fuera de esa lista. No nombres recursos en el JSON porque el schema no los admite: exprésalos solo mediante las variables existentes. ${capabilityGuidance(caps)}. Diseña trayectorias naturales; usa focalApproach solo cuando mejore el encuentro y evita geometría artificial/sobresaturada.`;
+}
+function extractJSON(content){if(typeof content!=='string')throw new Error('missing_content');const text=content.trim().replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'');try{return JSON.parse(text);}catch{}const a=text.indexOf('{'),b=text.lastIndexOf('}');if(a>=0&&b>a)return JSON.parse(text.slice(a,b+1));throw new Error('invalid_json_content');}
+
+async function completeWith(modelInfo,stage,env,capabilities){
+  const request={model:modelInfo.id,temperature:.45,max_tokens:1500,messages:[{role:'system',content:systemPrompt(stage,capabilities)},{role:'user',content:`Genera el batch JSON para ${stage}. Usa solo capacidades verificadas y maximiza naturalidad visual.`}]};
+  if(modelInfo.mode==='json_schema'){request.provider={require_parameters:true};request.response_format={type:'json_schema',json_schema:SCHEMA};}
+  else if(modelInfo.mode==='json_object'){request.provider={require_parameters:true};request.response_format={type:'json_object'};}
+  const r=await fetch('https://openrouter.ai/api/v1/chat/completions',{method:'POST',headers:{Authorization:`Bearer ${env.OPENROUTER_API_KEY}`,'Content-Type':'application/json','HTTP-Referer':'https://pychile.github.io/Music_pulse/','X-OpenRouter-Title':'URUX Journey Director'},body:JSON.stringify(request)});
+  if(!r.ok){const body=await r.text();throw new Error(`completion_http_${r.status}:${body.slice(0,180)}`);}
+  const body=await r.json(),parsed=extractJSON(body.choices?.[0]?.message?.content);
+  if(!validate(parsed,stage))throw new Error('invalid_batch');
+  return{...parsed,model:modelInfo.id,modelMode:modelInfo.mode,verifiedCapabilities:cleanCapabilities(capabilities)};
+}
+
+async function generate(stage,env,capabilities){
+  const free=await eligibleModels(env);if(!free.length)throw new Error('no_free_models');
+  const plan=await candidatePlan(free),attempts=[];
+  for(const modelInfo of plan){try{return await completeWith(modelInfo,stage,env,capabilities);}catch(error){attempts.push(`${modelInfo.id}[${modelInfo.mode}]:${String(error.message||error).slice(0,140)}`);}}
+  throw new Error(`all_candidates_failed:${attempts.join('|')}`);
+}
+
+async function validateWithWindmill(env,batch,capabilities){
+  const status=windmillStatus(env);if(!status.configured)return{configured:false,used:false,ok:true,mode:'local-schema'};
+  try{
+    const response=await runValidation(env,{batch,allowedCapabilities:cleanCapabilities(capabilities)});
+    const result=response?.result;
+    if(result&&typeof result==='object'&&result.ok===false)throw new Error(`windmill_rejected:${(result.errors||[]).join(',')}`);
+    return{configured:true,used:true,ok:true,mode:'windmill+local-schema'};
+  }catch(error){return{configured:true,used:true,ok:false,mode:'windmill-error',error:String(error.message||error).slice(0,240)};}
+}
+
+async function celestiaRoute(request,url,env,headers){
+  if(!Object.keys(headers).length)return json({error:'origin_not_allowed'},403);
+  const retry=await rateLimit(env,'urux-celestia',10);if(retry)return json({error:'rate_limited'},429,{...headers,'Retry-After':String(retry)});
+  try{
+    if(url.pathname==='/v1/celestia/capabilities'&&request.method==='GET')return json(await celestiaCapabilities(env),200,headers);
+    if(url.pathname==='/v1/celestia/constants'&&request.method==='GET')return json(await celestiaConstants(env),200,headers);
+    let payload={};if(request.method==='POST')payload=await readPayload(request);
+    if(url.pathname==='/v1/celestia/photometry'&&request.method==='POST')return json(await celestiaPhotometry(env,payload),200,headers);
+    if(url.pathname==='/v1/celestia/equatorial'&&request.method==='POST')return json(await celestiaEquatorial(env,payload),200,headers);
+    if(url.pathname==='/v1/celestia/anomaly'&&request.method==='POST')return json(await celestiaAnomaly(env,payload),200,headers);
+    if(url.pathname==='/v1/celestia/obliquity'&&request.method==='POST')return json(await celestiaObliquity(env,payload),200,headers);
+    return json({error:'not_found'},404,headers);
+  }catch(error){return json({ok:false,error:'celestia_sidecar_failure',detail:String(error?.message||error).slice(0,420)},502,headers);}
+}
+
+export default{
+  async fetch(request,env,ctx){
+    const origin=request.headers.get('Origin')||'',headers=cors(origin,env),url=new URL(request.url);
+    if(request.method==='OPTIONS')return Object.keys(headers).length?new Response(null,{status:204,headers}):new Response(null,{status:403});
+    if(url.pathname==='/health'&&request.method==='GET')return json({ok:true,service:'urux-journey-api',version:VERSION,openrouterConfigured:Boolean(env.OPENROUTER_API_KEY),capabilityPolicy:true,windmill:windmillStatus(env),celestia:celestiaSidecarStatus(env)},200,headers);
+    if(url.pathname==='/diagnostics/celestia'&&request.method==='GET')return json(await celestiaHealth(env),200,headers);
+    if(url.pathname.startsWith('/v1/celestia/'))return celestiaRoute(request,url,env,headers);
+    if(url.pathname==='/diagnostics/windmill'&&request.method==='GET')return json({ok:true,...windmillStatus(env)},200,headers);
+    if(url.pathname==='/diagnostics/openrouter'&&request.method==='GET'){
+      if(!env.OPENROUTER_API_KEY)return json({ok:false,error:'backend_not_configured'},503,headers);
+      try{return json({ok:true,...await keyUsage(env)},200,headers);}catch(error){return json({ok:false,error:'key_diagnostics_failed',detail:String(error.message||error)},502,headers);}
+    }
+    if(url.pathname==='/diagnostics/models'&&request.method==='GET'){
+      if(!env.OPENROUTER_API_KEY)return json({ok:false,error:'backend_not_configured'},503,headers);
+      try{const models=await eligibleModels(env),counts=models.reduce((a,m)=>(a[m.mode]=(a[m.mode]||0)+1,a),{}),plan=await candidatePlan(models);return json({ok:true,freeModels:models.length,modes:counts,candidatePlan:plan},200,headers);}catch(error){return json({ok:false,error:'model_discovery_failed',detail:String(error.message||error)},502,headers);}
+    }
+    if((url.pathname==='/v1/workflows/validate'||url.pathname==='/v1/workflows/agent')&&request.method==='POST'){
+      if(!Object.keys(headers).length)return json({error:'origin_not_allowed'},403);const retry=await rateLimit(env,'urux-windmill',30);if(retry)return json({error:'rate_limited'},429,{...headers,'Retry-After':String(retry)});
+      let payload;try{payload=await readPayload(request);}catch(error){return json({error:String(error.message||error)},String(error.message||error)==='payload_too_large'?413:400,headers);}
+      try{const result=url.pathname.endsWith('/validate')?await runValidation(env,payload):await runAgentWorkflow(env,payload);return json(result,url.pathname.endsWith('/validate')?200:202,headers);}catch(error){return json({ok:false,error:'windmill_failure',detail:String(error.message||error).slice(0,420)},502,headers);}
+    }
+    if(url.pathname!=='/v1/encounters'||request.method!=='POST')return json({error:'not_found'},404,headers);
+    if(!Object.keys(headers).length)return json({error:'origin_not_allowed'},403);
+    if(!env.OPENROUTER_API_KEY)return json({error:'backend_not_configured'},503,headers);
+    const retry=await rateLimit(env,'urux-public',20);if(retry)return json({error:'rate_limited'},429,{...headers,'Retry-After':String(retry)});
+    let payload;try{payload=await readPayload(request);}catch(error){return json({error:String(error.message||error)},String(error.message||error)==='payload_too_large'?413:400,headers);}
+    const stage=payload?.stage;if(!ALLOWED_STAGES[stage])return json({error:'invalid_stage'},400,headers);
+    const capabilities=cleanCapabilities(payload?.capabilities);
+    try{
+      const batch=await generate(stage,env,capabilities);
+      const windmillValidation=await validateWithWindmill(env,batch,capabilities);
+      if(windmillValidation.used&&!windmillValidation.ok)return json({error:'windmill_validation_failed',detail:windmillValidation.error},502,headers);
+      if(windmillStatus(env).configured&&ctx?.waitUntil)ctx.waitUntil(runAgentWorkflow(env,{stage,batch,capabilities,kind:'accepted-journey-batch'}).catch(error=>console.warn('Windmill async orchestration failed',String(error))));
+      return json({...batch,windmillValidation},200,headers);
+    }catch(error){const detail=String(error.message||error).slice(0,520);console.error('URUX backend error',detail);return json({error:'upstream_failure',detail},502,headers);}
+  }
+};
