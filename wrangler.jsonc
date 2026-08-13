@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "music-pulse",
-  "main": "worker/src/entry.js",
+  "main": "worker/src/index.js",
   "compatibility_date": "2026-08-13",
   "workers_dev": true,
   "vars": {
@@ -10,28 +10,6 @@
   "secrets": {
     "required": ["OPENROUTER_API_KEY"]
   },
-  "containers": [
-    {
-      "class_name": "CelestiaContainer",
-      "image": "./native/celestia-sidecar/Dockerfile",
-      "max_instances": 1,
-      "instance_type": "standard-1"
-    }
-  ],
-  "durable_objects": {
-    "bindings": [
-      {
-        "name": "CELESTIA_CONTAINER",
-        "class_name": "CelestiaContainer"
-      }
-    ]
-  },
-  "migrations": [
-    {
-      "tag": "celestia-v1",
-      "new_sqlite_classes": ["CelestiaContainer"]
-    }
-  ],
   "ratelimits": [
     {
       "name": "URUX_RATE_LIMITER",
