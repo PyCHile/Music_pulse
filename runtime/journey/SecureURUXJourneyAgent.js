@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {URUXBackendClient,configureURUXBackendURL,clearURUXBackendURL,getURUXBackendURL} from './URUXBackendClient.js?v=20260813-6';
+import {URUXBackendClient,configureURUXBackendURL,clearURUXBackendURL,getURUXBackendURL} from './URUXBackendClient.js?v=20260813-7';
 
 const STAGES=[
 {id:'DESPRENDIMIENTO',label:'Desprendimiento',durationRange:[42,68],paletteHint:['#02030a','#07152d','#17265e'],encounterTypes:['debris','void_pulse','light_filament'],nebulaProfile:{density:.22,filamentDensity:.24,darkZoneFraction:.72}},
