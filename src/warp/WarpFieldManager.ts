@@ -22,6 +22,7 @@ export class WarpFieldManager {
     this.galacticWisps=new GalacticWispSystem(maxStars<=1200?28:36);
     this.starTunnel=new StarTunnelSystem(maxStars);
     this.flybys=new CelestialFlybySystem();
+    this.flybys.group.visible=false;
     this.etherealFigures=new EtherealFiguresSystem();
     this.group.add(this.nebula.mesh,this.deepSpace.group,this.galacticWisps.group,this.starTunnel.group,this.flybys.group,this.etherealFigures.group);
   }
