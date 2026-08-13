@@ -37,11 +37,11 @@ async function initializeSecondarySystems(){
   await nextPaint();
   const [agentModule,encounterModule,nebulaModule,scienceModule,capabilityModule,spacekitModule]=await Promise.all([
    import('./journey/SecureURUXJourneyAgent.js?v=20260813-10'),
-   import('./journey/CinematicEncounterSystemV42.js?v=20260813-45'),
+   import('./journey/CinematicEncounterSystemV42.js?v=20260813-46'),
    import('./journey/NebulaDirectiveBridge.js?v=20260812-1'),
    import('./astronomy/ScientificAstronomyRuntime.js?v=20260813-43'),
    import('./capabilities/RuntimeCapabilityRegistry.js?v=20260813-42'),
-   import('./spacekit/SpaceKitAstronomicalLayer.js?v=20260813-44')
+   import('./spacekit/SpaceKitAstronomicalLayer.js?v=20260813-46')
   ]);
   configureURUXBackendURL=agentModule.configureURUXBackendURL;clearURUXBackendURL=agentModule.clearURUXBackendURL;scientificAstronomy=scienceModule.scientificAstronomy;runtimeCapabilities=capabilityModule.runtimeCapabilities;
   setPhase('ai-runtime');await nextPaint();
@@ -51,7 +51,7 @@ async function initializeSecondarySystems(){
   secondaryInitializing=false;boot().aiRuntimeReady=true;setPhase('ai-ready');
   void journeyAgent.start();
   void scientificAstronomy.readyPromise;
-  setTimeout(()=>void initializeSpaceKit(spacekitModule.SpaceKitAstronomicalLayer),1800);
+  if(!mobile)setTimeout(()=>void initializeSpaceKit(spacekitModule.SpaceKitAstronomicalLayer),1800);
  }catch(error){secondaryInitializing=false;boot().secondaryError=String(error);setPhase('visual-ready');console.warn('[URUX] Secondary AI/science runtime unavailable; visual journey remains active.',error);}
 }
 
@@ -59,12 +59,12 @@ async function initializeRuntime(){
  if(runtimeInitPromise)return runtimeInitPromise;
  runtimeInitPromise=(async()=>{
   setPhase('visual-module');status.textContent='Preparando motor visual…';await nextPaint();
-  const sceneModule=await import('./scene/InterstellarWarpScene.js?v=20260813-44');
+  const sceneModule=await import('./scene/InterstellarWarpScene.js?v=20260813-46');
   setPhase('visual-scene');status.textContent='Inicializando viaje…';await nextPaint();
   scene=new sceneModule.InterstellarWarpScene(app);
   runtimeReady=true;boot().runtimeReady=true;setPhase('visual-ready');status.textContent='';
   startRenderLoop();
-  setTimeout(()=>void initializeSecondarySystems(),80);
+  setTimeout(()=>void initializeSecondarySystems(),mobile?3500:80);
   return true;
  })().catch(error=>{runtimeInitPromise=null;runtimeReady=false;boot().runtimeError=String(error);setPhase('visual-error');throw error;});
  return runtimeInitPromise;
