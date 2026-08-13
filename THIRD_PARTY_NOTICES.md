@@ -10,7 +10,7 @@ License: GNU General Public License, version 2 or (at your option) any later ver
 
 Copyright: Celestia Development Team; portions originally by Chris Laurel.
 
-URUX-derived files include `runtime/thirdparty/CelestiaPhotometry.js` and `src/thirdparty/CelestiaPhotometry.ts`. They port selected magnitude/irradiance conversion, reflected-luminosity, stellar temperature-color, and PSF/glow soft-clipping logic from Celestia sources including `src/celastro/astro.cpp`, `src/celastro/astro.h`, `src/celengine/pointstarrenderer.cpp`, and `src/celengine/starcolors.cpp`/`.h`.
+URUX-derived files include `runtime/thirdparty/CelestiaPhotometry.js` and `src/thirdparty/CelestiaPhotometry.ts`. They port selected magnitude/irradiance conversion, stellar temperature-color, and PSF/glow soft-clipping logic from Celestia sources including `src/celastro/astro.cpp`, `src/celastro/astro.h`, `src/celengine/pointstarrenderer.cpp`, and `src/celengine/starcolors.cpp`/`.h`.
 
 Because URUX contains GPL-derived Celestia code, URUX is distributed under GPL-2.0-or-later.
 
@@ -22,7 +22,7 @@ License: MIT License.
 
 Copyright (c) 2024 Askaniy Anpilogov.
 
-URUX-derived files include `runtime/thirdparty/TrueColorToolsColor.js` and `src/thirdparty/TrueColorToolsColor.ts`. They port the `ColorSystem` approach, RGB-primary/white-point matrix construction, Bradford chromatic adaptation, out-of-gamut handling and sRGB gamma behavior from TrueColorTools. URUX also vendors CIE 1931 2-degree color-matching data and selected visible-range planetary spectral/albedo samples from the TrueColorTools repository under `assets/truecolor/`.
+URUX-derived files include `runtime/thirdparty/TrueColorToolsColor.js` and `src/thirdparty/TrueColorToolsColor.ts`. They port the `ColorSystem` approach, RGB-primary/white-point matrix construction, Bradford chromatic adaptation, out-of-gamut handling and sRGB gamma behavior from TrueColorTools. URUX vendors only the CIE 1931 2-degree color-matching data required by that pipeline under `assets/truecolor/`. Deep-space spectral colors are loaded from TrueColorTools upstream spectra at runtime.
 
 MIT notice:
 
@@ -50,7 +50,7 @@ License: MIT License.
 
 Copyright (c) 2019 Ian Webster.
 
-URUX executes SpaceKit directly from its official published browser build (`https://typpo.github.io/spacekit/build/spacekit.js`) rather than porting or rewriting its renderer. `runtime/spacekit/SpaceKitAstronomicalLayer.js` instantiates the upstream `Spacekit.Simulation`, `SkyboxPresets.ESO_GIGAGALAXY`, `createStars()`, `createSphere()`, atmosphere rendering, and ring support. Planet textures are also loaded directly from SpaceKit's published example assets, including Jupiter, Saturn, Saturn rings, and the ESO Earth texture. URUX only controls the narrative timing and focal-origin trajectory of those upstream SpaceKit objects.
+URUX executes SpaceKit directly from its official published browser build (`https://typpo.github.io/spacekit/build/spacekit.js`) rather than porting or rewriting its renderer. `runtime/spacekit/SpaceKitAstronomicalLayer.js` instantiates the upstream `Spacekit.Simulation`, `SkyboxPresets.ESO_GIGAGALAXY`, `createStars()`, `createSphere()`, atmosphere rendering, and ring support. Planet textures are loaded directly from SpaceKit's published example assets, including Jupiter, Saturn, Saturn rings, and the ESO Earth texture. URUX controls only narrative timing and the fixed-focal-origin flyby trajectory of those upstream SpaceKit objects.
 
 MIT notice:
 
