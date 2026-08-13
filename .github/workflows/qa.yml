@@ -64,7 +64,12 @@ jobs:
           grep -q 'llmEncounterRendered' runtime/main.js
           grep -q 'NebulaDirectiveBridge' runtime/main.js
           grep -q 'llmNebulaApplied' runtime/main.js
-          grep -q 'nebulaBridge.update' runtime/main.js
+          grep -q 'journeySynchronized' runtime/main.js
+          grep -q 'synchronizeWithLegacyStage' runtime/main.js
+          grep -q 'LEGACY_TO_SEMANTIC' runtime/journey/URUXJourneyAgent.js
+          grep -q 'IDEALIZED_COSMOS' runtime/journey/URUXJourneyAgent.js
+          grep -q 'syncTo(stageId)' runtime/journey/URUXJourneyAgent.js
+          grep -q 'clearBuffer()' runtime/journey/URUXJourneyAgent.js
           grep -q 'encounterSink' runtime/journey/URUXJourneyAgent.js
           grep -q "source:'llm'" runtime/journey/URUXJourneyAgent.js
           grep -q 'darkZoneFraction' runtime/journey/URUXJourneyAgent.js
@@ -73,7 +78,6 @@ jobs:
           grep -q 'uNarrativeDarkZone' runtime/warp/NebulaBackdrop.js
           grep -q 'uNarrativeFilaments' runtime/warp/NebulaBackdrop.js
           grep -q 'uNarrativeCore' runtime/warp/NebulaBackdrop.js
-          grep -q 'spectralColors' runtime/journey/NebulaDirectiveBridge.js
           test -f tests/e2e/runtime-warp-continuity.spec.ts
           test -f tests/e2e/spacekit-astronomical-layer.spec.ts
       - name: Reject deprecated URUX files
