@@ -1,0 +1,9 @@
+import * as THREE from 'three';
+import { DeepSpaceSectorSystem as Base } from './DeepSpaceSectorSystem.js?v=20260813-49';
+const CLOUD='https://cdn.jsdelivr.net/gh/dgreenheck/webgpu-galaxy@main/public/cloud.png';
+const clamp=v=>Math.max(0,Math.min(1,v)),smooth=v=>{const t=clamp(v);return t*t*(3-2*t)};
+export class DeepSpaceSectorSystem extends Base{
+ constructor(){super();this.fastClouds=[];for(const sector of this.sectors){for(const l of sector.layers){sector.group.remove(l.sprite);l.material.dispose();}sector.layers=[];const mat=new THREE.SpriteMaterial({transparent:true,opacity:0,depthWrite:false,depthTest:false,blending:THREE.NormalBlending,color:0x8a6fa8}),sprite=new THREE.Sprite(mat);sprite.scale.set(108,70,1);sprite.renderOrder=-840;sector.group.add(sprite);this.fastClouds.push({sector,mat,sprite});}this.cloudReady=false;new THREE.TextureLoader().load(CLOUD,t=>{t.colorSpace=THREE.SRGBColorSpace;this.fastTexture=t;for(const q of this.fastClouds){q.mat.map=t;q.mat.needsUpdate=true;}this.cloudReady=true;},undefined,()=>{});}
+ update(dt,state){const p=clamp(state.soulProgress||0),fade=1-clamp(state.finalFade||0);this.maxPresence=0;this.activeSectorCount=0;for(const q of this.fastClouds){const s=q.sector,raw=(p-s.spec.start)/(s.spec.end-s.spec.start);if(raw<=0||raw>=1){s.group.visible=false;s.cluster.material.uniforms.uOpacity.value=0;continue;}const env=smooth(raw/.12)*(1-smooth((raw-.93)/.07))*fade,a=1-Math.pow(1-clamp(raw),3.05);s.group.visible=env>.003;s.group.position.set(s.spec.x*(1-a*.74),s.spec.y*(1-a*.58),-224+a*252);s.group.scale.setScalar(.76+a*2.65);s.cluster.material.uniforms.uSpinTime.value+=dt*.8;s.cluster.material.uniforms.uOpacity.value=Math.min(.62,env*(.18+a*.44));q.mat.opacity=this.cloudReady?Math.min(.14,env*(.05+a*.09)):0;this.maxPresence=Math.max(this.maxPresence,env);this.activeSectorCount++;}}
+ dispose(){for(const q of this.fastClouds)q.mat.dispose();this.fastTexture?.dispose();super.dispose();}
+}
