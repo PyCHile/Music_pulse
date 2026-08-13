@@ -55,11 +55,15 @@ jobs:
           test ! -e src/warp/CelestialFlybySystem.ts
           test ! -e runtime/space/ColorScience.js
           test ! -e src/space/ColorScience.ts
+          test ! -e src/spacekit
           test ! -e manifest.json
           test ! -e src/shaders/commonNoise.glsl
           test ! -e src/shaders/hazeFragment.glsl
           test ! -e assets/truecolor/Jupiter_Li2018_visible.txt
           test ! -e assets/truecolor/Mars_McCord1971_visible.txt
+          if grep -q '@react-three/drei' package.json; then
+            echo 'Unused Drei dependency reintroduced'; exit 1
+          fi
       - name: Reject placeholders in critical source
         run: |
           if grep -RniE 'TODO|placeholder|mock-only|fake shader' src runtime --include='*.ts' --include='*.tsx' --include='*.js' --include='*.glsl'; then
