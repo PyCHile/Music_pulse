@@ -27,7 +27,10 @@ target_include_directories(urux-celestia-bridge PRIVATE
   "${CELESTIA_BUILD_DIR}"
 )
 target_link_libraries(urux-celestia-bridge PRIVATE Eigen3::Eigen "${CELESTIA_LIBRARY}")
-set_target_properties(urux-celestia-bridge PROPERTIES BUILD_RPATH "${CELESTIA_BUILD_DIR}/src/celestia")
+set_target_properties(urux-celestia-bridge PROPERTIES
+  BUILD_RPATH "${CELESTIA_BUILD_DIR}/src/celestia"
+  INSTALL_RPATH "$ORIGIN/../lib"
+)
 
 install(TARGETS urux-celestia-bridge RUNTIME DESTINATION bin)
 install(FILES "${CELESTIA_LIBRARY}" DESTINATION lib)
