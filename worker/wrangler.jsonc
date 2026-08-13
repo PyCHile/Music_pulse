@@ -1,0 +1,18 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "urux-journey-api",
+  "main": "src/index.js",
+  "compatibility_date": "2026-08-12",
+  "workers_dev": true,
+  "vars": {
+    "ALLOWED_ORIGIN": "https://pychile.github.io"
+  },
+  "ratelimits": [
+    {
+      "name": "URUX_RATE_LIMITER",
+      "namespace_id": "12082601",
+      "simple": { "limit": 3, "period": 60 }
+    }
+  ],
+  "observability": { "enabled": true }
+}
