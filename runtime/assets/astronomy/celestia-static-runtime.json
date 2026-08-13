@@ -1,0 +1,426 @@
+{
+  "schema": "urux-celestia-static-runtime-v1",
+  "generatedAt": "2026-08-13T08:48:24.072921+00:00",
+  "engine": "Celestia",
+  "native": true,
+  "execution": "GitHub Actions ephemeral native sidecar",
+  "runtimeDelivery": "GitHub Pages static JSON",
+  "renderLoopDependency": false,
+  "capabilities": {
+    "ok": true,
+    "native": true,
+    "engine": "Celestia 1.7.0",
+    "sidecarVersion": "1.1.0",
+    "linkedLibrary": "libcelestia",
+    "modules": [
+      "celastro",
+      "celengine",
+      "celephem",
+      "celimage",
+      "celmath",
+      "celmodel",
+      "celrender",
+      "celscript",
+      "celutil"
+    ],
+    "nativeFunctions": [
+      "magToIrradiance",
+      "equatorialToCelestialCart",
+      "anomaly",
+      "meanEclipticObliquity"
+    ],
+    "renderLoopDependency": false
+  },
+  "constants": {
+    "engine": "Celestia",
+    "version": "1.7.0",
+    "native": true,
+    "j2000ObliquityDeg": 0.409092804028403,
+    "speedOfLightKmS": 299792.458,
+    "solarMassKg": 1.98840987069805e+30,
+    "earthMassKg": 5.97216786779138e+24,
+    "lunarMassKg": 7.346e+22,
+    "jupiterMassKg": 1.89812459733605e+27,
+    "solarTemperatureK": 5772,
+    "solarIrradianceWM2": 1361,
+    "earthRadiusKm": 6378.1,
+    "jupiterRadiusKm": 71492,
+    "solarRadiusKm": 695700
+  },
+  "photometryLut": [
+    {
+      "ok": true,
+      "magnitude": -8,
+      "irradiance": 1584.89392089844
+    },
+    {
+      "ok": true,
+      "magnitude": -4,
+      "irradiance": 39.8107261657715
+    },
+    {
+      "ok": true,
+      "magnitude": 0,
+      "irradiance": 1
+    },
+    {
+      "ok": true,
+      "magnitude": 2,
+      "irradiance": 0.158489301800728
+    },
+    {
+      "ok": true,
+      "magnitude": 4,
+      "irradiance": 0.0251188576221466
+    },
+    {
+      "ok": true,
+      "magnitude": 6,
+      "irradiance": 0.00398107012733817
+    },
+    {
+      "ok": true,
+      "magnitude": 8,
+      "irradiance": 0.000630957016255707
+    },
+    {
+      "ok": true,
+      "magnitude": 10,
+      "irradiance": 9.99999901978299e-05
+    },
+    {
+      "ok": true,
+      "magnitude": 12,
+      "irradiance": 1.58489201567136e-05
+    }
+  ],
+  "equatorialLut": [
+    {
+      "ok": true,
+      "raHours": 0,
+      "decDeg": 0,
+      "distance": 1,
+      "celestial": [
+        1,
+        1.04893225590937e-16,
+        8.80023210398574e-17
+      ]
+    },
+    {
+      "ok": true,
+      "raHours": 6,
+      "decDeg": -30,
+      "distance": 1,
+      "celestial": [
+        1.59086285808736e-16,
+        -0.803226153001235,
+        -0.595674195458252
+      ]
+    },
+    {
+      "ok": true,
+      "raHours": 12,
+      "decDeg": 0,
+      "distance": 1,
+      "celestial": [
+        -1,
+        -4.12477305794823e-17,
+        -2.49075120164924e-16
+      ]
+    },
+    {
+      "ok": true,
+      "raHours": 18,
+      "decDeg": 45,
+      "distance": 1,
+      "celestial": [
+        -2.16489014058873e-16,
+        0.930028711995425,
+        0.367486863525937
+      ]
+    },
+    {
+      "ok": true,
+      "raHours": 23.5,
+      "decDeg": -60,
+      "distance": 1,
+      "celestial": [
+        0.495722430686905,
+        -0.768602604588901,
+        0.404362841929156
+      ]
+    }
+  ],
+  "anomalyLut": [
+    {
+      "ok": true,
+      "meanAnomalyRad": 0,
+      "eccentricity": 0,
+      "trueAnomalyRad": 0,
+      "eccentricAnomalyRad": 0
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 0.785398163397448,
+      "eccentricity": 0,
+      "trueAnomalyRad": 0.785398163397448,
+      "eccentricAnomalyRad": 0.785398163397448
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 1.5707963267949,
+      "eccentricity": 0,
+      "trueAnomalyRad": 1.5707963267949,
+      "eccentricAnomalyRad": 1.5707963267949
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 3.14159265358979,
+      "eccentricity": 0,
+      "trueAnomalyRad": 3.14159265358979,
+      "eccentricAnomalyRad": 3.14159265358979
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 4.71238898038469,
+      "eccentricity": 0,
+      "trueAnomalyRad": -1.5707963267949,
+      "eccentricAnomalyRad": 4.71238898038469
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 0,
+      "eccentricity": 0.0167,
+      "trueAnomalyRad": 0,
+      "eccentricAnomalyRad": 0
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 0.785398163397448,
+      "eccentricity": 0.0167,
+      "trueAnomalyRad": 0.809366849531967,
+      "eccentricAnomalyRad": 0.797347101516109
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 1.5707963267949,
+      "eccentricity": 0.0167,
+      "trueAnomalyRad": 1.60419011926782,
+      "eccentricAnomalyRad": 1.58749399876671
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 3.14159265358979,
+      "eccentricity": 0.0167,
+      "trueAnomalyRad": 3.14159265358979,
+      "eccentricAnomalyRad": 3.14159265358979
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 4.71238898038469,
+      "eccentricity": 0.0167,
+      "trueAnomalyRad": -1.60419011926782,
+      "eccentricAnomalyRad": 4.69569130841288
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 0,
+      "eccentricity": 0.0934,
+      "trueAnomalyRad": 0,
+      "eccentricAnomalyRad": 0
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 0.785398163397448,
+      "eccentricity": 0.0934,
+      "trueAnomalyRad": 0.928825762898137,
+      "eccentricAnomalyRad": 0.85593219107987
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 1.5707963267949,
+      "eccentricity": 0.0934,
+      "trueAnomalyRad": 1.75652304230129,
+      "eccentricAnomalyRad": 1.66379274063253
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 3.14159265358979,
+      "eccentricity": 0.0934,
+      "trueAnomalyRad": 3.14159265358979,
+      "eccentricAnomalyRad": 3.14159265358979
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 4.71238898038469,
+      "eccentricity": 0.0934,
+      "trueAnomalyRad": -1.75652304230129,
+      "eccentricAnomalyRad": 4.61939256654706
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 0,
+      "eccentricity": 0.2056,
+      "trueAnomalyRad": 0,
+      "eccentricAnomalyRad": 0
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 0.785398163397448,
+      "eccentricity": 0.2056,
+      "trueAnomalyRad": 1.13276244751285,
+      "eccentricAnomalyRad": 0.952993665853929
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 1.5707963267949,
+      "eccentricity": 0.2056,
+      "trueAnomalyRad": 1.97105189102072,
+      "eccentricAnomalyRad": 1.77223888233884
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 3.14159265358979,
+      "eccentricity": 0.2056,
+      "trueAnomalyRad": 3.14159265358979,
+      "eccentricAnomalyRad": 3.14159265358979
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 4.71238898038469,
+      "eccentricity": 0.2056,
+      "trueAnomalyRad": -1.97105189102072,
+      "eccentricAnomalyRad": 4.51094642484075
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 0,
+      "eccentricity": 0.5,
+      "trueAnomalyRad": 0,
+      "eccentricAnomalyRad": 0
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 0.785398163397448,
+      "eccentricity": 0.5,
+      "trueAnomalyRad": 1.80382837101373,
+      "eccentricAnomalyRad": 1.2617030552531
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 1.5707963267949,
+      "eccentricity": 0.5,
+      "trueAnomalyRad": 2.44656087796867,
+      "eccentricAnomalyRad": 2.02097993808977
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 3.14159265358979,
+      "eccentricity": 0.5,
+      "trueAnomalyRad": 3.14159265358979,
+      "eccentricAnomalyRad": 3.14159265358979
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 4.71238898038469,
+      "eccentricity": 0.5,
+      "trueAnomalyRad": -2.44656087796867,
+      "eccentricAnomalyRad": 4.26220536908982
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 0,
+      "eccentricity": 0.9,
+      "trueAnomalyRad": 0,
+      "eccentricAnomalyRad": 0
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 0.785398163397448,
+      "eccentricity": 0.9,
+      "trueAnomalyRad": 2.73598562039344,
+      "eccentricAnomalyRad": 1.68003373578805
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 1.5707963267949,
+      "eccentricity": 0.9,
+      "trueAnomalyRad": 2.92692248787584,
+      "eccentricAnomalyRad": 2.26341510635694
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 3.14159265358979,
+      "eccentricity": 0.9,
+      "trueAnomalyRad": 3.14159265358979,
+      "eccentricAnomalyRad": 3.14159265358979
+    },
+    {
+      "ok": true,
+      "meanAnomalyRad": 4.71238898038469,
+      "eccentricity": 0.9,
+      "trueAnomalyRad": -2.92692248787584,
+      "eccentricAnomalyRad": 4.01977020082264
+    }
+  ],
+  "obliquityLut": [
+    {
+      "ok": true,
+      "julianDate": 2415020,
+      "meanEclipticObliquityRad": 0.422096301250626
+    },
+    {
+      "ok": true,
+      "julianDate": 2451545,
+      "meanEclipticObliquityRad": 0.409092804028403
+    },
+    {
+      "ok": true,
+      "julianDate": 2462502.5,
+      "meanEclipticObliquityRad": 0.405191552603404
+    },
+    {
+      "ok": true,
+      "julianDate": 2488070,
+      "meanEclipticObliquityRad": 0.396088973472848
+    }
+  ],
+  "content": {
+    "source": "CelestiaProject/CelestiaContent",
+    "sourceRef": "e4d5d2754b6224f04e440e53b189f9ee96b6d1fe",
+    "fingerprint": "7c476e563dbe9f0e47f0fb0139d0e3a7532659cbd3c849de8af11b28d38ea234",
+    "resourceFamilies": {
+      "solarSystem": 32,
+      "stars": 9,
+      "deepSky": 3,
+      "scripts": 0,
+      "models": 98,
+      "textures": 165
+    },
+    "counts": {
+      "celestiaModels": 66,
+      "deepSkyCatalogs": 3,
+      "jpegTextures": 86,
+      "legacyModels": 32,
+      "other": 303,
+      "pngTextures": 79,
+      "solarSystemCatalogs": 32,
+      "starCatalogs": 9
+    }
+  },
+  "usage": {
+    "photometry": true,
+    "coordinateTransforms": true,
+    "orbitalAnomaly": true,
+    "precessionObliquitySupport": true,
+    "physicalConstants": true,
+    "solarSystemCatalogs": true,
+    "starCatalogs": true,
+    "deepSkyCatalogs": true,
+    "models": true,
+    "textures": true,
+    "scripts": false,
+    "nativeRenderer": false,
+    "nativeRendererReason": "Three.js/postprocessing is the active URUX renderer; duplicating Celestia OpenGL rendering would replace rather than enhance the existing visual pipeline."
+  }
+}

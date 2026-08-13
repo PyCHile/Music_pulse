@@ -1,12 +1,14 @@
 {
-  "schema": "urux-celestia-native-v2",
-  "generatedAt": "2026-08-13T08:09:49.051677+00:00",
+  "schema": "urux-celestia-native-v5",
+  "generatedAt": "2026-08-13T08:48:24.108258+00:00",
   "source": "CelestiaProject/Celestia",
   "sourceRef": "84153ded046fbea46c9f411dd0232e5426373ead",
   "contentSource": "CelestiaProject/CelestiaContent",
   "contentRef": "e4d5d2754b6224f04e440e53b189f9ee96b6d1fe",
   "nativeBuildVerified": true,
   "sidecarBinaryVerified": true,
+  "ephemeralSidecarExecuted": true,
+  "staticRuntimeActive": true,
   "runtimeActive": false,
   "serviceUrl": null,
   "sharedLibrary": {
@@ -15,7 +17,7 @@
   },
   "sidecarBinary": {
     "path": "/home/runner/work/Music_pulse/Music_pulse/build/urux-celestia-sidecar",
-    "bytes": 65200
+    "bytes": 204552
   },
   "compiledSubsystems": [
     "cel3ds",
@@ -33,20 +35,39 @@
     "celx",
     "tools"
   ],
+  "headlessUses": [
+    "photometry",
+    "physical constants",
+    "equatorial coordinate conversion",
+    "orbital anomaly solving",
+    "mean ecliptic obliquity",
+    "CelestiaContent catalog indexing",
+    "star/deep-sky/solar-system/model/texture/script resource discovery"
+  ],
   "optionalSubsystems": {
     "spice": false,
     "ffmpeg": false,
     "miniaudio": false,
     "avif": false
   },
-  "browserEmbedding": "not-direct",
-  "integrationMode": "cloudflare-native-container-sidecar",
-  "verifiedEndpoints": [
-    "/ready",
-    "/v1/capabilities",
-    "/v1/content",
-    "/v1/astro",
-    "/v1/orbit"
+  "browserEmbedding": "static-precompute",
+  "integrationMode": "github-actions-static-precompute",
+  "staticAssets": [
+    "celestia-static-runtime.json",
+    "celestia-content-index.json"
   ],
-  "note": "Literal libcelestia and the URUX native sidecar binary were compiled and /ready was executed successfully. Production runtime is marked active only by the live Worker diagnostic."
+  "verifiedEndpoints": [
+    "/health",
+    "/v1/capabilities",
+    "/v1/constants",
+    "/v1/photometry",
+    "/v1/equatorial",
+    "/v1/anomaly",
+    "/v1/obliquity"
+  ],
+  "rendering": {
+    "celestiaNativeRenderer": false,
+    "reason": "Three.js + postprocessing is the existing URUX renderer and is better integrated for the interactive journey; Celestia native rendering would replace rather than augment that renderer."
+  },
+  "note": "Literal libcelestia is compiled and executed in GitHub Actions. Native calculations and official CelestiaContent inventory are exported to static assets consumed from GitHub Pages; no permanent server or paid container is required."
 }
