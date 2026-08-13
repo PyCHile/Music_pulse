@@ -4,7 +4,10 @@ on:
   push:
     paths:
       - "native/celestia/**"
+      - "native/celestia-sidecar/**"
       - "science/index_celestia_content.py"
+      - "wrangler.jsonc"
+      - "worker/src/entry.js"
       - ".github/workflows/celestia-native.yml"
   workflow_dispatch:
 
@@ -45,14 +48,14 @@ jobs:
             libepoxy-dev libeigen3-dev libfmt-dev libpng-dev libjpeg-dev \
             libfreetype6-dev gperf libboost-dev liblua5.4-dev gettext
 
-      - name: Build complete Celestia shared library and tools
+      - name: Build complete Celestia shared library, tools and sidecar
         env:
           CELESTIA_SOURCE_REF: 84153ded046fbea46c9f411dd0232e5426373ead
           CELESTIA_CONTENT_REF: e4d5d2754b6224f04e440e53b189f9ee96b6d1fe
           CELESTIA_BUILD_JOBS: "2"
         run: bash native/celestia/build.sh
 
-      - name: Verify native manifest
+      - name: Verify native manifest and executed sidecar
         run: |
           python - <<'PY'
           import json
@@ -60,10 +63,13 @@ jobs:
           p=Path('runtime/assets/astronomy/celestia-native-manifest.json')
           d=json.loads(p.read_text())
           assert d['nativeBuildVerified'] is True
+          assert d['sidecarBinaryVerified'] is True
           assert d['runtimeActive'] is False
           assert 'celengine' in d['compiledSubsystems']
           assert 'celephem' in d['compiledSubsystems']
           assert 'celrender' in d['compiledSubsystems']
+          assert '/ready' in d['verifiedEndpoints']
+          assert Path('build/urux-celestia-sidecar').exists()
           print(json.dumps(d, indent=2))
           PY
 
@@ -73,6 +79,7 @@ jobs:
           name: urux-celestia-native
           path: |
             build/celestia/src/celestia/libcelestia.so*
+            build/urux-celestia-sidecar
             runtime/assets/astronomy/celestia-native-manifest.json
             runtime/assets/astronomy/celestia-content-index.json
           if-no-files-found: error
@@ -86,6 +93,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No Celestia metadata changes"
           else
-            git commit -m "build: verify literal Celestia engine"
-            git push
+            git commit -m "build: verify literal Celestia engine and sidecar"
+            git pull --rebase --autostash origin main
+            git push origin HEAD:main
           fi
