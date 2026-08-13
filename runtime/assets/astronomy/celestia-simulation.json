@@ -1,0 +1,22 @@
+{
+  "schema":"urux-celestia-simulation-v1",
+  "native":true,
+  "engine":"Celestia 1.7.0",
+  "api":"CelestiaCore + Simulation + Universe",
+  "simulationInitialized":true,
+  "epochJD":2451545,
+  "catalogCounts":{"stars":2483179,"deepSky":17609,"solarSystems":4782},
+  "objects":[
+    {"name":"Sol","found":true,"type":"star","radiusKm":695901,"velocityKmPerSec":[804.918457455933,-14.2178087448701,1108.26885357499]},
+    {"name":"Sol/Earth","found":true,"type":"body","radiusKm":6378.13671875,"velocityKmPerSec":[-2573419.58565038,-9.67038857049374,473672.957769781]},
+    {"name":"Sol/Moon","found":false},
+    {"name":"Sol/Mars","found":true,"type":"body","radiusKm":3396.18994140625,"velocityKmPerSec":[101248.309413381,45110.7440562034,-2270872.42874891]},
+    {"name":"Sol/Jupiter","found":true,"type":"body","radiusKm":71488,"velocityKmPerSec":[-682606.871303134,11291.4562700177,-962776.915396303]},
+    {"name":"Sol/Saturn","found":true,"type":"body","radiusKm":60268,"velocityKmPerSec":[-641327.846225314,15394.0034885192,-580879.399107546]},
+    {"name":"Sirius","found":true,"type":"star","radiusKm":0.00100000004749745,"velocityKmPerSec":[0,0,0]},
+    {"name":"M 31","found":true,"type":"deep-sky","radiusKm":6.69441296703685e+17,"velocityKmPerSec":[0,0,0]}
+  ],
+  "objectsFound":7,
+  "renderingInvoked":false,
+  "renderingReason":"URUX keeps Three.js/postprocessing as the superior integrated interactive renderer while Celestia provides literal simulation, universe, catalogs, ephemeris/orbit models and physical astronomy data."
+}

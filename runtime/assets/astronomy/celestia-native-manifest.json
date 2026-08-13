@@ -1,6 +1,6 @@
 {
-  "schema": "urux-celestia-native-v5",
-  "generatedAt": "2026-08-13T08:48:24.108258+00:00",
+  "schema": "urux-celestia-native-v7",
+  "generatedAt": "2026-08-13T09:07:11.771394+00:00",
   "source": "CelestiaProject/Celestia",
   "sourceRef": "84153ded046fbea46c9f411dd0232e5426373ead",
   "contentSource": "CelestiaProject/CelestiaContent",
@@ -8,9 +8,14 @@
   "nativeBuildVerified": true,
   "sidecarBinaryVerified": true,
   "ephemeralSidecarExecuted": true,
+  "simulationInitialized": true,
   "staticRuntimeActive": true,
   "runtimeActive": false,
   "serviceUrl": null,
+  "abi": {
+    "celx": true,
+    "probeMatchesLibrary": true
+  },
   "sharedLibrary": {
     "path": "/home/runner/work/Music_pulse/Music_pulse/build/celestia/src/celestia/libcelestia.so.1.7.0",
     "bytes": 4504264
@@ -35,14 +40,35 @@
     "celx",
     "tools"
   ],
+  "executedHighLevelAPIs": [
+    "CelestiaCore::initSimulation",
+    "CelestiaCore::getSimulation",
+    "Simulation::getUniverse",
+    "Simulation::findObjectFromPath",
+    "Selection::getVelocity",
+    "StarDatabase::size",
+    "DSODatabase::size",
+    "SolarSystemCatalog::size"
+  ],
+  "catalogCounts": {
+    "stars": 2483179,
+    "deepSky": 17609,
+    "solarSystems": 4782
+  },
+  "objectsFound": 7,
   "headlessUses": [
+    "Simulation/Universe initialization",
+    "star catalog",
+    "deep-sky catalog",
+    "solar-system catalog",
+    "object lookup",
+    "ephemeris velocity",
     "photometry",
     "physical constants",
     "equatorial coordinate conversion",
     "orbital anomaly solving",
     "mean ecliptic obliquity",
-    "CelestiaContent catalog indexing",
-    "star/deep-sky/solar-system/model/texture/script resource discovery"
+    "CelestiaContent resource discovery"
   ],
   "optionalSubsystems": {
     "spice": false,
@@ -53,6 +79,7 @@
   "browserEmbedding": "static-precompute",
   "integrationMode": "github-actions-static-precompute",
   "staticAssets": [
+    "celestia-simulation.json",
     "celestia-static-runtime.json",
     "celestia-content-index.json"
   ],
@@ -67,7 +94,7 @@
   ],
   "rendering": {
     "celestiaNativeRenderer": false,
-    "reason": "Three.js + postprocessing is the existing URUX renderer and is better integrated for the interactive journey; Celestia native rendering would replace rather than augment that renderer."
+    "reason": "Three.js + postprocessing is the existing URUX renderer and is better integrated for this interactive experience; Celestia native OpenGL rendering would replace, not augment, that project-specific pipeline."
   },
-  "note": "Literal libcelestia is compiled and executed in GitHub Actions. Native calculations and official CelestiaContent inventory are exported to static assets consumed from GitHub Pages; no permanent server or paid container is required."
+  "note": "Literal libcelestia is compiled and both CelestiaCore/Simulation/Universe plus native astronomy functions are executed in GitHub Actions. Results are exported as static Pages assets, requiring no permanent server or paid container."
 }
