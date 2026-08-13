@@ -1,0 +1,10 @@
+# URUX
+
+URUX es una experiencia visual que representa el tránsito cósmico del alma.
+Proyecto: Data Governance Mesh con arquitectura agentica.
+Contacto: habidomix@gmail.com
+
+## Estructura del proyecto
+- /index.html — experiencia Three.js principal
+- /AGENTS.md — instrucciones para agentes de IA
+- /sitemap.xml — mapa del sitio
