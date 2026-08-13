@@ -1,1 +1,1 @@
-const m=/iPad|iPhone|iPod|Android/i.test(navigator.userAgent||'')||innerWidth<800;export const CinematicEncounterSystem=m?(await import('./MobileCinematicEncounterSystemV50.js?v=20260813-50')).CinematicEncounterSystem:(await import('./CinematicEncounterSystem.js?v=20260813-46')).CinematicEncounterSystem;
+export { CinematicEncounterSystem } from './MobileCinematicEncounterSystemV50.js?v=20260813-51';
