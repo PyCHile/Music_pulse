@@ -28,6 +28,8 @@ jobs:
           test -f package.json
           test -f vite.config.ts
           test -f tsconfig.json
+          test -f index.html
+          test -f manifest-urux.json
           test -f src/main.tsx
           test -f src/App.tsx
           test -f src/audio/AudioEngine.ts
@@ -41,11 +43,27 @@ jobs:
           test -f src/warp/StreakController.ts
           test -f src/performance/AdaptiveQualityManager.ts
           test -f runtime/main.js
+          test -f runtime/spacekit/SpaceKitAstronomicalLayer.js
           test -f tests/e2e/runtime-warp-continuity.spec.ts
+          test -f tests/e2e/spacekit-astronomical-layer.spec.ts
+      - name: Reject deprecated URUX files
+        run: |
+          test ! -e runtime/warp/EtherealFiguresSystem.js
+          test ! -e src/warp/EtherealFiguresSystem.ts
+          test ! -e assets/ethereal
+          test ! -e runtime/warp/CelestialFlybySystem.js
+          test ! -e src/warp/CelestialFlybySystem.ts
+          test ! -e runtime/space/ColorScience.js
+          test ! -e src/space/ColorScience.ts
+          test ! -e manifest.json
+          test ! -e src/shaders/commonNoise.glsl
+          test ! -e src/shaders/hazeFragment.glsl
+          test ! -e assets/truecolor/Jupiter_Li2018_visible.txt
+          test ! -e assets/truecolor/Mars_McCord1971_visible.txt
       - name: Reject placeholders in critical source
         run: |
           if grep -RniE 'TODO|placeholder|mock-only|fake shader' src runtime --include='*.ts' --include='*.tsx' --include='*.js' --include='*.glsl'; then
-            echo 'Critical placeholder marker detected'; exit 1;
+            echo 'Critical placeholder marker detected'; exit 1
           fi
       - name: TypeScript
         run: npm run typecheck
