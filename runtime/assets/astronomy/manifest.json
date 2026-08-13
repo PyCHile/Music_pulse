@@ -1,0 +1,27 @@
+{
+  "schema": "urux-astronomy-assets-v1",
+  "generatedAt": null,
+  "pendingPipeline": true,
+  "target": "M 42",
+  "libraries": {},
+  "capabilities": {
+    "astroquery.simbad": false,
+    "astroquery.gaia": false,
+    "astroquery.jplhorizons": false,
+    "astroquery.skyview": false,
+    "astropy.visualization": false,
+    "astropy.wcsaxes": false,
+    "reproject.interp": false,
+    "reproject.adaptive": false,
+    "reproject.exact": false,
+    "aplpy": false,
+    "spectral-cube": false
+  },
+  "provenance": [],
+  "files": {},
+  "errors": {
+    "pipeline": {
+      "message": "Awaiting first URUX Astronomy Assets workflow run"
+    }
+  }
+}
