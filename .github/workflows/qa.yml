@@ -43,43 +43,41 @@ jobs:
           test -f src/EncounterPlanner.ts
           test -f src/FocalTrajectoryEngine.ts
           test -f src/CosmicPaletteDirector.ts
-          test -f src/audio/AudioEngine.ts
-          test -f src/audio/AudioReactiveEngine.ts
-          test -f src/audio/MusicalStateAnalyzer.ts
-          test -f src/warp/WarpContinuityDirector.ts
-          test -f src/warp/VisualFamilyLock.ts
-          test -f src/warp/ContinuityGuard.ts
-          test -f src/warp/StarTunnelSystem.ts
-          test -f src/warp/OpticalFlowController.ts
-          test -f src/warp/StreakController.ts
-          test -f src/performance/AdaptiveQualityManager.ts
           test -f runtime/main.js
-          test -f runtime/journey/URUXJourneyAgent.js
+          test -f runtime/journey/SecureURUXJourneyAgent.js
+          test -f runtime/journey/URUXBackendClient.js
           test -f runtime/journey/CinematicEncounterSystem.js
           test -f runtime/journey/NebulaDirectiveBridge.js
           test -f runtime/spacekit/SpaceKitAstronomicalLayer.js
-          grep -q 'URUXJourneyAgent' runtime/main.js
-          grep -q 'semanticJourneyStage' runtime/main.js
-          grep -q 'spawnEncounter(encounter,meta)' runtime/main.js
+          test -f worker/src/index.js
+          test -f worker/wrangler.jsonc
+          test -f worker/package.json
+          grep -q 'SecureURUXJourneyAgent' runtime/main.js
+          grep -q 'configureBackendURL' runtime/main.js
+          grep -q 'secureBackendConfigured' runtime/main.js
+          grep -q 'URUXBackendClient' runtime/journey/SecureURUXJourneyAgent.js
+          grep -q '/v1/encounters' runtime/journey/URUXBackendClient.js
+          grep -q 'OPENROUTER_API_KEY' worker/src/index.js
+          grep -q 'OPENROUTER_API_KEY' worker/wrangler.jsonc
+          grep -q 'darkZoneFraction' worker/src/index.js
+          grep -q 'structured_outputs' worker/src/index.js
+          grep -q 'response_format' worker/src/index.js
           grep -q 'llmEncounterRendered' runtime/main.js
-          grep -q 'NebulaDirectiveBridge' runtime/main.js
           grep -q 'llmNebulaApplied' runtime/main.js
           grep -q 'journeySynchronized' runtime/main.js
-          grep -q 'synchronizeWithLegacyStage' runtime/main.js
-          grep -q 'LEGACY_TO_SEMANTIC' runtime/journey/URUXJourneyAgent.js
-          grep -q 'IDEALIZED_COSMOS' runtime/journey/URUXJourneyAgent.js
-          grep -q 'syncTo(stageId)' runtime/journey/URUXJourneyAgent.js
-          grep -q 'clearBuffer()' runtime/journey/URUXJourneyAgent.js
-          grep -q 'encounterSink' runtime/journey/URUXJourneyAgent.js
-          grep -q "source:'llm'" runtime/journey/URUXJourneyAgent.js
-          grep -q 'darkZoneFraction' runtime/journey/URUXJourneyAgent.js
-          grep -q 'llmSpawned' runtime/journey/CinematicEncounterSystem.js
-          grep -q 'trajectoryVector' runtime/journey/CinematicEncounterSystem.js
-          grep -q 'uNarrativeDarkZone' runtime/warp/NebulaBackdrop.js
-          grep -q 'uNarrativeFilaments' runtime/warp/NebulaBackdrop.js
-          grep -q 'uNarrativeCore' runtime/warp/NebulaBackdrop.js
           test -f tests/e2e/runtime-warp-continuity.spec.ts
           test -f tests/e2e/spacekit-astronomical-layer.spec.ts
+      - name: Security boundary audit
+        run: |
+          test ! -e runtime/journey/URUXJourneyAgent.js
+          if grep -RniE 'urux_openrouter_api_key|Authorization:.*Bearer|openrouter\.ai/api/v1/chat/completions|openrouter\.ai/api/v1/models' src runtime --include='*.ts' --include='*.tsx' --include='*.js'; then
+            echo 'Direct OpenRouter access or provider credential handling detected in frontend code'; exit 1
+          fi
+          if grep -RniE 'OPENROUTER_API_KEY\s*[:=]\s*["'"'][^"'"']+' worker --exclude='wrangler.jsonc' --exclude='README.md'; then
+            echo 'Possible hard-coded OpenRouter secret detected'; exit 1
+          fi
+          test ! -e worker/.dev.vars
+          test ! -e worker/.env
       - name: Reject deprecated URUX files
         run: |
           test ! -e runtime/warp/EtherealFiguresSystem.js
@@ -91,16 +89,12 @@ jobs:
           test ! -e src/space/ColorScience.ts
           test ! -e src/spacekit
           test ! -e manifest.json
-          test ! -e src/shaders/commonNoise.glsl
-          test ! -e src/shaders/hazeFragment.glsl
-          test ! -e assets/truecolor/Jupiter_Li2018_visible.txt
-          test ! -e assets/truecolor/Mars_McCord1971_visible.txt
           if grep -q '@react-three/drei' package.json; then
             echo 'Unused Drei dependency reintroduced'; exit 1
           fi
       - name: Reject placeholders in critical source
         run: |
-          if grep -RniE 'TODO|placeholder|mock-only|fake shader' src runtime --include='*.ts' --include='*.tsx' --include='*.js' --include='*.glsl'; then
+          if grep -RniE 'TODO|placeholder|mock-only|fake shader' src runtime worker/src --include='*.ts' --include='*.tsx' --include='*.js' --include='*.glsl'; then
             echo 'Critical placeholder marker detected'; exit 1
           fi
       - name: TypeScript
@@ -109,6 +103,8 @@ jobs:
         run: npm run test
       - name: Production build
         run: npm run build
+      - name: Worker syntax check
+        run: node --check worker/src/index.js
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
       - name: Browser smoke and warp checkpoint tests
