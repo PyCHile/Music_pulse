@@ -1,5 +1,5 @@
 {
-  "version": "2026.08.13.47",
-  "build": "URUX-20260813-47-IOS-FRAME-STABILITY",
-  "releasedAt": "2026-08-13T17:42:00Z"
+  "version": "2026.08.13.48",
+  "build": "URUX-20260813-48-IOS-JANK-ROOTCAUSE",
+  "releasedAt": "2026-08-13T17:49:00Z"
 }
