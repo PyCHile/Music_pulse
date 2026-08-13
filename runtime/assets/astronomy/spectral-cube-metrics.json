@@ -1,0 +1,16 @@
+{
+  "source": "http://data.astropy.org/tutorials/FITS-cubes/reduced_TAN_C14.fits",
+  "shape": [
+    450,
+    150,
+    150
+  ],
+  "unit": "K",
+  "slabShape": [
+    226,
+    150,
+    150
+  ],
+  "moment0Unit": "K km / s",
+  "moment1Unit": "km / s"
+}

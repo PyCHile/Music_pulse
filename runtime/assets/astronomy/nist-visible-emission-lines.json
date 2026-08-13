@@ -1,0 +1,3088 @@
+{
+  "source": "NIST Atomic Spectra Database via astroquery.nist",
+  "queriedAt": "2026-08-13T08:24:34.954524+00:00",
+  "rangeNm": [
+    400,
+    700
+  ],
+  "species": [
+    "H I",
+    "O III",
+    "N II",
+    "S II"
+  ],
+  "records": [
+    {
+      "wavelengthNm": 400.5006,
+      "relativeIntensity": "4500",
+      "spectrum": "S II",
+      "transition": 24968.75
+    },
+    {
+      "wavelengthNm": 400.8906,
+      "relativeIntensity": "920",
+      "spectrum": "S II",
+      "transition": 24944.46
+    },
+    {
+      "wavelengthNm": 401.0494,
+      "relativeIntensity": "920",
+      "spectrum": "S II",
+      "transition": 24934.58
+    },
+    {
+      "wavelengthNm": 402.9888,
+      "relativeIntensity": "13000",
+      "spectrum": "S II",
+      "transition": 24814.58
+    },
+    {
+      "wavelengthNm": 403.3919,
+      "relativeIntensity": "7800",
+      "spectrum": "S II",
+      "transition": 24789.79
+    },
+    {
+      "wavelengthNm": 403.622,
+      "relativeIntensity": "360",
+      "spectrum": "N II",
+      "transition": 24775.7
+    },
+    {
+      "wavelengthNm": 404.245,
+      "relativeIntensity": "550",
+      "spectrum": "N II",
+      "transition": 24737.5
+    },
+    {
+      "wavelengthNm": 404.467,
+      "relativeIntensity": "360",
+      "spectrum": "N II",
+      "transition": 24723.9
+    },
+    {
+      "wavelengthNm": 404.7883,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 24704.27
+    },
+    {
+      "wavelengthNm": 405.1219,
+      "relativeIntensity": "2500",
+      "spectrum": "S II",
+      "transition": 24683.93
+    },
+    {
+      "wavelengthNm": 405.9827,
+      "relativeIntensity": "310",
+      "spectrum": "S II",
+      "transition": 24631.59
+    },
+    {
+      "wavelengthNm": 406.5552,
+      "relativeIntensity": "1800",
+      "spectrum": "S II",
+      "transition": 24596.91
+    },
+    {
+      "wavelengthNm": 406.9746,
+      "relativeIntensity": null,
+      "spectrum": "S II",
+      "transition": 24571.56
+    },
+    {
+      "wavelengthNm": 406.975,
+      "relativeIntensity": null,
+      "spectrum": "S II",
+      "transition": 24571.54
+    },
+    {
+      "wavelengthNm": 407.3793,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 24547.15
+    },
+    {
+      "wavelengthNm": 407.5134,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 24539.07
+    },
+    {
+      "wavelengthNm": 407.7494,
+      "relativeIntensity": null,
+      "spectrum": "S II",
+      "transition": 24524.87
+    },
+    {
+      "wavelengthNm": 407.75,
+      "relativeIntensity": null,
+      "spectrum": "S II",
+      "transition": 24524.83
+    },
+    {
+      "wavelengthNm": 408.2172,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 24496.76
+    },
+    {
+      "wavelengthNm": 408.5413,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 24477.33
+    },
+    {
+      "wavelengthNm": 409.045,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 24447.19
+    },
+    {
+      "wavelengthNm": 410.0023,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 24390.11
+    },
+    {
+      "wavelengthNm": 410.285985517,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 24373.2429403
+    },
+    {
+      "wavelengthNm": 410.286191087,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 24373.2307283
+    },
+    {
+      "wavelengthNm": 410.28632,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 24373.223
+    },
+    {
+      "wavelengthNm": 410.286503488,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 24373.2121704
+    },
+    {
+      "wavelengthNm": 410.286579132,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 24373.2076763
+    },
+    {
+      "wavelengthNm": 410.286785081,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 24373.1954423
+    },
+    {
+      "wavelengthNm": 410.28680725,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 24373.1941249
+    },
+    {
+      "wavelengthNm": 410.2892,
+      "relativeIntensity": "70000",
+      "spectrum": "H I",
+      "transition": 24373.05
+    },
+    {
+      "wavelengthNm": 410.28922,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 24373.051
+    },
+    {
+      "wavelengthNm": 410.292068748,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 24372.8815683
+    },
+    {
+      "wavelengthNm": 410.29208,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 24372.881
+    },
+    {
+      "wavelengthNm": 410.292144772,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 24372.8770522
+    },
+    {
+      "wavelengthNm": 410.292350348,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 24372.8648402
+    },
+    {
+      "wavelengthNm": 410.4061,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 24366.11
+    },
+    {
+      "wavelengthNm": 410.4224,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 24365.14
+    },
+    {
+      "wavelengthNm": 410.8144,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 24341.89
+    },
+    {
+      "wavelengthNm": 410.9178,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 24335.77
+    },
+    {
+      "wavelengthNm": 411.0747,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 24326.48
+    },
+    {
+      "wavelengthNm": 411.2199,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 24317.89
+    },
+    {
+      "wavelengthNm": 411.3231,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 24311.79
+    },
+    {
+      "wavelengthNm": 411.5496,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 24298.41
+    },
+    {
+      "wavelengthNm": 411.976,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 24273.26
+    },
+    {
+      "wavelengthNm": 412.2754,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 24255.63
+    },
+    {
+      "wavelengthNm": 412.4288,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 24246.61
+    },
+    {
+      "wavelengthNm": 412.5244,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 24240.99
+    },
+    {
+      "wavelengthNm": 413.4839,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 24184.74
+    },
+    {
+      "wavelengthNm": 414.3424,
+      "relativeIntensity": "13000",
+      "spectrum": "S II",
+      "transition": 24134.63
+    },
+    {
+      "wavelengthNm": 414.6236,
+      "relativeIntensity": "16000",
+      "spectrum": "S II",
+      "transition": 24118.26
+    },
+    {
+      "wavelengthNm": 414.6943,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 24114.15
+    },
+    {
+      "wavelengthNm": 414.8079,
+      "relativeIntensity": "4500",
+      "spectrum": "S II",
+      "transition": 24107.54
+    },
+    {
+      "wavelengthNm": 415.4235,
+      "relativeIntensity": "20000",
+      "spectrum": "S II",
+      "transition": 24071.82
+    },
+    {
+      "wavelengthNm": 416.3479,
+      "relativeIntensity": "2500",
+      "spectrum": "S II",
+      "transition": 24018.37
+    },
+    {
+      "wavelengthNm": 416.3839,
+      "relativeIntensity": "25000",
+      "spectrum": "S II",
+      "transition": 24016.3
+    },
+    {
+      "wavelengthNm": 416.6274,
+      "relativeIntensity": "1800",
+      "spectrum": "S II",
+      "transition": 24002.26
+    },
+    {
+      "wavelengthNm": 416.9545,
+      "relativeIntensity": "5900*",
+      "spectrum": "S II",
+      "transition": 23983.43
+    },
+    {
+      "wavelengthNm": 416.9545,
+      "relativeIntensity": "5900*",
+      "spectrum": "S II",
+      "transition": 23983.43
+    },
+    {
+      "wavelengthNm": 417.2943,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 23963.9
+    },
+    {
+      "wavelengthNm": 417.5179,
+      "relativeIntensity": "7700",
+      "spectrum": "S II",
+      "transition": 23951.07
+    },
+    {
+      "wavelengthNm": 417.5442,
+      "relativeIntensity": "13000",
+      "spectrum": "S II",
+      "transition": 23949.56
+    },
+    {
+      "wavelengthNm": 417.734,
+      "relativeIntensity": "285",
+      "spectrum": "N II",
+      "transition": 23938.7
+    },
+    {
+      "wavelengthNm": 418.1812,
+      "relativeIntensity": "370",
+      "spectrum": "S II",
+      "transition": 23913.08
+    },
+    {
+      "wavelengthNm": 418.7097,
+      "relativeIntensity": "1800",
+      "spectrum": "S II",
+      "transition": 23882.9
+    },
+    {
+      "wavelengthNm": 418.8155,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 23876.86
+    },
+    {
+      "wavelengthNm": 419.0778,
+      "relativeIntensity": null,
+      "spectrum": "S II",
+      "transition": 23861.92
+    },
+    {
+      "wavelengthNm": 419.0857,
+      "relativeIntensity": "5900",
+      "spectrum": "S II",
+      "transition": 23861.47
+    },
+    {
+      "wavelengthNm": 419.3046,
+      "relativeIntensity": "83",
+      "spectrum": "S II",
+      "transition": 23849.01
+    },
+    {
+      "wavelengthNm": 419.4675,
+      "relativeIntensity": "2500",
+      "spectrum": "S II",
+      "transition": 23839.75
+    },
+    {
+      "wavelengthNm": 421.4704,
+      "relativeIntensity": "310",
+      "spectrum": "S II",
+      "transition": 23726.46
+    },
+    {
+      "wavelengthNm": 421.8367,
+      "relativeIntensity": "4500",
+      "spectrum": "S II",
+      "transition": 23705.86
+    },
+    {
+      "wavelengthNm": 421.8481,
+      "relativeIntensity": "1300",
+      "spectrum": "S II",
+      "transition": 23705.22
+    },
+    {
+      "wavelengthNm": 421.9491,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 23699.54
+    },
+    {
+      "wavelengthNm": 422.893,
+      "relativeIntensity": "285",
+      "spectrum": "N II",
+      "transition": 23646.6
+    },
+    {
+      "wavelengthNm": 423.2143,
+      "relativeIntensity": "4500",
+      "spectrum": "S II",
+      "transition": 23628.69
+    },
+    {
+      "wavelengthNm": 423.7548,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 23598.55
+    },
+    {
+      "wavelengthNm": 423.81,
+      "relativeIntensity": "285",
+      "spectrum": "N II",
+      "transition": 23595.5
+    },
+    {
+      "wavelengthNm": 423.824,
+      "relativeIntensity": "220",
+      "spectrum": "N II",
+      "transition": 23594.7
+    },
+    {
+      "wavelengthNm": 424.0677,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 23581.14
+    },
+    {
+      "wavelengthNm": 424.297,
+      "relativeIntensity": "450",
+      "spectrum": "N II",
+      "transition": 23568.4
+    },
+    {
+      "wavelengthNm": 425.1069,
+      "relativeIntensity": "450",
+      "spectrum": "S II",
+      "transition": 23523.49
+    },
+    {
+      "wavelengthNm": 425.621,
+      "relativeIntensity": "230",
+      "spectrum": "S II",
+      "transition": 23495.1
+    },
+    {
+      "wavelengthNm": 425.8577,
+      "relativeIntensity": "4500",
+      "spectrum": "S II",
+      "transition": 23482.02
+    },
+    {
+      "wavelengthNm": 426.0345,
+      "relativeIntensity": "3300",
+      "spectrum": "S II",
+      "transition": 23472.28
+    },
+    {
+      "wavelengthNm": 426.896,
+      "relativeIntensity": "13000",
+      "spectrum": "S II",
+      "transition": 23424.91
+    },
+    {
+      "wavelengthNm": 427.0926,
+      "relativeIntensity": "5900",
+      "spectrum": "S II",
+      "transition": 23414.13
+    },
+    {
+      "wavelengthNm": 427.9704,
+      "relativeIntensity": "5900",
+      "spectrum": "S II",
+      "transition": 23366.1
+    },
+    {
+      "wavelengthNm": 428.38,
+      "relativeIntensity": "5900",
+      "spectrum": "S II",
+      "transition": 23343.76
+    },
+    {
+      "wavelengthNm": 428.7383,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 23324.25
+    },
+    {
+      "wavelengthNm": 429.2639,
+      "relativeIntensity": "1800",
+      "spectrum": "S II",
+      "transition": 23295.69
+    },
+    {
+      "wavelengthNm": 429.5606,
+      "relativeIntensity": "16000",
+      "spectrum": "S II",
+      "transition": 23279.6
+    },
+    {
+      "wavelengthNm": 431.986,
+      "relativeIntensity": "5900",
+      "spectrum": "S II",
+      "transition": 23148.9
+    },
+    {
+      "wavelengthNm": 432.028,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 23146.65
+    },
+    {
+      "wavelengthNm": 433.4797,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 23069.13
+    },
+    {
+      "wavelengthNm": 433.5047,
+      "relativeIntensity": "1300",
+      "spectrum": "S II",
+      "transition": 23067.8
+    },
+    {
+      "wavelengthNm": 434.1647191,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 23032.73288
+    },
+    {
+      "wavelengthNm": 434.16512,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 23032.712
+    },
+    {
+      "wavelengthNm": 434.1651159,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 23032.71183
+    },
+    {
+      "wavelengthNm": 434.1653824,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 23032.69769
+    },
+    {
+      "wavelengthNm": 434.1657811,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 23032.67654
+    },
+    {
+      "wavelengthNm": 434.1658238,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 23032.67427
+    },
+    {
+      "wavelengthNm": 434.16837,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 23032.539
+    },
+    {
+      "wavelengthNm": 434.1692,
+      "relativeIntensity": "90000",
+      "spectrum": "H I",
+      "transition": 23032.49
+    },
+    {
+      "wavelengthNm": 434.171469,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 23032.374795
+    },
+    {
+      "wavelengthNm": 434.1715,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 23032.3733
+    },
+    {
+      "wavelengthNm": 434.1716161,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 23032.366992
+    },
+    {
+      "wavelengthNm": 434.172013,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 23032.34594
+    },
+    {
+      "wavelengthNm": 434.4029,
+      "relativeIntensity": "640",
+      "spectrum": "S II",
+      "transition": 23020.1
+    },
+    {
+      "wavelengthNm": 434.4034,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 23020.08
+    },
+    {
+      "wavelengthNm": 435.3448,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 22970.3
+    },
+    {
+      "wavelengthNm": 435.8018,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 22946.21
+    },
+    {
+      "wavelengthNm": 435.8091,
+      "relativeIntensity": "640",
+      "spectrum": "S II",
+      "transition": 22945.83
+    },
+    {
+      "wavelengthNm": 436.379,
+      "relativeIntensity": "210",
+      "spectrum": "S II",
+      "transition": 22915.86
+    },
+    {
+      "wavelengthNm": 436.4436,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 22912.47
+    },
+    {
+      "wavelengthNm": 436.7728,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 22895.2
+    },
+    {
+      "wavelengthNm": 436.829,
+      "relativeIntensity": "640*",
+      "spectrum": "S II",
+      "transition": 22892.25
+    },
+    {
+      "wavelengthNm": 436.829,
+      "relativeIntensity": "640*",
+      "spectrum": "S II",
+      "transition": 22892.25
+    },
+    {
+      "wavelengthNm": 437.1155,
+      "relativeIntensity": "1300",
+      "spectrum": "S II",
+      "transition": 22877.25
+    },
+    {
+      "wavelengthNm": 437.6214,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 22850.8
+    },
+    {
+      "wavelengthNm": 437.7105,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 22846.15
+    },
+    {
+      "wavelengthNm": 437.786,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 22842.21
+    },
+    {
+      "wavelengthNm": 437.9771,
+      "relativeIntensity": "1300",
+      "spectrum": "S II",
+      "transition": 22832.24
+    },
+    {
+      "wavelengthNm": 438.0816,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 22826.8
+    },
+    {
+      "wavelengthNm": 438.4765,
+      "relativeIntensity": "300",
+      "spectrum": "S II",
+      "transition": 22806.24
+    },
+    {
+      "wavelengthNm": 438.6881,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 22795.24
+    },
+    {
+      "wavelengthNm": 439.3052,
+      "relativeIntensity": "3300",
+      "spectrum": "S II",
+      "transition": 22763.22
+    },
+    {
+      "wavelengthNm": 439.5081,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 22752.71
+    },
+    {
+      "wavelengthNm": 440.4078,
+      "relativeIntensity": "1300",
+      "spectrum": "S II",
+      "transition": 22706.23
+    },
+    {
+      "wavelengthNm": 440.5967,
+      "relativeIntensity": "910",
+      "spectrum": "S II",
+      "transition": 22696.49
+    },
+    {
+      "wavelengthNm": 441.2552,
+      "relativeIntensity": "1800",
+      "spectrum": "S II",
+      "transition": 22662.62
+    },
+    {
+      "wavelengthNm": 441.374,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 22656.52
+    },
+    {
+      "wavelengthNm": 441.6583,
+      "relativeIntensity": "12",
+      "spectrum": "S II",
+      "transition": 22641.94
+    },
+    {
+      "wavelengthNm": 442.915,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 22577.72
+    },
+    {
+      "wavelengthNm": 443.2251,
+      "relativeIntensity": "2400",
+      "spectrum": "S II",
+      "transition": 22561.9
+    },
+    {
+      "wavelengthNm": 443.3616,
+      "relativeIntensity": "5900",
+      "spectrum": "S II",
+      "transition": 22554.95
+    },
+    {
+      "wavelengthNm": 443.398,
+      "relativeIntensity": "285",
+      "spectrum": "N II",
+      "transition": 22553.1
+    },
+    {
+      "wavelengthNm": 443.8901,
+      "relativeIntensity": "640",
+      "spectrum": "S II",
+      "transition": 22528.1
+    },
+    {
+      "wavelengthNm": 444.1339,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 22515.73
+    },
+    {
+      "wavelengthNm": 444.628,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 22490.7
+    },
+    {
+      "wavelengthNm": 444.828,
+      "relativeIntensity": "650",
+      "spectrum": "N II",
+      "transition": 22480.6
+    },
+    {
+      "wavelengthNm": 444.8943,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 22477.25
+    },
+    {
+      "wavelengthNm": 445.1961,
+      "relativeIntensity": "640",
+      "spectrum": "S II",
+      "transition": 22462.01
+    },
+    {
+      "wavelengthNm": 445.7639,
+      "relativeIntensity": "4400",
+      "spectrum": "S II",
+      "transition": 22433.4
+    },
+    {
+      "wavelengthNm": 446.1189,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 22415.55
+    },
+    {
+      "wavelengthNm": 446.2859,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 22407.16
+    },
+    {
+      "wavelengthNm": 446.4832,
+      "relativeIntensity": "10000",
+      "spectrum": "S II",
+      "transition": 22397.26
+    },
+    {
+      "wavelengthNm": 446.538,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 22394.51
+    },
+    {
+      "wavelengthNm": 446.5683,
+      "relativeIntensity": "7700",
+      "spectrum": "S II",
+      "transition": 22392.99
+    },
+    {
+      "wavelengthNm": 446.6782,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 22387.48
+    },
+    {
+      "wavelengthNm": 446.8267,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 22380.04
+    },
+    {
+      "wavelengthNm": 447.7142,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 22335.68
+    },
+    {
+      "wavelengthNm": 447.753,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 22333.75
+    },
+    {
+      "wavelengthNm": 447.8938,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 22326.72
+    },
+    {
+      "wavelengthNm": 448.3742,
+      "relativeIntensity": "1300",
+      "spectrum": "S II",
+      "transition": 22302.8
+    },
+    {
+      "wavelengthNm": 448.4687,
+      "relativeIntensity": "7700",
+      "spectrum": "S II",
+      "transition": 22298.1
+    },
+    {
+      "wavelengthNm": 448.6703,
+      "relativeIntensity": "910",
+      "spectrum": "S II",
+      "transition": 22288.08
+    },
+    {
+      "wavelengthNm": 448.7895,
+      "relativeIntensity": "3300",
+      "spectrum": "S II",
+      "transition": 22282.16
+    },
+    {
+      "wavelengthNm": 448.9354,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 22274.92
+    },
+    {
+      "wavelengthNm": 449.3529,
+      "relativeIntensity": "640",
+      "spectrum": "S II",
+      "transition": 22254.22
+    },
+    {
+      "wavelengthNm": 449.463,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 22248.77
+    },
+    {
+      "wavelengthNm": 449.7108,
+      "relativeIntensity": "300",
+      "spectrum": "S II",
+      "transition": 22236.51
+    },
+    {
+      "wavelengthNm": 449.9114,
+      "relativeIntensity": "1800",
+      "spectrum": "S II",
+      "transition": 22226.6
+    },
+    {
+      "wavelengthNm": 450.7904,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 22183.26
+    },
+    {
+      "wavelengthNm": 450.8824,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 22178.73
+    },
+    {
+      "wavelengthNm": 450.9976,
+      "relativeIntensity": "440",
+      "spectrum": "S II",
+      "transition": 22173.07
+    },
+    {
+      "wavelengthNm": 451.0445,
+      "relativeIntensity": "640",
+      "spectrum": "S II",
+      "transition": 22170.76
+    },
+    {
+      "wavelengthNm": 451.5093,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 22147.94
+    },
+    {
+      "wavelengthNm": 452.02,
+      "relativeIntensity": "540",
+      "spectrum": "S II",
+      "transition": 22123.1
+    },
+    {
+      "wavelengthNm": 452.089,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 22119.54
+    },
+    {
+      "wavelengthNm": 452.5491,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 22097.05
+    },
+    {
+      "wavelengthNm": 452.599,
+      "relativeIntensity": "7700bl",
+      "spectrum": "S II",
+      "transition": 22094.63
+    },
+    {
+      "wavelengthNm": 452.6216,
+      "relativeIntensity": "13000",
+      "spectrum": "S II",
+      "transition": 22093.51
+    },
+    {
+      "wavelengthNm": 452.8563,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 22082.06
+    },
+    {
+      "wavelengthNm": 453.168,
+      "relativeIntensity": "360",
+      "spectrum": "N II",
+      "transition": 22066.9
+    },
+    {
+      "wavelengthNm": 453.4056,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 22055.31
+    },
+    {
+      "wavelengthNm": 453.462,
+      "relativeIntensity": "440",
+      "spectrum": "S II",
+      "transition": 22052.56
+    },
+    {
+      "wavelengthNm": 453.6557,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 22043.15
+    },
+    {
+      "wavelengthNm": 454.0124,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 22025.83
+    },
+    {
+      "wavelengthNm": 454.1668,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 22018.34
+    },
+    {
+      "wavelengthNm": 455.0847,
+      "relativeIntensity": "4400",
+      "spectrum": "S II",
+      "transition": 21973.93
+    },
+    {
+      "wavelengthNm": 455.3682,
+      "relativeIntensity": "5900",
+      "spectrum": "S II",
+      "transition": 21960.25
+    },
+    {
+      "wavelengthNm": 455.6664,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 21945.88
+    },
+    {
+      "wavelengthNm": 455.919,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 21933.72
+    },
+    {
+      "wavelengthNm": 456.316,
+      "relativeIntensity": "2400",
+      "spectrum": "S II",
+      "transition": 21914.64
+    },
+    {
+      "wavelengthNm": 456.6039,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 21900.82
+    },
+    {
+      "wavelengthNm": 457.0541,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 21879.25
+    },
+    {
+      "wavelengthNm": 458.9006,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 21791.21
+    },
+    {
+      "wavelengthNm": 459.2055,
+      "relativeIntensity": "210",
+      "spectrum": "S II",
+      "transition": 21776.74
+    },
+    {
+      "wavelengthNm": 459.2409,
+      "relativeIntensity": "2400",
+      "spectrum": "S II",
+      "transition": 21775.06
+    },
+    {
+      "wavelengthNm": 459.6369,
+      "relativeIntensity": "91",
+      "spectrum": "S II",
+      "transition": 21756.3
+    },
+    {
+      "wavelengthNm": 460.277,
+      "relativeIntensity": "550",
+      "spectrum": "N II",
+      "transition": 21726.1
+    },
+    {
+      "wavelengthNm": 460.845,
+      "relativeIntensity": "450",
+      "spectrum": "N II",
+      "transition": 21699.3
+    },
+    {
+      "wavelengthNm": 461.1899,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 21683.04
+    },
+    {
+      "wavelengthNm": 461.516,
+      "relativeIntensity": "360",
+      "spectrum": "N II",
+      "transition": 21667.7
+    },
+    {
+      "wavelengthNm": 462.268,
+      "relativeIntensity": "450",
+      "spectrum": "N II",
+      "transition": 21632.5
+    },
+    {
+      "wavelengthNm": 462.5411,
+      "relativeIntensity": "2400",
+      "spectrum": "S II",
+      "transition": 21619.7
+    },
+    {
+      "wavelengthNm": 463.184,
+      "relativeIntensity": "870",
+      "spectrum": "N II",
+      "transition": 21589.7
+    },
+    {
+      "wavelengthNm": 463.207,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 21588.62
+    },
+    {
+      "wavelengthNm": 464.438,
+      "relativeIntensity": "550",
+      "spectrum": "N II",
+      "transition": 21531.4
+    },
+    {
+      "wavelengthNm": 464.9471,
+      "relativeIntensity": "2400",
+      "spectrum": "S II",
+      "transition": 21507.82
+    },
+    {
+      "wavelengthNm": 465.051,
+      "relativeIntensity": "m",
+      "spectrum": "S II",
+      "transition": 21503.02
+    },
+    {
+      "wavelengthNm": 465.1275,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 21499.48
+    },
+    {
+      "wavelengthNm": 465.5834,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 21478.43
+    },
+    {
+      "wavelengthNm": 465.8081,
+      "relativeIntensity": "7700",
+      "spectrum": "S II",
+      "transition": 21468.07
+    },
+    {
+      "wavelengthNm": 466.8514,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 21420.09
+    },
+    {
+      "wavelengthNm": 466.989,
+      "relativeIntensity": "4400",
+      "spectrum": "S II",
+      "transition": 21413.78
+    },
+    {
+      "wavelengthNm": 467.0182,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 21412.44
+    },
+    {
+      "wavelengthNm": 467.4796,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 21391.31
+    },
+    {
+      "wavelengthNm": 467.6216,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 21384.81
+    },
+    {
+      "wavelengthNm": 468.2604,
+      "relativeIntensity": "1300",
+      "spectrum": "S II",
+      "transition": 21355.64
+    },
+    {
+      "wavelengthNm": 469.5587,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 21296.59
+    },
+    {
+      "wavelengthNm": 469.7213,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 21289.22
+    },
+    {
+      "wavelengthNm": 469.754,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 21287.74
+    },
+    {
+      "wavelengthNm": 469.8952,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 21281.34
+    },
+    {
+      "wavelengthNm": 469.9869,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 21277.19
+    },
+    {
+      "wavelengthNm": 470.1347,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 21270.5
+    },
+    {
+      "wavelengthNm": 470.1539,
+      "relativeIntensity": "1800",
+      "spectrum": "S II",
+      "transition": 21269.63
+    },
+    {
+      "wavelengthNm": 470.3819,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 21259.32
+    },
+    {
+      "wavelengthNm": 470.5563,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 21251.44
+    },
+    {
+      "wavelengthNm": 470.7717,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 21241.72
+    },
+    {
+      "wavelengthNm": 470.9464,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 21233.84
+    },
+    {
+      "wavelengthNm": 471.0753,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 21228.03
+    },
+    {
+      "wavelengthNm": 471.0901,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 21227.36
+    },
+    {
+      "wavelengthNm": 471.3384,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 21216.18
+    },
+    {
+      "wavelengthNm": 471.7586,
+      "relativeIntensity": "9900",
+      "spectrum": "S II",
+      "transition": 21197.28
+    },
+    {
+      "wavelengthNm": 471.9697,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 21187.8
+    },
+    {
+      "wavelengthNm": 472.2898,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 21173.44
+    },
+    {
+      "wavelengthNm": 472.4121,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 21167.96
+    },
+    {
+      "wavelengthNm": 473.0767,
+      "relativeIntensity": "1800",
+      "spectrum": "S II",
+      "transition": 21138.22
+    },
+    {
+      "wavelengthNm": 473.386,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 21124.41
+    },
+    {
+      "wavelengthNm": 473.92,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 21101.0
+    },
+    {
+      "wavelengthNm": 473.92,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 21101.0
+    },
+    {
+      "wavelengthNm": 474.3715,
+      "relativeIntensity": "900",
+      "spectrum": "S II",
+      "transition": 21080.52
+    },
+    {
+      "wavelengthNm": 474.867,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 21058.53
+    },
+    {
+      "wavelengthNm": 474.998,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 21053.0
+    },
+    {
+      "wavelengthNm": 474.998,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 21053.0
+    },
+    {
+      "wavelengthNm": 474.998,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 21053.0
+    },
+    {
+      "wavelengthNm": 475.531,
+      "relativeIntensity": "210",
+      "spectrum": "S II",
+      "transition": 21029.12
+    },
+    {
+      "wavelengthNm": 475.6421,
+      "relativeIntensity": "3300",
+      "spectrum": "S II",
+      "transition": 21024.21
+    },
+    {
+      "wavelengthNm": 476.3082,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 20994.81
+    },
+    {
+      "wavelengthNm": 476.4702,
+      "relativeIntensity": "1800",
+      "spectrum": "S II",
+      "transition": 20987.67
+    },
+    {
+      "wavelengthNm": 476.578,
+      "relativeIntensity": "440bl",
+      "spectrum": "S II",
+      "transition": 20982.91
+    },
+    {
+      "wavelengthNm": 476.597,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 20982.0
+    },
+    {
+      "wavelengthNm": 476.597,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 20982.0
+    },
+    {
+      "wavelengthNm": 477.5579,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 20939.87
+    },
+    {
+      "wavelengthNm": 477.7559,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 20931.19
+    },
+    {
+      "wavelengthNm": 477.9765,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 20921.53
+    },
+    {
+      "wavelengthNm": 478.043,
+      "relativeIntensity": "3300",
+      "spectrum": "S II",
+      "transition": 20918.62
+    },
+    {
+      "wavelengthNm": 478.1059,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 20915.87
+    },
+    {
+      "wavelengthNm": 478.2527,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 20909.45
+    },
+    {
+      "wavelengthNm": 478.728,
+      "relativeIntensity": "440*",
+      "spectrum": "S II",
+      "transition": 20888.72
+    },
+    {
+      "wavelengthNm": 478.728,
+      "relativeIntensity": "440*",
+      "spectrum": "S II",
+      "transition": 20888.72
+    },
+    {
+      "wavelengthNm": 478.947,
+      "relativeIntensity": "285",
+      "spectrum": "N II",
+      "transition": 20879.1
+    },
+    {
+      "wavelengthNm": 479.3352,
+      "relativeIntensity": "4400",
+      "spectrum": "S II",
+      "transition": 20862.23
+    },
+    {
+      "wavelengthNm": 479.4988,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 20855.11
+    },
+    {
+      "wavelengthNm": 480.1095,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 20828.58
+    },
+    {
+      "wavelengthNm": 480.463,
+      "relativeIntensity": "450",
+      "spectrum": "N II",
+      "transition": 20813.2
+    },
+    {
+      "wavelengthNm": 480.5463,
+      "relativeIntensity": "900",
+      "spectrum": "S II",
+      "transition": 20809.65
+    },
+    {
+      "wavelengthNm": 481.1125,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 20785.16
+    },
+    {
+      "wavelengthNm": 481.1643,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 20782.92
+    },
+    {
+      "wavelengthNm": 481.3427,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 20775.22
+    },
+    {
+      "wavelengthNm": 481.6895,
+      "relativeIntensity": "16000",
+      "spectrum": "S II",
+      "transition": 20760.26
+    },
+    {
+      "wavelengthNm": 481.6963,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 20759.97
+    },
+    {
+      "wavelengthNm": 482.0795,
+      "relativeIntensity": "1100",
+      "spectrum": "S II",
+      "transition": 20743.47
+    },
+    {
+      "wavelengthNm": 482.0985,
+      "relativeIntensity": "3500",
+      "spectrum": "S II",
+      "transition": 20742.65
+    },
+    {
+      "wavelengthNm": 482.3152,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 20733.33
+    },
+    {
+      "wavelengthNm": 482.391,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 20730.07
+    },
+    {
+      "wavelengthNm": 482.5414,
+      "relativeIntensity": "3300",
+      "spectrum": "S II",
+      "transition": 20723.61
+    },
+    {
+      "wavelengthNm": 482.7539,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 20714.49
+    },
+    {
+      "wavelengthNm": 482.812,
+      "relativeIntensity": "1300*",
+      "spectrum": "S II",
+      "transition": 20711.99
+    },
+    {
+      "wavelengthNm": 482.812,
+      "relativeIntensity": "1300*",
+      "spectrum": "S II",
+      "transition": 20711.99
+    },
+    {
+      "wavelengthNm": 483.0118,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 20703.43
+    },
+    {
+      "wavelengthNm": 483.7199,
+      "relativeIntensity": "1800",
+      "spectrum": "S II",
+      "transition": 20673.12
+    },
+    {
+      "wavelengthNm": 483.9133,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 20664.86
+    },
+    {
+      "wavelengthNm": 484.0203,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 20660.29
+    },
+    {
+      "wavelengthNm": 484.1525,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 20654.65
+    },
+    {
+      "wavelengthNm": 484.9256,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 20621.72
+    },
+    {
+      "wavelengthNm": 485.0331,
+      "relativeIntensity": "200",
+      "spectrum": "S II",
+      "transition": 20617.15
+    },
+    {
+      "wavelengthNm": 486.1524,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 20569.68
+    },
+    {
+      "wavelengthNm": 486.1969,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 20567.8
+    },
+    {
+      "wavelengthNm": 486.26365622,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 20564.975137
+    },
+    {
+      "wavelengthNm": 486.264130267,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 20564.9550877
+    },
+    {
+      "wavelengthNm": 486.2642,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 20564.952
+    },
+    {
+      "wavelengthNm": 486.264488953,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 20564.9399183
+    },
+    {
+      "wavelengthNm": 486.264631087,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 20564.9339078
+    },
+    {
+      "wavelengthNm": 486.265465422,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 20564.8986218
+    },
+    {
+      "wavelengthNm": 486.265570377,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 20564.8941832
+    },
+    {
+      "wavelengthNm": 486.2683,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 20564.779
+    },
+    {
+      "wavelengthNm": 486.271,
+      "relativeIntensity": "180000",
+      "spectrum": "H I",
+      "transition": 20564.67
+    },
+    {
+      "wavelengthNm": 486.271947584,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 20564.6244857
+    },
+    {
+      "wavelengthNm": 486.27202,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 20564.6216
+    },
+    {
+      "wavelengthNm": 486.27230788,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 20564.609249
+    },
+    {
+      "wavelengthNm": 486.273282785,
+      "relativeIntensity": null,
+      "spectrum": "H I",
+      "transition": 20564.5680197
+    },
+    {
+      "wavelengthNm": 486.8416,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 20540.56
+    },
+    {
+      "wavelengthNm": 487.593,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 20508.92
+    },
+    {
+      "wavelengthNm": 488.2977,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 20479.31
+    },
+    {
+      "wavelengthNm": 488.5036,
+      "relativeIntensity": "440",
+      "spectrum": "S II",
+      "transition": 20470.68
+    },
+    {
+      "wavelengthNm": 488.7012,
+      "relativeIntensity": "4400",
+      "spectrum": "S II",
+      "transition": 20462.4
+    },
+    {
+      "wavelengthNm": 489.2224,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 20440.6
+    },
+    {
+      "wavelengthNm": 489.648,
+      "relativeIntensity": "285",
+      "spectrum": "N II",
+      "transition": 20422.8
+    },
+    {
+      "wavelengthNm": 489.89,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 20412.73
+    },
+    {
+      "wavelengthNm": 490.1881,
+      "relativeIntensity": "2400",
+      "spectrum": "S II",
+      "transition": 20400.33
+    },
+    {
+      "wavelengthNm": 490.2634,
+      "relativeIntensity": "1800",
+      "spectrum": "S II",
+      "transition": 20397.2
+    },
+    {
+      "wavelengthNm": 490.3809,
+      "relativeIntensity": "3300",
+      "spectrum": "S II",
+      "transition": 20392.31
+    },
+    {
+      "wavelengthNm": 490.8565,
+      "relativeIntensity": null,
+      "spectrum": "S II",
+      "transition": 20372.55
+    },
+    {
+      "wavelengthNm": 491.8585,
+      "relativeIntensity": "7600",
+      "spectrum": "S II",
+      "transition": 20331.05
+    },
+    {
+      "wavelengthNm": 492.549,
+      "relativeIntensity": "5800",
+      "spectrum": "S II",
+      "transition": 20302.55
+    },
+    {
+      "wavelengthNm": 492.6722,
+      "relativeIntensity": "7600",
+      "spectrum": "S II",
+      "transition": 20297.47
+    },
+    {
+      "wavelengthNm": 493.2603,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 20273.27
+    },
+    {
+      "wavelengthNm": 494.0424,
+      "relativeIntensity": "91",
+      "spectrum": "S II",
+      "transition": 20241.18
+    },
+    {
+      "wavelengthNm": 494.3845,
+      "relativeIntensity": "3300",
+      "spectrum": "S II",
+      "transition": 20227.17
+    },
+    {
+      "wavelengthNm": 495.3573,
+      "relativeIntensity": "300",
+      "spectrum": "S II",
+      "transition": 20187.45
+    },
+    {
+      "wavelengthNm": 496.0295,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 20160.09
+    },
+    {
+      "wavelengthNm": 496.0295,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 20160.09
+    },
+    {
+      "wavelengthNm": 498.876,
+      "relativeIntensity": "285",
+      "spectrum": "N II",
+      "transition": 20045.1
+    },
+    {
+      "wavelengthNm": 499.2636,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 20029.5
+    },
+    {
+      "wavelengthNm": 499.3367,
+      "relativeIntensity": "9800",
+      "spectrum": "S II",
+      "transition": 20026.57
+    },
+    {
+      "wavelengthNm": 499.489,
+      "relativeIntensity": "4400",
+      "spectrum": "S II",
+      "transition": 20020.46
+    },
+    {
+      "wavelengthNm": 499.575,
+      "relativeIntensity": "450",
+      "spectrum": "N II",
+      "transition": 20017.0
+    },
+    {
+      "wavelengthNm": 499.5764,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 20016.96
+    },
+    {
+      "wavelengthNm": 499.8618,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 20005.53
+    },
+    {
+      "wavelengthNm": 500.2529,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19989.89
+    },
+    {
+      "wavelengthNm": 500.288,
+      "relativeIntensity": "650",
+      "spectrum": "N II",
+      "transition": 19988.5
+    },
+    {
+      "wavelengthNm": 500.41,
+      "relativeIntensity": "360",
+      "spectrum": "N II",
+      "transition": 19983.6
+    },
+    {
+      "wavelengthNm": 500.655,
+      "relativeIntensity": "870",
+      "spectrum": "N II",
+      "transition": 19973.8
+    },
+    {
+      "wavelengthNm": 500.6696,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19973.25
+    },
+    {
+      "wavelengthNm": 500.8124,
+      "relativeIntensity": "2400",
+      "spectrum": "S II",
+      "transition": 19967.56
+    },
+    {
+      "wavelengthNm": 500.824,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 19967.1
+    },
+    {
+      "wavelengthNm": 500.824,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 19967.1
+    },
+    {
+      "wavelengthNm": 500.872,
+      "relativeIntensity": "550",
+      "spectrum": "N II",
+      "transition": 19965.2
+    },
+    {
+      "wavelengthNm": 501.0961,
+      "relativeIntensity": "13000",
+      "spectrum": "S II",
+      "transition": 19956.25
+    },
+    {
+      "wavelengthNm": 501.202,
+      "relativeIntensity": "450",
+      "spectrum": "N II",
+      "transition": 19952.0
+    },
+    {
+      "wavelengthNm": 501.2712,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19949.28
+    },
+    {
+      "wavelengthNm": 501.3006,
+      "relativeIntensity": "3300",
+      "spectrum": "S II",
+      "transition": 19948.11
+    },
+    {
+      "wavelengthNm": 501.3433,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19946.41
+    },
+    {
+      "wavelengthNm": 501.5468,
+      "relativeIntensity": "13000",
+      "spectrum": "S II",
+      "transition": 19938.32
+    },
+    {
+      "wavelengthNm": 501.779,
+      "relativeIntensity": "360",
+      "spectrum": "N II",
+      "transition": 19929.1
+    },
+    {
+      "wavelengthNm": 502.3475,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19906.54
+    },
+    {
+      "wavelengthNm": 502.4454,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19902.66
+    },
+    {
+      "wavelengthNm": 502.706,
+      "relativeIntensity": "360",
+      "spectrum": "N II",
+      "transition": 19892.3
+    },
+    {
+      "wavelengthNm": 502.8623,
+      "relativeIntensity": "9800",
+      "spectrum": "S II",
+      "transition": 19886.16
+    },
+    {
+      "wavelengthNm": 503.0184,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19879.99
+    },
+    {
+      "wavelengthNm": 503.385,
+      "relativeIntensity": "20000",
+      "spectrum": "S II",
+      "transition": 19865.51
+    },
+    {
+      "wavelengthNm": 504.0787,
+      "relativeIntensity": "1300",
+      "spectrum": "S II",
+      "transition": 19838.17
+    },
+    {
+      "wavelengthNm": 504.2117,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19832.94
+    },
+    {
+      "wavelengthNm": 504.651,
+      "relativeIntensity": "550",
+      "spectrum": "N II",
+      "transition": 19815.7
+    },
+    {
+      "wavelengthNm": 504.7945,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19810.04
+    },
+    {
+      "wavelengthNm": 504.8149,
+      "relativeIntensity": "90",
+      "spectrum": "S II",
+      "transition": 19809.24
+    },
+    {
+      "wavelengthNm": 504.8699,
+      "relativeIntensity": "5800",
+      "spectrum": "S II",
+      "transition": 19807.08
+    },
+    {
+      "wavelengthNm": 505.1278,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 19796.97
+    },
+    {
+      "wavelengthNm": 506.2143,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 19754.48
+    },
+    {
+      "wavelengthNm": 506.5068,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 19743.07
+    },
+    {
+      "wavelengthNm": 506.9968,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 19723.99
+    },
+    {
+      "wavelengthNm": 507.4504,
+      "relativeIntensity": "140",
+      "spectrum": "S II",
+      "transition": 19706.36
+    },
+    {
+      "wavelengthNm": 507.5006,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19704.41
+    },
+    {
+      "wavelengthNm": 509.0341,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 19645.05
+    },
+    {
+      "wavelengthNm": 509.3299,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 19633.64
+    },
+    {
+      "wavelengthNm": 509.5409,
+      "relativeIntensity": "38",
+      "spectrum": "S II",
+      "transition": 19625.51
+    },
+    {
+      "wavelengthNm": 510.4762,
+      "relativeIntensity": "7600",
+      "spectrum": "S II",
+      "transition": 19589.55
+    },
+    {
+      "wavelengthNm": 510.5868,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19585.31
+    },
+    {
+      "wavelengthNm": 511.361,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 19555.7
+    },
+    {
+      "wavelengthNm": 511.571,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19547.63
+    },
+    {
+      "wavelengthNm": 511.918,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 19534.4
+    },
+    {
+      "wavelengthNm": 512.496,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19512.35
+    },
+    {
+      "wavelengthNm": 512.617,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 19507.8
+    },
+    {
+      "wavelengthNm": 512.7558,
+      "relativeIntensity": "1300",
+      "spectrum": "S II",
+      "transition": 19502.46
+    },
+    {
+      "wavelengthNm": 513.775,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 19463.8
+    },
+    {
+      "wavelengthNm": 514.033,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19454.01
+    },
+    {
+      "wavelengthNm": 514.3774,
+      "relativeIntensity": "5800",
+      "spectrum": "S II",
+      "transition": 19440.98
+    },
+    {
+      "wavelengthNm": 515.042,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 19415.9
+    },
+    {
+      "wavelengthNm": 515.391,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 19402.8
+    },
+    {
+      "wavelengthNm": 516.9489,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19344.27
+    },
+    {
+      "wavelengthNm": 517.1596,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19336.39
+    },
+    {
+      "wavelengthNm": 517.2706,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19332.24
+    },
+    {
+      "wavelengthNm": 517.273,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 19332.2
+    },
+    {
+      "wavelengthNm": 517.291,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19331.48
+    },
+    {
+      "wavelengthNm": 517.3785,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19328.21
+    },
+    {
+      "wavelengthNm": 517.4414,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19325.86
+    },
+    {
+      "wavelengthNm": 517.4826,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19324.32
+    },
+    {
+      "wavelengthNm": 517.5903,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19320.3
+    },
+    {
+      "wavelengthNm": 517.7331,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19314.97
+    },
+    {
+      "wavelengthNm": 517.8015,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19312.42
+    },
+    {
+      "wavelengthNm": 517.85,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19310.61
+    },
+    {
+      "wavelengthNm": 518.0786,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19302.09
+    },
+    {
+      "wavelengthNm": 518.0963,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19301.43
+    },
+    {
+      "wavelengthNm": 518.1801,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19298.31
+    },
+    {
+      "wavelengthNm": 518.4643,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19287.73
+    },
+    {
+      "wavelengthNm": 518.6405,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19281.18
+    },
+    {
+      "wavelengthNm": 518.6531,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19280.71
+    },
+    {
+      "wavelengthNm": 518.765,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19276.55
+    },
+    {
+      "wavelengthNm": 519.1825,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19261.05
+    },
+    {
+      "wavelengthNm": 519.341,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19255.17
+    },
+    {
+      "wavelengthNm": 520.0292,
+      "relativeIntensity": "630",
+      "spectrum": "S II",
+      "transition": 19229.69
+    },
+    {
+      "wavelengthNm": 520.0949,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19227.26
+    },
+    {
+      "wavelengthNm": 520.2472,
+      "relativeIntensity": "9800",
+      "spectrum": "S II",
+      "transition": 19221.63
+    },
+    {
+      "wavelengthNm": 520.2835,
+      "relativeIntensity": "2400",
+      "spectrum": "S II",
+      "transition": 19220.29
+    },
+    {
+      "wavelengthNm": 521.3714,
+      "relativeIntensity": null,
+      "spectrum": "S II",
+      "transition": 19180.19
+    },
+    {
+      "wavelengthNm": 521.4074,
+      "relativeIntensity": "13000",
+      "spectrum": "S II",
+      "transition": 19178.86
+    },
+    {
+      "wavelengthNm": 523.2021,
+      "relativeIntensity": null,
+      "spectrum": "S II",
+      "transition": 19113.07
+    },
+    {
+      "wavelengthNm": 523.963,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19085.3
+    },
+    {
+      "wavelengthNm": 524.2316,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 19075.54
+    },
+    {
+      "wavelengthNm": 525.1348,
+      "relativeIntensity": null,
+      "spectrum": "S II",
+      "transition": 19042.73
+    },
+    {
+      "wavelengthNm": 525.5305,
+      "relativeIntensity": null,
+      "spectrum": "S II",
+      "transition": 19028.39
+    },
+    {
+      "wavelengthNm": 526.9767,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 18976.17
+    },
+    {
+      "wavelengthNm": 530.825,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 18838.6
+    },
+    {
+      "wavelengthNm": 531.4903,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 18815.02
+    },
+    {
+      "wavelengthNm": 532.1682,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 18791.05
+    },
+    {
+      "wavelengthNm": 532.2212,
+      "relativeIntensity": "24000",
+      "spectrum": "S II",
+      "transition": 18789.18
+    },
+    {
+      "wavelengthNm": 532.2439,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 18788.38
+    },
+    {
+      "wavelengthNm": 532.3686,
+      "relativeIntensity": "140",
+      "spectrum": "S II",
+      "transition": 18783.98
+    },
+    {
+      "wavelengthNm": 532.8572,
+      "relativeIntensity": null,
+      "spectrum": "S II",
+      "transition": 18766.75
+    },
+    {
+      "wavelengthNm": 532.9238,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 18764.41
+    },
+    {
+      "wavelengthNm": 533.2646,
+      "relativeIntensity": null,
+      "spectrum": "S II",
+      "transition": 18752.42
+    },
+    {
+      "wavelengthNm": 534.0214,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 18725.84
+    },
+    {
+      "wavelengthNm": 534.1692,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 18720.66
+    },
+    {
+      "wavelengthNm": 534.7208,
+      "relativeIntensity": "16000",
+      "spectrum": "S II",
+      "transition": 18701.35
+    },
+    {
+      "wavelengthNm": 534.7571,
+      "relativeIntensity": null,
+      "spectrum": "S II",
+      "transition": 18700.08
+    },
+    {
+      "wavelengthNm": 535.272,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 18682.09
+    },
+    {
+      "wavelengthNm": 535.649,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 18668.93
+    },
+    {
+      "wavelengthNm": 536.4194,
+      "relativeIntensity": "430",
+      "spectrum": "S II",
+      "transition": 18642.13
+    },
+    {
+      "wavelengthNm": 538.5218,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 18569.35
+    },
+    {
+      "wavelengthNm": 539.2187,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 18545.35
+    },
+    {
+      "wavelengthNm": 540.2214,
+      "relativeIntensity": "2400",
+      "spectrum": "S II",
+      "transition": 18510.93
+    },
+    {
+      "wavelengthNm": 543.0176,
+      "relativeIntensity": "20000",
+      "spectrum": "S II",
+      "transition": 18415.61
+    },
+    {
+      "wavelengthNm": 543.4325,
+      "relativeIntensity": "30000",
+      "spectrum": "S II",
+      "transition": 18401.55
+    },
+    {
+      "wavelengthNm": 545.3586,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 18336.56
+    },
+    {
+      "wavelengthNm": 545.5344,
+      "relativeIntensity": "42000",
+      "spectrum": "S II",
+      "transition": 18330.65
+    },
+    {
+      "wavelengthNm": 545.5731,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 18329.35
+    },
+    {
+      "wavelengthNm": 545.8906,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 18318.69
+    },
+    {
+      "wavelengthNm": 546.4099,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 18301.28
+    },
+    {
+      "wavelengthNm": 546.8734,
+      "relativeIntensity": null,
+      "spectrum": "S II",
+      "transition": 18285.77
+    },
+    {
+      "wavelengthNm": 547.5141,
+      "relativeIntensity": "20000",
+      "spectrum": "S II",
+      "transition": 18264.37
+    },
+    {
+      "wavelengthNm": 547.6532,
+      "relativeIntensity": "620",
+      "spectrum": "S II",
+      "transition": 18259.73
+    },
+    {
+      "wavelengthNm": 547.6808,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 18258.81
+    },
+    {
+      "wavelengthNm": 547.9608,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 18249.48
+    },
+    {
+      "wavelengthNm": 547.9716,
+      "relativeIntensity": "430",
+      "spectrum": "S II",
+      "transition": 18249.12
+    },
+    {
+      "wavelengthNm": 548.0832,
+      "relativeIntensity": "90",
+      "spectrum": "S II",
+      "transition": 18245.4
+    },
+    {
+      "wavelengthNm": 548.1573,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 18242.94
+    },
+    {
+      "wavelengthNm": 549.4759,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 18199.16
+    },
+    {
+      "wavelengthNm": 549.72,
+      "relativeIntensity": "450",
+      "spectrum": "N II",
+      "transition": 18191.1
+    },
+    {
+      "wavelengthNm": 550.9772,
+      "relativeIntensity": null,
+      "spectrum": "O III",
+      "transition": 18149.57
+    },
+    {
+      "wavelengthNm": 551.1249,
+      "relativeIntensity": "20000",
+      "spectrum": "S II",
+      "transition": 18144.71
+    },
+    {
+      "wavelengthNm": 552.0265,
+      "relativeIntensity": "620",
+      "spectrum": "S II",
+      "transition": 18115.07
+    },
+    {
+      "wavelengthNm": 552.0445,
+      "relativeIntensity": null,
+      "spectrum": "S II",
+      "transition": 18114.48
+    },
+    {
+      "wavelengthNm": 552.1933,
+      "relativeIntensity": "890",
+      "spectrum": "S II",
+      "transition": 18109.6
+    },
+    {
+      "wavelengthNm": 552.7518,
+      "relativeIntensity": null,
+      "spectrum": "S II",
+      "transition": 18091.3
+    },
+    {
+      "wavelengthNm": 552.7769,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 18090.48
+    },
+    {
+      "wavelengthNm": 552.7788,
+      "relativeIntensity": "5700",
+      "spectrum": "S II",
+      "transition": 18090.42
+    },
+    {
+      "wavelengthNm": 553.1778,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 18077.37
+    },
+    {
+      "wavelengthNm": 553.69,
+      "relativeIntensity": "285",
+      "spectrum": "N II",
+      "transition": 18060.7
+    },
+    {
+      "wavelengthNm": 553.6921,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 18060.58
+    },
+    {
+      "wavelengthNm": 553.8261,
+      "relativeIntensity": "430",
+      "spectrum": "S II",
+      "transition": 18056.21
+    },
+    {
+      "wavelengthNm": 553.9384,
+      "relativeIntensity": null,
+      "spectrum": "S II",
+      "transition": 18052.55
+    },
+    {
+      "wavelengthNm": 554.16,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 18045.33
+    },
+    {
+      "wavelengthNm": 554.5011,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 18034.23
+    },
+    {
+      "wavelengthNm": 555.3464,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 18006.78
+    },
+    {
+      "wavelengthNm": 555.4219,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 18004.33
+    },
+    {
+      "wavelengthNm": 555.755,
+      "relativeIntensity": "5700",
+      "spectrum": "S II",
+      "transition": 17993.54
+    },
+    {
+      "wavelengthNm": 556.06,
+      "relativeIntensity": "430bl",
+      "spectrum": "S II",
+      "transition": 17983.66
+    },
+    {
+      "wavelengthNm": 556.6521,
+      "relativeIntensity": "12000",
+      "spectrum": "S II",
+      "transition": 17964.54
+    },
+    {
+      "wavelengthNm": 556.68,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 17963.64
+    },
+    {
+      "wavelengthNm": 558.0438,
+      "relativeIntensity": "5700",
+      "spectrum": "S II",
+      "transition": 17919.74
+    },
+    {
+      "wavelengthNm": 558.6191,
+      "relativeIntensity": null,
+      "spectrum": "S II",
+      "transition": 17901.29
+    },
+    {
+      "wavelengthNm": 559.0146,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 17888.62
+    },
+    {
+      "wavelengthNm": 559.392,
+      "relativeIntensity": "110",
+      "spectrum": "O III",
+      "transition": 17876.5
+    },
+    {
+      "wavelengthNm": 560.7707,
+      "relativeIntensity": "20000",
+      "spectrum": "S II",
+      "transition": 17832.6
+    },
+    {
+      "wavelengthNm": 561.8198,
+      "relativeIntensity": "5700",
+      "spectrum": "S II",
+      "transition": 17799.3
+    },
+    {
+      "wavelengthNm": 563.328,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 17751.64
+    },
+    {
+      "wavelengthNm": 564.1537,
+      "relativeIntensity": "20000",
+      "spectrum": "S II",
+      "transition": 17725.66
+    },
+    {
+      "wavelengthNm": 564.1899,
+      "relativeIntensity": "12000",
+      "spectrum": "S II",
+      "transition": 17724.53
+    },
+    {
+      "wavelengthNm": 564.5323,
+      "relativeIntensity": "89",
+      "spectrum": "S II",
+      "transition": 17713.78
+    },
+    {
+      "wavelengthNm": 564.7239,
+      "relativeIntensity": "2400",
+      "spectrum": "S II",
+      "transition": 17707.77
+    },
+    {
+      "wavelengthNm": 564.86,
+      "relativeIntensity": "12000",
+      "spectrum": "S II",
+      "transition": 17703.5
+    },
+    {
+      "wavelengthNm": 564.9922,
+      "relativeIntensity": "880",
+      "spectrum": "S II",
+      "transition": 17699.36
+    },
+    {
+      "wavelengthNm": 565.5906,
+      "relativeIntensity": null,
+      "spectrum": "S II",
+      "transition": 17680.63
+    },
+    {
+      "wavelengthNm": 566.1556,
+      "relativeIntensity": "12000",
+      "spectrum": "S II",
+      "transition": 17662.99
+    },
+    {
+      "wavelengthNm": 566.6352,
+      "relativeIntensity": "9700",
+      "spectrum": "S II",
+      "transition": 17648.04
+    },
+    {
+      "wavelengthNm": 566.82,
+      "relativeIntensity": "650",
+      "spectrum": "N II",
+      "transition": 17642.3
+    },
+    {
+      "wavelengthNm": 567.557,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 17619.37
+    },
+    {
+      "wavelengthNm": 567.76,
+      "relativeIntensity": "550",
+      "spectrum": "N II",
+      "transition": 17613.1
+    },
+    {
+      "wavelengthNm": 568.114,
+      "relativeIntensity": "870",
+      "spectrum": "N II",
+      "transition": 17602.1
+    },
+    {
+      "wavelengthNm": 568.779,
+      "relativeIntensity": "450",
+      "spectrum": "N II",
+      "transition": 17581.5
+    },
+    {
+      "wavelengthNm": 569.2391,
+      "relativeIntensity": null,
+      "spectrum": "S II",
+      "transition": 17567.31
+    },
+    {
+      "wavelengthNm": 570.4711,
+      "relativeIntensity": null,
+      "spectrum": "S II",
+      "transition": 17529.37
+    },
+    {
+      "wavelengthNm": 571.235,
+      "relativeIntensity": "450",
+      "spectrum": "N II",
+      "transition": 17505.9
+    },
+    {
+      "wavelengthNm": 573.2121,
+      "relativeIntensity": "430",
+      "spectrum": "S II",
+      "transition": 17445.55
+    },
+    {
+      "wavelengthNm": 573.225,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 17445.17
+    },
+    {
+      "wavelengthNm": 574.889,
+      "relativeIntensity": "285",
+      "spectrum": "N II",
+      "transition": 17394.6
+    },
+    {
+      "wavelengthNm": 575.619,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 17372.6
+    },
+    {
+      "wavelengthNm": 576.905,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 17333.89
+    },
+    {
+      "wavelengthNm": 579.9112,
+      "relativeIntensity": "89",
+      "spectrum": "S II",
+      "transition": 17244.02
+    },
+    {
+      "wavelengthNm": 582.0885,
+      "relativeIntensity": "7500",
+      "spectrum": "S II",
+      "transition": 17179.52
+    },
+    {
+      "wavelengthNm": 588.6985,
+      "relativeIntensity": "m",
+      "spectrum": "S II",
+      "transition": 16986.624
+    },
+    {
+      "wavelengthNm": 588.914,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 16980.4
+    },
+    {
+      "wavelengthNm": 588.914,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 16980.4
+    },
+    {
+      "wavelengthNm": 588.949,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 16979.4
+    },
+    {
+      "wavelengthNm": 589.164,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 16973.2
+    },
+    {
+      "wavelengthNm": 589.216,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 16971.7
+    },
+    {
+      "wavelengthNm": 589.2568,
+      "relativeIntensity": "38",
+      "spectrum": "S II",
+      "transition": 16970.53
+    },
+    {
+      "wavelengthNm": 589.369,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 16967.3
+    },
+    {
+      "wavelengthNm": 589.369,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 16967.3
+    },
+    {
+      "wavelengthNm": 589.404,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 16966.3
+    },
+    {
+      "wavelengthNm": 589.421,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 16965.8
+    },
+    {
+      "wavelengthNm": 589.421,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 16965.8
+    },
+    {
+      "wavelengthNm": 589.456,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 16964.8
+    },
+    {
+      "wavelengthNm": 589.456,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 16964.8
+    },
+    {
+      "wavelengthNm": 589.478,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 16964.16
+    },
+    {
+      "wavelengthNm": 589.7544,
+      "relativeIntensity": "38",
+      "spectrum": "S II",
+      "transition": 16956.21
+    },
+    {
+      "wavelengthNm": 589.888,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 16952.36
+    },
+    {
+      "wavelengthNm": 590.146,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 16944.95
+    },
+    {
+      "wavelengthNm": 590.9949,
+      "relativeIntensity": "620",
+      "spectrum": "S II",
+      "transition": 16920.62
+    },
+    {
+      "wavelengthNm": 591.196,
+      "relativeIntensity": null,
+      "spectrum": "N II",
+      "transition": 16914.85
+    }
+  ]
+}

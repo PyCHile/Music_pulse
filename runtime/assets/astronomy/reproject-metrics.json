@@ -1,0 +1,14 @@
+{
+  "interp": {
+    "finiteFraction": 0.8530731201171875,
+    "footprintMean": 0.8530731201171875
+  },
+  "adaptive": {
+    "finiteFraction": 0.84295654296875,
+    "footprintMean": 0.84295654296875
+  },
+  "exact": {
+    "finiteFraction": 0.85772705078125,
+    "footprintMean": 0.8531739507353491
+  }
+}

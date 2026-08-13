@@ -1,27 +1,78 @@
 {
   "schema": "urux-astronomy-assets-v1",
-  "generatedAt": null,
-  "pendingPipeline": true,
+  "generatedAt": "2026-08-13T08:21:14.962544+00:00",
   "target": "M 42",
-  "libraries": {},
-  "capabilities": {
-    "astroquery.simbad": false,
-    "astroquery.gaia": false,
-    "astroquery.jplhorizons": false,
-    "astroquery.skyview": false,
-    "astropy.visualization": false,
-    "astropy.wcsaxes": false,
-    "reproject.interp": false,
-    "reproject.adaptive": false,
-    "reproject.exact": false,
-    "aplpy": false,
-    "spectral-cube": false
+  "libraries": {
+    "python": "3.12.13",
+    "numpy": "2.5.2",
+    "matplotlib": "3.11.1",
+    "astropy": "8.0.1",
+    "astroquery": "0.4.11",
+    "aplpy": "2.2.1",
+    "reproject": "0.21.0",
+    "spectralCube": "0.6.7"
   },
-  "provenance": [],
-  "files": {},
+  "capabilities": {
+    "astroquery.simbad": true,
+    "astroquery.gaia": true,
+    "astroquery.skyview": true,
+    "astropy.visualization": true,
+    "astropy.wcsaxes": true,
+    "reproject.interp": true,
+    "reproject.adaptive": true,
+    "reproject.exact": true,
+    "aplpy": true,
+    "astropy.visualization.luptonRgb": true,
+    "astroquery.jplhorizons": true,
+    "spectral-cube": true,
+    "astroquery.eso": true,
+    "astroquery.nist": true,
+    "truecolor.spectralSource": true
+  },
+  "provenance": [
+    "SIMBAD/CDS",
+    "ESA Gaia DR3",
+    "NASA SkyView / DSS2 Red",
+    "NASA SkyView / 2MASS J-H-K (representational RGB)",
+    "NASA/JPL Horizons",
+    "Astropy tutorial reduced HI4PI 21cm cube",
+    "ESO Science Archive",
+    "NIST Atomic Spectra Database"
+  ],
+  "files": {
+    "simbad.json": "runtime/assets/astronomy/simbad.json",
+    "gaia-dr3.json": "runtime/assets/astronomy/gaia-dr3.json",
+    "skyview-dss2-red.fits": "runtime/assets/astronomy/skyview-dss2-red.fits",
+    "wcsaxes-dss2-red.png": "runtime/assets/astronomy/wcsaxes-dss2-red.png",
+    "reproject-interp-galactic.fits": "runtime/assets/astronomy/reproject-interp-galactic.fits",
+    "reproject-adaptive-galactic.fits": "runtime/assets/astronomy/reproject-adaptive-galactic.fits",
+    "reproject-exact-galactic.fits": "runtime/assets/astronomy/reproject-exact-galactic.fits",
+    "reproject-metrics.json": "runtime/assets/astronomy/reproject-metrics.json",
+    "aplpy-dss2-red.png": "runtime/assets/astronomy/aplpy-dss2-red.png",
+    "2mass-jhk-representational-rgb.png": "runtime/assets/astronomy/2mass-jhk-representational-rgb.png",
+    "jpl-earth-vector.json": "runtime/assets/astronomy/jpl-earth-vector.json",
+    "hi21cm-moment0.fits": "runtime/assets/astronomy/hi21cm-moment0.fits",
+    "hi21cm-moment1.fits": "runtime/assets/astronomy/hi21cm-moment1.fits",
+    "hi21cm-moment1-wcsaxes.png": "runtime/assets/astronomy/hi21cm-moment1-wcsaxes.png",
+    "spectral-cube-metrics.json": "runtime/assets/astronomy/spectral-cube-metrics.json",
+    "eso-archive.json": "runtime/assets/astronomy/eso-archive.json",
+    "nist-visible-emission-lines.json": "runtime/assets/astronomy/nist-visible-emission-lines.json"
+  },
   "errors": {
-    "pipeline": {
-      "message": "Awaiting first URUX Astronomy Assets workflow run"
+    "astroquery.eso.query": {
+      "type": "RemoteServiceError",
+      "message": "The query resulted in a network problem; the service may be offline."
     }
-  }
+  },
+  "coordinates": {
+    "icrs": {
+      "raDeg": 83.8201,
+      "decDeg": -5.3876
+    },
+    "galactic": {
+      "lDeg": 209.00947950388093,
+      "bDeg": -19.381774282431564
+    }
+  },
+  "augmentedAt": "2026-08-13T08:24:34.957403+00:00"
 }
