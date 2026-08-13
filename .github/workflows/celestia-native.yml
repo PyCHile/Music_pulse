@@ -4,7 +4,8 @@ on:
   push:
     paths:
       - "native/celestia/**"
-      - "native/celestia-sidecar/**"
+      - "scientific/celestia/sidecar/**"
+      - "scientific/celestia/simulation_probe.cpp"
       - "science/index_celestia_content.py"
       - "science/export_celestia_static_runtime.py"
       - ".github/workflows/celestia-native.yml"
@@ -47,7 +48,7 @@ jobs:
             libepoxy-dev libeigen3-dev libfmt-dev libpng-dev libjpeg-dev \
             libfreetype6-dev gperf libboost-dev liblua5.4-dev gettext
 
-      - name: Build complete Celestia shared library and precompute static runtime
+      - name: Build complete Celestia and execute Simulation/Universe precompute
         env:
           CELESTIA_SOURCE_REF: 84153ded046fbea46c9f411dd0232e5426373ead
           CELESTIA_CONTENT_REF: e4d5d2754b6224f04e440e53b189f9ee96b6d1fe
@@ -55,32 +56,36 @@ jobs:
           URUX_SIDECAR_TOKEN: "github-actions-only-urux-celestia-token-20260813"
         run: bash native/celestia/build.sh
 
-      - name: Verify native Celestia and static runtime export
+      - name: Verify literal Celestia high-level and low-level execution
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
           manifest=Path('runtime/assets/astronomy/celestia-native-manifest.json')
           runtime=Path('runtime/assets/astronomy/celestia-static-runtime.json')
+          simulation=Path('runtime/assets/astronomy/celestia-simulation.json')
           content=Path('runtime/assets/astronomy/celestia-content-index.json')
-          assert manifest.exists() and runtime.exists() and content.exists()
-          m=json.loads(manifest.read_text())
-          r=json.loads(runtime.read_text())
-          c=json.loads(content.read_text())
+          assert manifest.exists() and runtime.exists() and simulation.exists() and content.exists()
+          m=json.loads(manifest.read_text());r=json.loads(runtime.read_text());s=json.loads(simulation.read_text());c=json.loads(content.read_text())
           assert m['nativeBuildVerified'] is True
           assert m['sidecarBinaryVerified'] is True
           assert m['ephemeralSidecarExecuted'] is True
+          assert m['simulationInitialized'] is True
           assert m['staticRuntimeActive'] is True
           assert m['integrationMode'] == 'github-actions-static-precompute'
           for module in ('celengine','celephem','celrender','celscript','celx'):
               assert module in m['compiledSubsystems']
-          assert r['native'] is True
-          assert r['photometryLut'] and r['equatorialLut'] and r['anomalyLut'] and r['obliquityLut']
-          assert c['resourceFamilies']['solarSystem'] > 0
-          assert c['resourceFamilies']['stars'] > 0
-          assert c['resourceFamilies']['deepSky'] > 0
-          assert Path('build/urux-celestia-sidecar').exists()
-          print(json.dumps({'manifest':m,'usage':r['usage'],'resources':c['resourceFamilies']}, indent=2))
+          for api in ('CelestiaCore::initSimulation','Simulation::getUniverse','Simulation::findObjectFromPath','StarDatabase::size','DSODatabase::size'):
+              assert api in m['executedHighLevelAPIs']
+          assert s['simulationInitialized'] is True
+          assert s['catalogCounts']['stars'] > 1000
+          assert s['catalogCounts']['deepSky'] > 0
+          assert s['catalogCounts']['solarSystems'] > 0
+          assert s['objectsFound'] >= 5
+          assert r['native'] is True and r['photometryLut'] and r['equatorialLut'] and r['anomalyLut'] and r['obliquityLut']
+          assert c['resourceFamilies']['solarSystem'] > 0 and c['resourceFamilies']['stars'] > 0 and c['resourceFamilies']['deepSky'] > 0
+          assert Path('build/urux-celestia-sidecar').exists() and Path('build/urux-celestia-simulation-probe').exists()
+          print(json.dumps({'manifest':m,'simulation':s,'usage':r['usage'],'resources':c['resourceFamilies']}, indent=2))
           PY
 
       - name: Upload literal Celestia native build
@@ -90,9 +95,11 @@ jobs:
           path: |
             build/celestia/src/celestia/libcelestia.so*
             build/urux-celestia-sidecar
+            build/urux-celestia-simulation-probe
             runtime/assets/astronomy/celestia-native-manifest.json
             runtime/assets/astronomy/celestia-content-index.json
             runtime/assets/astronomy/celestia-static-runtime.json
+            runtime/assets/astronomy/celestia-simulation.json
           if-no-files-found: error
           retention-days: 14
 
@@ -102,11 +109,12 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add runtime/assets/astronomy/celestia-native-manifest.json \
                   runtime/assets/astronomy/celestia-content-index.json \
-                  runtime/assets/astronomy/celestia-static-runtime.json
+                  runtime/assets/astronomy/celestia-static-runtime.json \
+                  runtime/assets/astronomy/celestia-simulation.json
           if git diff --cached --quiet; then
             echo "No Celestia static asset changes"
           else
-            git commit -m "data: refresh literal Celestia static runtime"
+            git commit -m "data: refresh literal Celestia Simulation runtime"
             git pull --rebase --autostash origin main
             git push origin HEAD:main
           fi
