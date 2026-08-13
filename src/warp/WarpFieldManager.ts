@@ -4,8 +4,6 @@ import { StarTunnelSystem } from './StarTunnelSystem';
 import { NebulaBackdrop } from './NebulaBackdrop';
 import { DeepSpaceSectorSystem } from './DeepSpaceSectorSystem';
 import { GalacticWispSystem } from './GalacticWispSystem';
-import { CelestialFlybySystem } from './CelestialFlybySystem';
-import { EtherealFiguresSystem } from './EtherealFiguresSystem';
 
 export class WarpFieldManager {
   readonly group=new THREE.Group();
@@ -13,18 +11,13 @@ export class WarpFieldManager {
   readonly nebula:NebulaBackdrop;
   readonly deepSpace:DeepSpaceSectorSystem;
   readonly galacticWisps:GalacticWispSystem;
-  readonly flybys:CelestialFlybySystem;
-  readonly etherealFigures:EtherealFiguresSystem;
 
   constructor(maxStars:number){
     this.nebula=new NebulaBackdrop();
     this.deepSpace=new DeepSpaceSectorSystem();
     this.galacticWisps=new GalacticWispSystem(maxStars<=1200?28:36);
     this.starTunnel=new StarTunnelSystem(maxStars);
-    this.flybys=new CelestialFlybySystem();
-    this.flybys.group.visible=false;
-    this.etherealFigures=new EtherealFiguresSystem();
-    this.group.add(this.nebula.mesh,this.deepSpace.group,this.galacticWisps.group,this.starTunnel.group,this.flybys.group,this.etherealFigures.group);
+    this.group.add(this.nebula.mesh,this.deepSpace.group,this.galacticWisps.group,this.starTunnel.group);
   }
 
   update(dt:number,s:WarpState,f:AudioFeatures,vp:{x:number;y:number}){
@@ -41,9 +34,7 @@ export class WarpFieldManager {
       tunnel.pointGeometry.attributes.aAlpha.needsUpdate=true;tunnel.lineGeometry.attributes.aAlpha.needsUpdate=true;
       tunnel.lineMaterial.uniforms.uIntensity.value*=.18+.82*(1-sector*.90);
     }
-    this.flybys.update(dt,s);
-    this.etherealFigures.update(dt,s,f);
   }
 
-  dispose(){this.nebula.dispose();this.deepSpace.dispose();this.galacticWisps.dispose();this.starTunnel.dispose();this.flybys.dispose();this.etherealFigures.dispose();}
+  dispose(){this.nebula.dispose();this.deepSpace.dispose();this.galacticWisps.dispose();this.starTunnel.dispose();}
 }
