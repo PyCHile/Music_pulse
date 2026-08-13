@@ -9,7 +9,7 @@ using namespace celestia;
 
 namespace {
 void usage() {
-    std::cerr << "usage: urux-celestia-bridge <constants|photometry|equatorial|anomaly> [args...]\n";
+    std::cerr << "usage: urux-celestia-bridge <constants|photometry|equatorial|anomaly|obliquity> [args...]\n";
 }
 
 double number(const char* value) {
@@ -57,11 +57,11 @@ int main(int argc, char** argv) {
 
         if (cmd == "equatorial") {
             if (argc != 5) { usage(); return 2; }
-            const double raDeg = number(argv[2]);
+            const double raHours = number(argv[2]);
             const double decDeg = number(argv[3]);
             const double distance = number(argv[4]);
-            const auto p = astro::equatorialToCelestialCart(raDeg, decDeg, distance);
-            std::cout << "{\"raDeg\":" << raDeg << ",\"decDeg\":" << decDeg
+            const auto p = astro::equatorialToCelestialCart(raHours, decDeg, distance);
+            std::cout << "{\"raHours\":" << raHours << ",\"decDeg\":" << decDeg
                       << ",\"distance\":" << distance
                       << ",\"celestial\":[" << p.x() << ',' << p.y() << ',' << p.z() << "]}\n";
             return 0;
@@ -78,6 +78,15 @@ int main(int argc, char** argv) {
                       << ",\"eccentricity\":" << eccentricity
                       << ",\"trueAnomalyRad\":" << trueAnomaly
                       << ",\"eccentricAnomalyRad\":" << eccentricAnomaly << "}\n";
+            return 0;
+        }
+
+        if (cmd == "obliquity") {
+            if (argc != 3) { usage(); return 2; }
+            const double jd = number(argv[2]);
+            std::cout << "{\"julianDate\":" << jd
+                      << ",\"meanEclipticObliquityRad\":" << astro::meanEclipticObliquity(jd)
+                      << "}\n";
             return 0;
         }
 
