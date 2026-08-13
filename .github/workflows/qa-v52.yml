@@ -1,0 +1,59 @@
+name: Interstellar Warp QA v52
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: npm install
+      - name: Production architecture audit
+        run: |
+          for f in index.html version.json runtime/main.js runtime/mainCoreV50.js runtime/scene/InterstellarWarpScene.js runtime/warp/WarpFieldManagerV51.js runtime/warp/VolumetricNebulaRaymarcherV51.js runtime/warp/CloudNebulaLayerV51.js runtime/journey/SecureURUXJourneyAgent.js runtime/journey/URUXBackendClient.js runtime/journey/CinematicEncounterSystemV42.js runtime/astronomy/ScientificAstronomyRuntime.js runtime/astronomy/ScientificAstronomyRuntimeLab.js runtime/spacekit/SpaceKitAstronomicalLayer.js runtime/spacekit/SpaceKitAstronomicalLayerLab.js worker/src/index-v2.js; do test -f "$f"; done
+          grep -q 'mainCoreV50' runtime/main.js
+          grep -q 'SecureURUXJourneyAgent' runtime/mainCoreV50.js
+          grep -q 'configureBackendURL' runtime/mainCoreV50.js
+          grep -q 'llmActive' runtime/mainCoreV50.js
+          grep -q 'FRAME-BUDGET' version.json
+          ! grep -q 'typpo.github.io/spacekit/build/spacekit.js' index.html
+          ! grep -q "from 'postprocessing'" runtime/scene/InterstellarWarpScene.js
+          grep -q 'one-renderer-production-path' runtime/scene/InterstellarWarpScene.js
+          grep -q 'VolumetricNebulaRaymarcherV51' runtime/warp/WarpFieldManagerV51.js
+          grep -q 'CloudNebulaLayerV51' runtime/warp/WarpFieldManagerV51.js
+          grep -q 'baseSteps=10' runtime/warp/VolumetricNebulaRaymarcherV51.js
+          grep -q "mode:'static-precomputed'" runtime/astronomy/ScientificAstronomyRuntime.js
+          grep -q 'disabledForPerformance=true' runtime/spacekit/SpaceKitAstronomicalLayer.js
+      - name: Scientific LAB audit
+        run: |
+          grep -q 'CelestiaCore::initSimulation' scientific/celestia/simulation_probe.cpp
+          grep -q 'WCSAxes' science/build_astronomy_assets.py
+          grep -q 'SpectralCube' science/build_astronomy_assets.py
+          grep -q 'astroquery.eso' science/augment_astronomy_assets.py
+          grep -q 'nativeBuildVerified' runtime/astronomy/ScientificAstronomyRuntimeLab.js
+      - name: Security audit
+        run: |
+          grep -q '/v1/encounters' runtime/journey/URUXBackendClient.js
+          grep -q 'OPENROUTER_API_KEY' worker/src/index-v2.js
+          ! grep -R -E 'Authorization\s*:\s*.*Bearer|openrouter\.ai/api/v1/chat/completions' runtime
+      - run: npm run typecheck
+      - run: npm run test
+      - run: npm run build
+      - run: node --check worker/src/index-v2.js
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: warp-visual-checkpoints-v52
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
