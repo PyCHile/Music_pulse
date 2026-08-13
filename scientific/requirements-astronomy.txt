@@ -1,0 +1,7 @@
+astropy==8.0.1
+astroquery==0.4.11
+aplpy
+reproject
+matplotlib
+numpy
+spectral-cube
