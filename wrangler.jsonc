@@ -2,13 +2,10 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "music-pulse",
   "main": "worker/src/index.js",
-  "compatibility_date": "2026-08-12",
+  "compatibility_date": "2026-08-13",
   "workers_dev": true,
   "vars": {
     "ALLOWED_ORIGIN": "https://pychile.github.io"
-  },
-  "secrets": {
-    "required": ["OPENROUTER_API_KEY"]
   },
   "observability": {
     "enabled": true
