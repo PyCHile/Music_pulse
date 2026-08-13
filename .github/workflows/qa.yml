@@ -72,7 +72,7 @@ jobs:
       - name: Scientific stack and static Celestia audit
         run: |
           for pkg in astropy astroquery aplpy reproject matplotlib numpy spectral-cube; do grep -qi "$pkg" requirements-astro.txt; done
-          for f in science/build_astronomy_assets.py science/augment_astronomy_assets.py science/export_celestia_static_runtime.py native/celestia/build.sh scientific/celestia/sidecar/server.cpp windmill/f/urux/validate_encounter.ts windmill/f/urux/direct_journey.ts; do test -f "$f"; done
+          for f in science/build_astronomy_assets.py science/augment_astronomy_assets.py science/export_celestia_static_runtime.py native/celestia/build.sh scientific/celestia/sidecar/server_v2.cpp scientific/celestia/simulation_probe.cpp windmill/f/urux/validate_encounter.ts windmill/f/urux/direct_journey.ts; do test -f "$f"; done
           grep -q 'WCSAxes' science/build_astronomy_assets.py
           grep -q 'reproject_interp' science/build_astronomy_assets.py
           grep -q 'reproject_adaptive' science/build_astronomy_assets.py
@@ -81,6 +81,10 @@ jobs:
           grep -q 'astroquery.eso' science/augment_astronomy_assets.py
           grep -q 'astroquery.nist' science/augment_astronomy_assets.py
           grep -q 'github-actions-static-precompute' native/celestia/build.sh
+          grep -q 'CelestiaCore::initSimulation' scientific/celestia/simulation_probe.cpp
+          grep -q 'Simulation::getUniverse' native/celestia/build.sh
+          grep -q 'velocityKmPerJulianDay' scientific/celestia/simulation_probe.cpp
+          grep -q 'velocityKmPerSecDerived' scientific/celestia/simulation_probe.cpp
 
       - name: Encounter visibility and cost audit
         run: |
