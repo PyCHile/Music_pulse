@@ -1,21 +1,24 @@
 # URUX
 
-Experiencia audiovisual de viaje interestelar continuo. La música controla velocidad, densidad, streaks, profundidad, FOV y energía visual, pero la composición queda bloqueada permanentemente en la familia `INTERSTELLAR_WARP`.
+Experiencia audiovisual de viaje interestelar continuo. La música controla velocidad, densidad, streaks, profundidad, FOV y energía visual, mientras el punto focal permanece matemáticamente centrado.
 
-## Principio de continuidad
+## Arquitectura activa
 
-La escena nunca cambia a data grids, paneles, cajas flotantes o composiciones abstractas. El centro de fuga, el flujo radial y el movimiento hacia adelante se mantienen durante toda la reproducción.
+- `index.html` + `runtime/`: aplicación publicada directamente por GitHub Pages.
+- `runtime/spacekit/SpaceKitAstronomicalLayer.js`: capa astronómica activa basada literalmente en SpaceKit.js para cielo, estrellas y cuerpos planetarios.
+- `runtime/thirdparty/`: ports activos de Celestia, TrueColorTools y webgpu-galaxy utilizados por el campo profundo.
+- `runtime/warp/DeepSpaceSectorSystem.js`: sectores galácticos/nebulosos atravesables.
+- `runtime/warp/StarTunnelSystem.js`: viaje radial con punto focal fijo.
+- `src/`: implementación React + TypeScript usada para desarrollo, typecheck, build y QA del núcleo warp.
+- `tests/unit/` y `tests/e2e/`: invariantes del vuelo, audio, continuidad visual y SpaceKit.
 
-## Arquitectura
+## Regla de continuidad
 
-- `runtime/`: versión estática que GitHub Pages ejecuta directamente desde `index.html`.
-- `src/`: fuente modular React + TypeScript + React Three Fiber para desarrollo y QA.
-- `src/audio/`: Web Audio API, FFT, energía, transientes y estados musicales.
-- `src/warp/`: `VisualFamilyLock`, `ContinuityGuard`, `WarpVariationEngine`, `WarpContinuityDirector`, `StarTunnelSystem`, optical flow y streak control.
-- `src/shaders/`: shaders GLSL de estrellas y streaks.
-- `tests/unit/`: pruebas de invariantes del viaje warp y análisis musical.
-- `tests/e2e/`: smoke test de navegador con Playwright.
-- `.github/workflows/qa.yml`: gate QA automático en cada push/PR.
+La escena no cambia a paneles, grids ni composiciones abstractas. El centro de fuga permanece en `(0,0)` y los objetos astronómicos aparecen desde ese punto, crecen por perspectiva y solo se desplazan lateralmente al acercarse para producir la sensación de sobrevuelo.
+
+## Limpieza de código
+
+Los sistemas visuales sustituidos se eliminan físicamente del repositorio. El workflow de QA bloquea la reintroducción de módulos deprecados, assets huérfanos y dependencias no utilizadas identificadas durante la evolución de URUX.
 
 ## Desarrollo
 
@@ -24,7 +27,7 @@ npm install
 npm run dev
 ```
 
-Abrir `/source/` para la versión de desarrollo.
+Abrir `/source/` para la aplicación React de desarrollo.
 
 ## QA
 
@@ -35,8 +38,8 @@ npm run build
 npm run test:e2e
 ```
 
-El workflow de GitHub Actions repite estas validaciones y además audita la estructura física del repositorio y rechaza placeholders en componentes críticos.
+GitHub Actions repite estas validaciones, audita la estructura del repositorio y rechaza placeholders y archivos deprecados.
 
 ## GitHub Pages
 
-La raíz del repositorio mantiene una versión modular estática en `runtime/`, por lo que el sitio publicado no depende del bundle antiguo generado anteriormente. `music.mp3` permanece como audio principal.
+La versión publicada se ejecuta desde la raíz del repositorio y utiliza `music.mp3`, `light-theme.mp3` y `fetal-heartbeat.mp3` como arquitectura de audio activa.
