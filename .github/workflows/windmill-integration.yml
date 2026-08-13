@@ -71,7 +71,7 @@ jobs:
         env:
           WM_TOKEN: ${{ steps.auth.outputs.token }}
         run: |
-          wmill generate-metadata f/urux --yes
+          wmill generate-metadata f/urux --yes --base-url http://127.0.0.1 --token "$WM_TOKEN" --workspace admins
           wmill sync push --yes --base-url http://127.0.0.1 --token "$WM_TOKEN" --workspace admins
           wmill script show f/urux/validate_encounter --base-url http://127.0.0.1 --token "$WM_TOKEN" --workspace admins >/dev/null
           wmill script show f/urux/direct_journey --base-url http://127.0.0.1 --token "$WM_TOKEN" --workspace admins >/dev/null
