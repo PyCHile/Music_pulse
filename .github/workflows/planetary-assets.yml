@@ -28,7 +28,8 @@ jobs:
           git clone --depth 1 https://github.com/BinomialLLC/basis_universal.git external/basis_universal
           cmake -S external/basis_universal -B build/basisu -DCMAKE_BUILD_TYPE=Release
           cmake --build build/basisu --parallel 2
-          test -x build/basisu/bin/basisu
+          test -x external/basis_universal/bin/basisu
+          external/basis_universal/bin/basisu -version || true
 
       - name: Fetch documented Three.js r185 Earth PBR sources
         run: |
@@ -40,17 +41,18 @@ jobs:
 
       - name: Encode UASTC KTX2 with mipmaps
         run: |
-          BASIS=build/basisu/bin/basisu
-          OUT="$PWD/runtime/assets/planets/earth/ktx2"
+          BASIS="$GITHUB_WORKSPACE/external/basis_universal/bin/basisu"
+          OUT="$GITHUB_WORKSPACE/runtime/assets/planets/earth/ktx2"
           cd runtime/assets/planets/earth/source
           for f in earth_day_4096.jpg earth_night_4096.jpg earth_bump_roughness_clouds_4096.jpg earth_normal_2048.jpg earth_clouds_1024.png earth_atmos_2048.jpg; do
-            "$GITHUB_WORKSPACE/$BASIS" -ktx2 -uastc -mipmap -quality 75 "$f"
+            "$BASIS" -ktx2 -uastc -uastc_level 2 -mipmap "$f"
+            test -f "${f%.*}.ktx2"
             mv "${f%.*}.ktx2" "$OUT/"
           done
 
       - name: Validate KTX2 and write manifest
         run: |
-          BASIS=build/basisu/bin/basisu
+          BASIS="$GITHUB_WORKSPACE/external/basis_universal/bin/basisu"
           for f in runtime/assets/planets/earth/ktx2/*.ktx2; do "$BASIS" -validate "$f"; done
           python - <<'PY'
           import json, hashlib
