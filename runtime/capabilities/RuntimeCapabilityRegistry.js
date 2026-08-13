@@ -16,7 +16,12 @@ export class RuntimeCapabilityRegistry{
     set('pbr-astronomy',false,{kind:'textures'});
     set('shader-noise',false,{kind:'shader'});
     set('volumetric-raymarch',false,{kind:'shader'});
-    set('celestia-photometry',true,{kind:'astronomy'});
+    set('celestia-photometry',true,{kind:'astronomy',mode:'ported legacy subset'});
+    set('celestia-literal',false,{kind:'astronomy',mode:'native shared library + bridge'});
+    set('astropy-stack',false,{kind:'science'});
+    set('gaia-catalog',false,{kind:'data'});
+    set('wcs-science',false,{kind:'science'});
+    set('spectral-cube',false,{kind:'science'});
     set('truecolor-tools',true,{kind:'astronomy'});
     set('webgpu-galaxy-model',true,{kind:'astronomy'});
     set('nasa-jpl-catalog',false,{kind:'data'});
