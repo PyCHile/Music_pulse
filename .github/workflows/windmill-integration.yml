@@ -14,18 +14,15 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
-
       - name: Fetch official Windmill self-host compose
         run: |
           mkdir -p .windmill-ci
           curl -fsSL https://raw.githubusercontent.com/windmill-labs/windmill/main/docker-compose.yml -o .windmill-ci/docker-compose.yml
           curl -fsSL https://raw.githubusercontent.com/windmill-labs/windmill/main/Caddyfile -o .windmill-ci/Caddyfile
           curl -fsSL https://raw.githubusercontent.com/windmill-labs/windmill/main/.env -o .windmill-ci/.env
-
       - name: Start literal Windmill Community Edition
         working-directory: .windmill-ci
         run: docker compose up -d
-
       - name: Verify Windmill API health
         run: |
           python - <<'PY'
@@ -38,10 +35,8 @@ jobs:
               except Exception as exc: last=exc;time.sleep(2)
           else: raise SystemExit(f'Windmill did not become healthy: {last}')
           PY
-
       - name: Install official Windmill CLI
         run: npm install -g windmill-cli && wmill --version
-
       - name: Authenticate to ephemeral Windmill
         id: auth
         run: |
@@ -55,15 +50,13 @@ jobs:
           if not isinstance(token,str) or len(token)<20: raise SystemExit('Windmill login did not return a usable token')
           print('token='+token)
           PY
-
       - name: Configure authenticated Windmill workspace profile
         env:
           WM_TOKEN: ${{ steps.auth.outputs.token }}
         run: |
-          wmill workspace add urux-ci admins http://127.0.0.1 --token "$WM_TOKEN" --force
+          wmill workspace add urux-ci admins http://127.0.0.1 --token "$WM_TOKEN"
           wmill workspace switch urux-ci
           wmill workspace whoami
-
       - name: Generate metadata and push URUX scripts into Windmill
         working-directory: windmill
         run: |
@@ -71,7 +64,6 @@ jobs:
           wmill sync push --yes
           wmill script show f/urux/validate_encounter >/dev/null
           wmill script show f/urux/direct_journey >/dev/null
-
       - name: Execute URUX validator inside Windmill
         working-directory: windmill
         run: |
@@ -84,7 +76,6 @@ jobs:
           import json,os
           d=json.loads(os.environ['RESULT']);assert d['ok'] is True,d;assert 'volumetric-raymarch' in d['allowedCapabilities'];assert d['policy'].startswith('Windmill validates/orchestrates')
           PY
-
       - name: Execute URUX journey director inside Windmill
         working-directory: windmill
         run: |
@@ -97,13 +88,11 @@ jobs:
           import json,os
           d=json.loads(os.environ['RESULT']);assert d['ok'] is True;assert d['directives']['onlyUseDeclaredCapabilities'] is True;assert d['directives']['noRenderLoopCalls'] is True;assert 'three-nebula' in d['availableCapabilities'];assert 'imaginary-effect' not in d['availableCapabilities']
           PY
-
       - name: Verify Windmill remains outside render loop
         run: |
           grep -q "noRenderLoopCalls:true" windmill/f/urux/direct_journey.ts
           grep -q "never runs in Three.js render loop" windmill/f/urux/validate_encounter.ts
           if grep -R -E "requestAnimationFrame|renderer\.render|composer\.render" windmill/f/urux; then echo "Windmill render-loop coupling detected"; exit 1; fi
-
       - name: Stop ephemeral Windmill
         if: always()
         working-directory: .windmill-ci
