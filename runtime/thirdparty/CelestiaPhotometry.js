@@ -1,55 +1,23 @@
 /*
- * URUX JavaScript port of selected Celestia photometric routines.
+ * URUX JavaScript port of the Celestia stellar photometry used by the active
+ * deep-space renderer.
  * Source: https://github.com/celestiaproject/Celestia
  * Original copyright (C) 2001-present, Celestia Development Team.
  * Original version by Chris Laurel <claurel@gmail.com>.
  * Licensed under GNU GPL v2 or later.
- *
- * This file intentionally preserves the core formulas used by Celestia for
- * magnitude <-> irradiance conversion and bright-star soft clipping.
  */
 
 export const CELESTIA_LN_MAG = 1.0857362;
-export const CELESTIA_LY_PER_PARSEC = 3.2615637771674336;
-export const CELESTIA_SOLAR_ABSMAG = 4.81;
-export const CELESTIA_SOLAR_TEMPERATURE = 5772.0;
 
 export function magToIrradiance(mag) {
-  return Math.exp(-mag / CELESTIA_LN_MAG); // 10^(-0.4 * mag)
+  return Math.exp(-mag / CELESTIA_LN_MAG);
 }
 
-export function irradianceToMag(irradiance) {
-  return -Math.log(Math.max(1e-30, irradiance)) * CELESTIA_LN_MAG;
-}
-
-export function distanceModulus(lightYears) {
-  return 5 * Math.log10(Math.max(1e-12, lightYears) / CELESTIA_LY_PER_PARSEC) - 5;
-}
-
-export function absToAppMag(absMag, lightYears) {
-  return absMag + distanceModulus(lightYears);
-}
-
-export function appToAbsMag(appMag, lightYears) {
-  return appMag - distanceModulus(lightYears);
-}
-
-export function absMagToLum(absMag) {
-  return Math.exp((CELESTIA_SOLAR_ABSMAG - absMag) / CELESTIA_LN_MAG);
-}
-
-export function reflectedLuminosity(sunLuminosity, distanceFromSun, objectRadius) {
-  const ratio = objectRadius / Math.max(1e-9, distanceFromSun);
-  return sunLuminosity * 0.25 * ratio * ratio;
-}
-
-// Port of the hyperbolic dim-gate used by Celestia's PSF star renderer.
 export function celestiaDimGateSoftClip(peakRadiance, dimGate) {
   if (peakRadiance <= dimGate) return 0;
   return Math.sqrt(peakRadiance * peakRadiance - dimGate * dimGate);
 }
 
-// Port of Celestia's bounded glow peak calculation used to prevent runaway bloom.
 export function celestiaGlowSoftClip(peakRadiance, maxIrradiance) {
   if (!(maxIrradiance > 0)) return peakRadiance;
   return (1 - 1 / (peakRadiance / maxIrradiance + 1)) * maxIrradiance;
@@ -61,8 +29,6 @@ export function normalizedStellarRadiance(apparentMagnitude, exposure = 1, dimGa
   return celestiaGlowSoftClip(peak, maxIrradiance);
 }
 
-// Celestia's legacy enhanced temperature table, kept as an optional rendering mode.
-// Values are sampled every 1000K from the original StarColors_Enhanced table.
 const ENHANCED_STAR_COLORS = [
   [0,0,0],[.75,.20,.20],[1,.40,.40],[1,.70,.70],[1,.90,.70],[1,1,.75],[1,1,.88],[1,1,.95],[1,1,1],
   [.95,.98,1],[.90,.95,1],[.85,.93,1],[.80,.90,1],[.79,.89,1],[.78,.88,1],[.77,.87,1],[.76,.86,1],
