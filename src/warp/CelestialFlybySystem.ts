@@ -7,6 +7,7 @@ type RGB=[number,number,number];
 const clamp01=(v:number)=>Math.max(0,Math.min(1,v));
 const smooth01=(x:number)=>{const t=clamp01(x);return t*t*(3-2*t);};
 const tonePlanet=(rgb:number[],type:number):RGB=>{const y=rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722,sat=type<.5?.46:.58,neutral:RGB=type<.5?[.64,.58,.51]:[.48,.27,.18];return rgb.map((v,i)=>clamp01((y+(v-y)*sat)*.72+neutral[i]*.28)) as RGB;};
+const focalTrajectory=(t:number,s:{side:number;y:number})=>{const rush=Math.pow(t,2.35),peel=smooth01((t-.42)/.50),lateral=peel*peel,x=s.side*lateral*(4+30*Math.pow(t,1.6)),y=lateral*(s.y+Math.sin(t*Math.PI)*s.side*1.2),z=-270+rush*282;return{x,y,z,peel,lateral,rush};};
 
 const vertex=`varying vec3 vNormal;varying vec3 vPos;void main(){vNormal=normalize(normalMatrix*normal);vec4 mv=modelViewMatrix*vec4(position,1.0);vPos=mv.xyz;gl_Position=projectionMatrix*mv;}`;
 const fragment=`precision highp float;varying vec3 vNormal;varying vec3 vPos;uniform vec3 uBase;uniform vec3 uAccent;uniform float uType;uniform float uTime;uniform float uOpacity;uniform float uLunarLambert;uniform float uSpecular;float hash(vec3 p){p=fract(p*.3183099+.1);p*=17.0;return fract(p.x*p.y*p.z*(p.x+p.y+p.z));}float noise(vec3 p){vec3 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);float n000=hash(i),n100=hash(i+vec3(1,0,0)),n010=hash(i+vec3(0,1,0)),n110=hash(i+vec3(1,1,0)),n001=hash(i+vec3(0,0,1)),n101=hash(i+vec3(1,0,1)),n011=hash(i+vec3(0,1,1)),n111=hash(i+vec3(1,1,1));return mix(mix(mix(n000,n100,f.x),mix(n010,n110,f.x),f.y),mix(mix(n001,n101,f.x),mix(n011,n111,f.x),f.y),f.z);}void main(){vec3 N=normalize(vNormal),V=normalize(-vPos),L=normalize(vec3(-.52,.36,.78));float NL=max(0.0,dot(N,L)),NV=max(0.001,dot(N,V));float cosPhaseAngle=dot(V,L);float phaseAngle=degrees(acos(clamp(cosPhaseAngle,-1.0,1.0)));float lunarLimbDarkening=1.0+phaseAngle*(-0.019+phaseAngle*(0.242e-3-phaseAngle*1.46e-6));float lunarWeight=clamp(uLunarLambert*max(lunarLimbDarkening,0.0),0.0,1.0);float lunarDiffuse=mix(NL,2.0*NL/(NV+NL),lunarWeight);float micro=noise(N*24.0+vec3(uTime*.003,0.0,0.0)),fine=noise(N*71.0);float latitude=asin(clamp(N.y,-1.0,1.0));float bands=.5+.5*sin(latitude*27.0+noise(vec3(N.xz*8.0,0.0))*1.55+uTime*.005);float jet=.5+.5*sin(latitude*54.0+noise(N*13.0)*.85);float spot=exp(-dot(vec2(N.x+.34,N.y+.17),vec2(N.x+.34,N.y+.17))*72.0);float rocky=mix(.78,1.14,micro*.68+fine*.32);float gas=mix(.84,1.10,bands*.76+jet*.24);float pattern=mix(gas,rocky,step(.5,uType));vec3 albedo=mix(uBase,uAccent,uType<.5?bands*.14:(micro-.5)*.12+.08)*pattern;if(uType<.5)albedo=mix(albedo,uAccent*vec3(.92,.66,.54),spot*.12);vec3 H=normalize(L+V);float spec=pow(max(dot(N,H),0.0),mix(28.0,58.0,1.0-uType))*uSpecular*NL;float terminator=smoothstep(-.018,.14,dot(N,L));vec3 col=albedo*(lunarDiffuse*.92)*terminator+albedo*.003+vec3(1.0,.96,.90)*spec;float limb=pow(1.0-NV,3.5);col+=uAccent*limb*.018;gl_FragColor=vec4(col,uOpacity);}`;
@@ -35,6 +36,9 @@ export class CelestialFlybySystem{
  private time=0;
  activeFlybyCount=0;
  closestObjectZ=-999;
+ closestLateralOffset=0;
+ focusOriginError=0;
+ flybyProgress=0;
 
  constructor(){
   for(const s of EVENTS){
@@ -52,15 +56,15 @@ export class CelestialFlybySystem{
  }
 
  update(dt:number,state:WarpState){
-  this.time+=dt;const p=clamp01(state.soulProgress||0),fade=1-clamp01(state.finalFade||0);this.activeFlybyCount=0;this.closestObjectZ=-999;
+  this.time+=dt;const p=clamp01(state.soulProgress||0),fade=1-clamp01(state.finalFade||0);this.activeFlybyCount=0;this.closestObjectZ=-999;this.closestLateralOffset=0;this.focusOriginError=0;this.flybyProgress=0;
   for(let i=0;i<this.flybys.length;i++){
    const f=this.flybys[i],s=f.spec,raw=(p-s.start)/(s.end-s.start);if(raw<=0||raw>=1){f.group.visible=false;continue;}
-   const env=smooth01(raw/.10)*(1-smooth01((raw-.86)/.12))*fade,t=smooth01(raw),approach=1-Math.pow(1-t,2.12);this.activeFlybyCount++;f.group.visible=env>.005;
-   f.group.position.set(s.side*(10+approach*17),s.y+Math.sin(t*Math.PI)*s.side*.8,Math.max(-10,-230+approach*240));f.group.rotation.y=this.time*.025*s.side+t*.30;f.planet.rotation.y+=dt*(.035+.025*i);
-   f.material.uniforms.uTime.value=this.time;f.material.uniforms.uOpacity.value=Math.min(.96,env*1.02);f.atmosphere.mat.uniforms.uOpacity.value=Math.min(.20,env*(s.type<.5?.11:.07));f.moonMat.uniforms.uTime.value=this.time*.8;f.moonMat.uniforms.uOpacity.value=Math.min(.72,env);
+   const env=smooth01(raw/.10)*(1-smooth01((raw-.90)/.10))*fade,t=smooth01(raw),traj=focalTrajectory(t,s);this.activeFlybyCount++;f.group.visible=env>.005;
+   f.group.position.set(traj.x,traj.y,traj.z);f.group.rotation.y=traj.lateral*(this.time*.025*s.side+t*.42);f.group.rotation.x=traj.lateral*Math.sin(t*Math.PI)*.06*s.side;f.planet.rotation.y+=dt*(.035+.025*i);
+   f.material.uniforms.uTime.value=this.time;f.material.uniforms.uOpacity.value=Math.min(.98,env*1.04);f.atmosphere.mat.uniforms.uOpacity.value=Math.min(.20,env*(s.type<.5?.11:.07));f.moonMat.uniforms.uTime.value=this.time*.8;f.moonMat.uniforms.uOpacity.value=Math.min(.72,env*traj.peel);
    const orbit=t*Math.PI*2.0+i;f.moon.position.set(Math.cos(orbit)*8.2,Math.sin(orbit*.72)*2.6,-3+Math.sin(orbit)*2);
-   const rad=normalizedStellarRadiance(1.4-5.5*t,.50,.0015,5.2);f.starMat.opacity=Math.min(.68,env*(.07+rad*.12));const ss=4+Math.min(8,rad*.8);f.star.scale.set(ss,ss,1);
-   f.material.uniforms.uOpacity.value*=Math.min(1,.78+Math.sqrt(reflectedLuminosity(1,Math.max(1.4,8.5-5*t),s.radius*.08))*2.4);if(f.ring)f.ring.mat.opacity=Math.min(.24,env*.22);this.closestObjectZ=Math.max(this.closestObjectZ,f.group.position.z);
+   const rad=normalizedStellarRadiance(1.4-5.5*t,.50,.0015,5.2);f.starMat.opacity=Math.min(.68,env*(.07+rad*.12)*(.12+.88*traj.peel));const ss=4+Math.min(8,rad*.8);f.star.scale.set(ss,ss,1);
+   f.material.uniforms.uOpacity.value*=Math.min(1,.78+Math.sqrt(reflectedLuminosity(1,Math.max(1.4,8.5-5*t),s.radius*.08))*2.4);if(f.ring)f.ring.mat.opacity=Math.min(.24,env*.22*(.18+.82*traj.peel));this.closestObjectZ=Math.max(this.closestObjectZ,traj.z);this.closestLateralOffset=Math.max(this.closestLateralOffset,Math.hypot(traj.x,traj.y));this.focusOriginError=traj.peel<.05?Math.hypot(traj.x,traj.y):this.focusOriginError;this.flybyProgress=Math.max(this.flybyProgress,t);
   }
  }
 
