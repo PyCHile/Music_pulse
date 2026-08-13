@@ -5,7 +5,7 @@ export class AIStatusOverlay{
     this.lastRender=0;
     this.root=document.createElement('div');
     this.root.id='urux-ai-status';
-    Object.assign(this.root.style,{position:'fixed',top:'max(14px, env(safe-area-inset-top))',right:'12px',zIndex:'9999',fontFamily:'ui-monospace,SFMono-Regular,Menlo,monospace',fontSize:'11px',lineHeight:'1.35',color:'#eef5ff',background:'rgba(3,7,18,.66)',border:'1px solid rgba(180,210,255,.18)',borderRadius:'14px',backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)',boxShadow:'0 8px 30px rgba(0,0,0,.28)',maxWidth:'78vw',userSelect:'none',WebkitUserSelect:'none'});
+    Object.assign(this.root.style,{position:'fixed',top:'max(14px, env(safe-area-inset-top))',right:'12px',zIndex:'9999',fontFamily:'ui-monospace,SFMono-Regular,Menlo,monospace',fontSize:'11px',lineHeight:'1.35',color:'#eef5ff',background:'rgba(3,7,18,.66)',border:'1px solid rgba(180,210,255,.18)',borderRadius:'14px',backdropFilter:'blur(10px)',WebkitBackdropFilter:'blur(10px)',boxShadow:'0 8px 30px rgba(0,0,0,.28)',maxWidth:'82vw',userSelect:'none',WebkitUserSelect:'none'});
     this.button=document.createElement('button');
     this.button.type='button';
     this.button.setAttribute('aria-label','Estado IA URUX');
@@ -15,11 +15,28 @@ export class AIStatusOverlay{
     this.label=document.createElement('span');this.label.textContent='IA';
     this.button.append(this.dot,this.label);
     this.panel=document.createElement('div');
-    Object.assign(this.panel.style,{display:'none',padding:'0 10px 10px',minWidth:'205px',whiteSpace:'normal',wordBreak:'break-word'});
+    Object.assign(this.panel.style,{display:'none',padding:'0 10px 10px',minWidth:'225px',whiteSpace:'normal',wordBreak:'break-word'});
     this.root.append(this.button,this.panel);document.body.appendChild(this.root);
     this.button.addEventListener('click',()=>{this.expanded=!this.expanded;this.panel.style.display=this.expanded?'block':'none';this.render(true);});
   }
   bool(v){return v?'sí':'no';}
+  decisionText(d){
+    const c=d.cinematic||{},n=d.nebulaDirective||{};
+    if(!d.llmActive)return 'Aún sin decisiones LLM aceptadas.';
+    const type=c.lastType||d.lastEncounterType||'encounter';
+    const parts=[`seleccionó ${type}`];
+    if(n.active)parts.push('actualizó densidad/filamentos/paleta de nebulosa');
+    if(d.stage)parts.push(`adaptó la escena a ${d.stage}`);
+    return parts.join(' · ')+'.';
+  }
+  agentText(d){
+    const c=d.cinematic||{},n=d.nebulaDirective||{};
+    const parts=[];
+    if((c.llmSpawned||0)>0){parts.push('ejecutó trayectoria 3D del cuerpo celeste');parts.push('aplicó aproximación al punto focal según la instrucción');parts.push('ajustó escala, velocidad, luminosidad y presencia visual');}
+    if(n.active)parts.push('interpoló la nebulosa sin bloquear el render');
+    if(!parts.length)parts.push('mantiene fallback procedural mientras espera al LLM');
+    return parts.join(' · ')+'.';
+  }
   render(force=false){
     const now=performance.now();if(!force&&now-this.lastRender<800)return;this.lastRender=now;
     let d={};try{d=this.getDiagnostics?.()||{};}catch{}
@@ -31,14 +48,17 @@ export class AIStatusOverlay{
     const c=d.cinematic||{},n=d.nebulaDirective||{};
     this.panel.innerHTML=`<div style="opacity:.72;margin-bottom:5px">URUX Journey Director</div>
       <div>Worker: <b>${configured?'OK':'NO'}</b> · HTTP ${status}</div>
-      <div>LLM: <b>${active?'ACTIVO':'esperando'}</b></div>
+      <div>LLM: <b>${active?'ACTIVO':(d.backendRequestState||'esperando')}</b></div>
+      <div>Intentos: ${d.backendRequestAttempts??0} · Inicio: ${d.startState||'—'}</div>
       <div>Modelo: <span style="opacity:.9">${d.model||'—'}</span></div>
       <div>Etapa: ${d.stage||'—'}</div>
       <div>Batches IA: ${d.acceptedBatches??0}</div>
-      <div>Último: ${c.lastType||'—'} <span style="opacity:.6">${c.lastSource||''}</span></div>
+      <div>Último: ${c.lastType||d.lastEncounterType||'—'} <span style="opacity:.6">${c.lastSource||''}</span></div>
       <div>Encounter IA: ${c.llmSpawned??0}</div>
       <div>Nebulosa IA: ${this.bool(Boolean(n.active))}</div>
-      <div style="opacity:.55;margin-top:5px">Toca “IA” para cerrar</div>`;
+      <div style="margin-top:7px;padding-top:6px;border-top:1px solid rgba(180,210,255,.12)"><b>IA decidió</b><br><span style="opacity:.78">${this.decisionText(d)}</span></div>
+      <div style="margin-top:6px"><b>Agente aplicó</b><br><span style="opacity:.78">${this.agentText(d)}</span></div>
+      <div style="opacity:.55;margin-top:7px">Toca “IA” para cerrar</div>`;
   }
   update(){this.render(false);}
 }
