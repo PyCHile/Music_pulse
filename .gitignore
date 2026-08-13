@@ -3,3 +3,8 @@ dist/
 playwright-report/
 test-results/
 .DS_Store
+worker/node_modules/
+worker/.dev.vars
+worker/.dev.vars.*
+worker/.env
+worker/.env.*
