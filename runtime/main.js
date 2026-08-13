@@ -6,7 +6,7 @@ import { SpaceKitAstronomicalLayer } from './spacekit/SpaceKitAstronomicalLayer.
 import { URUXJourneyAgent,configureURUXBackendURL,clearURUXBackendURL } from './journey/SecureURUXJourneyAgent.js?v=20260813-10';
 import { CinematicEncounterSystem } from './journey/CinematicEncounterSystemV42.js?v=20260813-42';
 import { NebulaDirectiveBridge } from './journey/NebulaDirectiveBridge.js?v=20260812-1';
-import { scientificAstronomy } from './astronomy/ScientificAstronomyRuntime.js?v=20260813-42';
+import { scientificAstronomy } from './astronomy/ScientificAstronomyRuntime.js?v=20260813-43';
 import { runtimeCapabilities } from './capabilities/RuntimeCapabilityRegistry.js?v=20260813-42';
 
 const app=document.getElementById('app'),spacekitHost=document.getElementById('spacekitLayer'),startGate=document.getElementById('startGate'),enterBtn=document.getElementById('enterBtn'),controls=document.getElementById('controls'),pauseBtn=document.getElementById('pauseBtn'),fullBtn=document.getElementById('fullBtn'),status=document.getElementById('status');
