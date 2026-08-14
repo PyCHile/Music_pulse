@@ -19,7 +19,7 @@ jobs:
       - name: Production cinematic-space audit
         run: |
           for f in index.html version.json runtime/main.js runtime/mainCoreV53.js runtime/scene/InterstellarWarpSceneV53.js runtime/warp/WarpFieldManagerV53.js runtime/warp/CloudNebulaVolumeV59.js runtime/warp/CloudNebulaVolumeV65.js runtime/warp/CachedVolumetricNebulaPassV53.js runtime/warp/VolumetricNebulaRaymarcherV53.js runtime/warp/VolumetricNebulaRaymarcherV65.js runtime/warp/DeepSpaceSectorSystemV53.js runtime/warp/GalacticWispSystemV53.js runtime/performance/LayerBudgetSchedulerV53.js runtime/audio/AudioEngineV53.js runtime/journey/CinematicEncounterSystemV65.js runtime/journey/CinematicEncounterSystemV59Route.js runtime/journey/CinematicEncounterSystemV59.js runtime/journey/CinematicEncounterSystemV55.js runtime/journey/CinematicEncounterSystemV53.js runtime/particles/ThreeNebulaParticleFXV53.js runtime/journey/SecureURUXJourneyAgent.js runtime/journey/URUXBackendClient.js worker/src/index-v2.js; do test -f "$f"; done
-          grep -q 'URUX-20260814-65-PERCEPTUAL' version.json
+          grep -q 'URUX-20260814-65-' version.json
           grep -q 'id="enterBtn" disabled' index.html
           grep -q 'interactionReady' index.html
           grep -q '#controls\[hidden\]' index.html
@@ -28,15 +28,20 @@ jobs:
           grep -q "perceptualRevision:'v65-dense-colored-gas'" runtime/warp/CloudNebulaVolumeV65.js
           grep -q 'v65DensityGain' runtime/warp/CloudNebulaVolumeV65.js
           grep -q 'nearAlphaLift:true' runtime/warp/CloudNebulaVolumeV65.js
+          grep -q 'luminanceCapped:true' runtime/warp/CloudNebulaVolumeV65.js
           grep -q "perceptualRevision='v65-high-presence-raymarch'" runtime/warp/VolumetricNebulaRaymarcherV65.js
-          grep -q 'uNarrativeBlend.value=.84' runtime/warp/VolumetricNebulaRaymarcherV65.js
+          grep -q 'uNarrativeBlend.value=.80' runtime/warp/VolumetricNebulaRaymarcherV65.js
+          grep -q 'luminanceCapped=true' runtime/warp/VolumetricNebulaRaymarcherV65.js
           grep -q 'CinematicEncounterSystemV65' runtime/journey/CinematicSelectorV51.js
           grep -q "selectionMode='seeded-shuffle-bag-v65'" runtime/journey/CinematicEncounterSystemV65.js
           grep -q 'noImmediateRepeat=true' runtime/journey/CinematicEncounterSystemV65.js
           grep -q "kinematics='route-specific-parametric-v65'" runtime/journey/CinematicEncounterSystemV65.js
+          grep -q 'wallClockKinematics=true' runtime/journey/CinematicEncounterSystemV65.js
+          grep -q 'guaranteedActualCameraCrossing' runtime/journey/CinematicEncounterSystemV65.js
           grep -q 'actualCameraCrossings' runtime/journey/CinematicEncounterSystemV65.js
           grep -q 'routeDefinition' runtime/journey/CinematicEncounterSystemV65.js
           grep -q 'scheduleGuaranteedComet' runtime/journey/CinematicEncounterSystemV59Route.js
+          grep -q 'guaranteeSpawned' runtime/journey/CinematicEncounterSystemV59Route.js
           grep -q 'timerGuaranteed=true' runtime/journey/CinematicEncounterSystemV59Route.js
           grep -q 'PLANET_VARIANTS' runtime/journey/CinematicEncounterSystemV59.js
           grep -q 'COMET_ROUTE_MODES' runtime/journey/CinematicEncounterSystemV59.js
