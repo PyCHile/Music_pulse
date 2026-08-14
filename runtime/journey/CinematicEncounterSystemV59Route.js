@@ -23,7 +23,7 @@ export class CinematicEncounterSystem extends Base{
   this.scheduleGuaranteedComet(1200);
  }
  spawnGuaranteedComet(){
-  if(this._guaranteeStopped||this.stats.cometRoute.passes>0)return true;
+  if(this._guaranteeStopped||this.stats.cometRoute.guaranteeSpawned)return true;
   this.stats.cometRoute.guaranteeAttempts++;
   const previousMax=this.maxActive;
   this.maxActive=Math.max(previousMax,this.active.length+1);
@@ -41,7 +41,7 @@ export class CinematicEncounterSystem extends Base{
    palette,
    luminosity:.74,
    durationSeconds:20
-  },{source:'procedural'});
+  },{source:'procedural-guaranteed'});
   this.maxActive=previousMax;
   if(ok){
    this.stats.cometRoute.timerGuaranteed=true;
@@ -54,7 +54,7 @@ export class CinematicEncounterSystem extends Base{
  scheduleGuaranteedComet(delay=1200){
   clearTimeout(this._guaranteeTimer);
   this._guaranteeTimer=setTimeout(()=>{
-   if(this._guaranteeStopped||this.stats.cometRoute.passes>0)return;
+   if(this._guaranteeStopped||this.stats.cometRoute.guaranteeSpawned)return;
    if(!this.spawnGuaranteedComet())this.scheduleGuaranteedComet(600);
   },delay);
  }
