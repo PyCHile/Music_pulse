@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { CinematicEncounterSystem as Base } from './CinematicEncounterSystemV59Route.js?v=20260814-64';
+import { CinematicEncounterSystem as Base } from './CinematicEncounterSystemV59Route.js?v=20260814-65.2';
 
 const clamp01=v=>Math.max(0,Math.min(1,v));
 const smooth01=v=>{const t=clamp01(v);return t*t*(3-2*t);};
@@ -82,6 +82,8 @@ export class CinematicEncounterSystem extends Base{
   this.stats.cometRoute.centerlineCrossings=0;
   this.stats.cometRoute.routeDefinitions=true;
   this.stats.cometRoute.depthCoupledCrossing=true;
+  this.stats.cometRoute.guaranteedCloseRoute=true;
+  this.stats.cometRoute.guaranteedRouteMode='diagonal-cross';
   this.stats.cometRoute.closestScreenApproach=null;
  }
  nextPlanetFamily(){
@@ -127,11 +129,19 @@ export class CinematicEncounterSystem extends Base{
   return root;
  }
  applyCometRoute(a){
+  const guaranteed=String(a?.id||'').startsWith('guaranteed-route-comet-'),cursorBefore=this.cometRouteCursor;
+  if(guaranteed)this.cometRouteCursor=0;
   super.applyCometRoute(a);
-  const side=a.passSide||1,def=routeDefinition(a.routeMode,side,a.root.position.y),direction=new THREE.Vector3((def.x1-def.x0)*.036,(def.y1-def.y0)*.052,1).normalize();
-  a.routeV65={...def,mode:a.routeMode,side,crossed:false,orientation:new THREE.Quaternion().setFromUnitVectors(BASE_AXIS,direction)};
+  if(guaranteed){
+   this.cometRouteCursor=cursorBefore;
+   a.routeMode='diagonal-cross';
+   a.root.userData.routeMode='diagonal-cross';
+   this.stats.cometRoute.lastMode='diagonal-cross';
+  }
+  const mode=guaranteed?'diagonal-cross':a.routeMode,side=a.passSide||1,def=routeDefinition(mode,side,a.root.position.y),direction=new THREE.Vector3((def.x1-def.x0)*.036,(def.y1-def.y0)*.052,1).normalize();
+  a.routeV65={...def,mode,side,crossed:false,guaranteed,orientation:new THREE.Quaternion().setFromUnitVectors(BASE_AXIS,direction)};
   a.root.position.x=def.x0;a.root.position.y=def.y0;a.speed*=def.speed;
-  a.root.userData.enhancements?.push('V65 trayectoria paramétrica independiente','cruce de encuadre acoplado a profundidad real','tangente física y cola alineada');
+  a.root.userData.enhancements?.push(guaranteed?'V65 encuentro cercano garantizado':'V65 trayectoria paramétrica independiente','cruce de encuadre acoplado a profundidad real','tangente física y cola alineada');
  }
  update(dt){
   super.update(dt);
@@ -152,6 +162,7 @@ export class CinematicEncounterSystem extends Base{
    if(centerline&&!r.centerlineCounted){r.centerlineCounted=true;this.stats.cometRoute.centerlineCrossings++;}
    if(r.close&&nearCamera&&Math.abs(x)<5.2&&Math.abs(y)<3.4&&!r.crossed){
     r.crossed=true;this.stats.cometRoute.actualCameraCrossings++;this.v65CrossingIds.add(a.id);
+    if(r.guaranteed)this.stats.cometRoute.guaranteedActualCameraCrossing=true;
    }
   }
  }
