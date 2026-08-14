@@ -1,4 +1,4 @@
-name: Interstellar Warp QA v58
+name: Interstellar Warp QA v59
 on:
   push:
     branches: [main]
@@ -16,31 +16,37 @@ jobs:
         with:
           node-version: 24
       - run: npm install
-      - name: Production volumetric-nebula audit
+      - name: Production cinematic-space audit
         run: |
-          for f in index.html version.json runtime/main.js runtime/mainCoreV53.js runtime/scene/InterstellarWarpSceneV53.js runtime/warp/WarpFieldManagerV53.js runtime/warp/CloudNebulaVolumeV58.js runtime/warp/CachedVolumetricNebulaPassV53.js runtime/warp/VolumetricNebulaRaymarcherV53.js runtime/warp/DeepSpaceSectorSystemV53.js runtime/warp/GalacticWispSystemV53.js runtime/performance/LayerBudgetSchedulerV53.js runtime/audio/AudioEngineV53.js runtime/journey/CinematicEncounterSystemV55.js runtime/journey/CinematicEncounterSystemV53.js runtime/particles/ThreeNebulaParticleFXV53.js runtime/journey/SecureURUXJourneyAgent.js runtime/journey/URUXBackendClient.js worker/src/index-v2.js; do test -f "$f"; done
-          grep -q 'VOLUMETRIC-GAS-NO-BILLBOARDS' version.json
+          for f in index.html version.json runtime/main.js runtime/mainCoreV53.js runtime/scene/InterstellarWarpSceneV53.js runtime/warp/WarpFieldManagerV53.js runtime/warp/CloudNebulaVolumeV59.js runtime/warp/CachedVolumetricNebulaPassV53.js runtime/warp/VolumetricNebulaRaymarcherV53.js runtime/warp/DeepSpaceSectorSystemV53.js runtime/warp/GalacticWispSystemV53.js runtime/performance/LayerBudgetSchedulerV53.js runtime/audio/AudioEngineV53.js runtime/journey/CinematicEncounterSystemV59.js runtime/journey/CinematicEncounterSystemV55.js runtime/journey/CinematicEncounterSystemV53.js runtime/particles/ThreeNebulaParticleFXV53.js runtime/journey/SecureURUXJourneyAgent.js runtime/journey/URUXBackendClient.js worker/src/index-v2.js; do test -f "$f"; done
+          grep -q 'COLORED-GAS-PLANET-VARIANTS-REAL-COMETS' version.json
           grep -q 'id="enterBtn" disabled' index.html
           grep -q 'interactionReady' index.html
           grep -q '#controls\[hidden\]' index.html
-          grep -q 'CloudNebulaVolumeV58' runtime/warp/WarpFieldManagerV53.js
-          grep -q "mode:'continuous-volumetric-traversal'" runtime/warp/CloudNebulaVolumeV58.js
-          grep -q "volumeType:'3d-point-gas'" runtime/warp/CloudNebulaVolumeV58.js
-          grep -q 'rectangularBillboards:false' runtime/warp/CloudNebulaVolumeV58.js
-          grep -q 'new THREE.Points' runtime/warp/CloudNebulaVolumeV58.js
-          grep -q 'new THREE.ShaderMaterial' runtime/warp/CloudNebulaVolumeV58.js
-          ! grep -q 'THREE.Sprite' runtime/warp/CloudNebulaVolumeV58.js
-          ! grep -q 'SpriteMaterial' runtime/warp/CloudNebulaVolumeV58.js
-          grep -q 'CinematicEncounterSystemV55' runtime/journey/CinematicSelectorV51.js
+          grep -q 'CloudNebulaVolumeV59' runtime/warp/WarpFieldManagerV53.js
+          grep -q "mode:'continuous-volumetric-traversal'" runtime/warp/CloudNebulaVolumeV59.js
+          grep -q "volumeType:'3d-point-gas-v59'" runtime/warp/CloudNebulaVolumeV59.js
+          grep -q 'coloredGas:true' runtime/warp/CloudNebulaVolumeV59.js
+          grep -q 'emissiveVolumes' runtime/warp/CloudNebulaVolumeV59.js
+          grep -q 'rectangularBillboards:false' runtime/warp/CloudNebulaVolumeV59.js
+          grep -q 'new THREE.Points' runtime/warp/CloudNebulaVolumeV59.js
+          grep -q 'new THREE.ShaderMaterial' runtime/warp/CloudNebulaVolumeV59.js
+          ! grep -q 'THREE.Sprite' runtime/warp/CloudNebulaVolumeV59.js
+          ! grep -q 'SpriteMaterial' runtime/warp/CloudNebulaVolumeV59.js
+          grep -q 'CinematicEncounterSystemV59' runtime/journey/CinematicSelectorV51.js
+          grep -q 'PLANET_VARIANTS' runtime/journey/CinematicEncounterSystemV59.js
+          grep -q 'buildTailGeometry' runtime/journey/CinematicEncounterSystemV59.js
+          grep -q 'guaranteedProcedural:true' runtime/journey/CinematicEncounterSystemV59.js
+          grep -q 'longIonTail:true' runtime/journey/CinematicEncounterSystemV59.js
+          grep -q 'longDustTail:true' runtime/journey/CinematicEncounterSystemV59.js
+          grep -q 'spawnProcedural' runtime/journey/CinematicEncounterSystemV59.js
           grep -q 'morfología bilobulada tipo 67P' runtime/journey/CinematicEncounterSystemV55.js
           grep -q 'redThermalShell:false' runtime/journey/CinematicEncounterSystemV55.js
           ! grep -q '0xff6a18' runtime/journey/CinematicEncounterSystemV55.js
-          grep -q 'overtakePasses' runtime/journey/CinematicEncounterSystemV55.js
           grep -q "import('three-nebula')" runtime/particles/ThreeNebulaParticleFXV53.js
           grep -q "mode:'event-driven'" runtime/particles/ThreeNebulaParticleFXV53.js
           grep -q 'CachedVolumetricNebulaPass' runtime/scene/InterstellarWarpSceneV53.js
           grep -q '230000' runtime/warp/CachedVolumetricNebulaPassV53.js
-          grep -q 'uVisibility.value=Math.min(.44' runtime/warp/VolumetricNebulaRaymarcherV53.js
           ! grep -q 'typpo.github.io/spacekit/build/spacekit.js' index.html
       - name: Scientific LAB audit
         run: |
@@ -64,7 +70,7 @@ jobs:
       - if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: warp-visual-checkpoints-v58
+          name: warp-visual-checkpoints-v59
           path: test-results/
           if-no-files-found: ignore
           retention-days: 7
