@@ -5,7 +5,7 @@ import { WarpVariationEngine } from '../warp/WarpVariationEngine.js';
 import { WarpContinuityDirector } from '../warp/WarpContinuityDirector.js';
 import { OpticalFlowController } from '../warp/OpticalFlowController.js?v=20260812-15';
 import { JourneyNarrativeDirector } from '../warp/JourneyNarrativeDirector.js?v=20260812-14';
-import { WarpFieldManager } from '../warp/WarpFieldManagerV53.js?v=20260814-58';
+import { WarpFieldManager } from '../warp/WarpFieldManagerV53.js?v=20260814-60';
 import { CachedVolumetricNebulaPass } from '../warp/CachedVolumetricNebulaPassV53.js?v=20260813-53';
 import { runtimeCapabilities } from '../capabilities/RuntimeCapabilityRegistry.js';
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
