@@ -81,6 +81,7 @@ export class CinematicEncounterSystem extends Base{
   this.stats.cometRoute.actualCameraCrossings=0;
   this.stats.cometRoute.centerlineCrossings=0;
   this.stats.cometRoute.routeDefinitions=true;
+  this.stats.cometRoute.depthCoupledCrossing=true;
   this.stats.cometRoute.closestScreenApproach=null;
  }
  nextPlanetFamily(){
@@ -130,13 +131,13 @@ export class CinematicEncounterSystem extends Base{
   const side=a.passSide||1,def=routeDefinition(a.routeMode,side,a.root.position.y),direction=new THREE.Vector3((def.x1-def.x0)*.036,(def.y1-def.y0)*.052,1).normalize();
   a.routeV65={...def,mode:a.routeMode,side,crossed:false,orientation:new THREE.Quaternion().setFromUnitVectors(BASE_AXIS,direction)};
   a.root.position.x=def.x0;a.root.position.y=def.y0;a.speed*=def.speed;
-  a.root.userData.enhancements?.push('V65 trayectoria paramétrica independiente','cruce de encuadre con tangente física y cola alineada');
+  a.root.userData.enhancements?.push('V65 trayectoria paramétrica independiente','cruce de encuadre acoplado a profundidad real','tangente física y cola alineada');
  }
  update(dt){
   super.update(dt);
   for(const a of this.active){
    if(a.type!=='comet'||!a.routeV65)continue;
-   const r=a.routeV65,t=clamp01(a.age/a.duration),p=smooth01(clamp01((t-.38)/.58)),arc=Math.sin(p*Math.PI)*r.arc;
+   const r=a.routeV65,z=a.root.position.z,p=smooth01(clamp01((z+112)/174)),arc=Math.sin(p*Math.PI)*r.arc;
    const x=lerp(r.x0,r.x1,p),y=lerp(r.y0,r.y1,p)+arc;
    a.root.position.x=x;a.root.position.y=y;
    a.root.quaternion.slerp(r.orientation,1-Math.exp(-2.2*Math.max(.001,dt)));
@@ -147,7 +148,7 @@ export class CinematicEncounterSystem extends Base{
    }
    const screen=Math.hypot(x,y),prev=this.stats.cometRoute.closestScreenApproach;
    if(prev===null||screen<prev)this.stats.cometRoute.closestScreenApproach=+screen.toFixed(2);
-   const z=a.root.position.z,centerline=Math.abs(x)<2.4&&Math.abs(y)<2.2,nearCamera=z>-42&&z<14;
+   const centerline=Math.abs(x)<2.4&&Math.abs(y)<2.2,nearCamera=z>-42&&z<14;
    if(centerline&&!r.centerlineCounted){r.centerlineCounted=true;this.stats.cometRoute.centerlineCrossings++;}
    if(r.close&&nearCamera&&Math.abs(x)<5.2&&Math.abs(y)<3.4&&!r.crossed){
     r.crossed=true;this.stats.cometRoute.actualCameraCrossings++;this.v65CrossingIds.add(a.id);
