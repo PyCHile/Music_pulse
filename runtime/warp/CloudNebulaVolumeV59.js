@@ -11,6 +11,7 @@ const GAS_COLORS=[
 ];
 
 const vertexShader=`
+precision mediump float;
 attribute float aSize;attribute float aSeed;attribute float aDensity;attribute float aGlow;attribute vec3 color;
 uniform float uTime;uniform float uPixelRatio;varying float vSeed;varying float vDensity;varying float vGlow;varying vec3 vColor;
 void main(){vec3 p=position;float sway=sin(uTime*.10+aSeed*23.0)*.22;p.x+=sway;p.y+=cos(uTime*.075+aSeed*17.0)*.16;vec4 mv=modelViewMatrix*vec4(p,1.0);float perspective=280.0/max(1.0,-mv.z);gl_PointSize=clamp(aSize*uPixelRatio*perspective,1.5,290.0);gl_Position=projectionMatrix*mv;vSeed=aSeed;vDensity=aDensity;vGlow=aGlow;vColor=color;}`;
