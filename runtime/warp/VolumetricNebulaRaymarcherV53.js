@@ -1,0 +1,6 @@
+import * as THREE from 'three';
+import { VolumetricNebulaRaymarcher as Base } from './VolumetricNebulaRaymarcherV50.js?v=20260813-50';
+export class VolumetricNebulaRaymarcher extends Base{
+ constructor(){super();this.baseSteps=this.mobile?8:10;this.minSteps=this.mobile?6:7;this.baseShadowSteps=1;const u=this.material.uniforms;u.uRaySteps.value=this.baseSteps;u.uShadowSteps.value=1;u.uNarrativeBlend.value=.46;u.uNarrativeColor0.value=new THREE.Color('#285fa8');u.uNarrativeColor1.value=new THREE.Color('#8d55bd');u.uNarrativeColor2.value=new THREE.Color('#dd6a2f');u.uNarrativeFilaments.value=.57;u.uNarrativeDarkZone.value=.50;u.uScattering.value=.92;u.uEmission.value=.86;this.active=false;this.mesh.visible=false;}
+ update(dt,state,features){super.update(dt,state,features);const demand=(state.nebulaPresence||0)+(state.galaxyReveal||0)*.9+(state.livingLight||0)*.7+(state.tunnelDrive||0)*.45+.055;this.active=demand>.075;this.mesh.visible=this.active;const u=this.material.uniforms;u.uRaySteps.value=Math.min(this.baseSteps,Math.max(this.minSteps,u.uRaySteps.value));u.uShadowSteps.value=1;u.uVisibility.value=Math.min(.30,Math.max(.075,u.uVisibility.value+(state.galaxyReveal||0)*.035+(state.livingLight||0)*.018));}
+}
