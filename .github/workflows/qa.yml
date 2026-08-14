@@ -1,4 +1,4 @@
-name: Interstellar Warp QA v56
+name: Interstellar Warp QA v57
 on:
   push:
     branches: [main]
@@ -19,7 +19,10 @@ jobs:
       - name: Production visible-nebula audit
         run: |
           for f in index.html version.json runtime/main.js runtime/mainCoreV53.js runtime/scene/InterstellarWarpSceneV53.js runtime/warp/WarpFieldManagerV53.js runtime/warp/CloudNebulaLayerV55.js runtime/warp/CachedVolumetricNebulaPassV53.js runtime/warp/VolumetricNebulaRaymarcherV53.js runtime/warp/DeepSpaceSectorSystemV53.js runtime/warp/GalacticWispSystemV53.js runtime/performance/LayerBudgetSchedulerV53.js runtime/audio/AudioEngineV53.js runtime/journey/CinematicEncounterSystemV55.js runtime/journey/CinematicEncounterSystemV53.js runtime/particles/ThreeNebulaParticleFXV53.js runtime/journey/SecureURUXJourneyAgent.js runtime/journey/URUXBackendClient.js worker/src/index-v2.js; do test -f "$f"; done
-          grep -q 'VISIBLE-NEBULA-REAL-COMET' version.json
+          grep -q 'COLD-START-SAFE-VISIBLE-NEBULA' version.json
+          grep -q 'id="enterBtn" disabled' index.html
+          grep -q 'interactionReady' index.html
+          grep -q '#controls\[hidden\]' index.html
           grep -q 'CloudNebulaLayerV55' runtime/warp/WarpFieldManagerV53.js
           grep -q "mode:'continuous-traversal'" runtime/warp/CloudNebulaLayerV55.js
           grep -q 'hybrid-local-webgpu' runtime/warp/CloudNebulaLayerV55.js
@@ -58,7 +61,7 @@ jobs:
       - if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: warp-visual-checkpoints-v56
+          name: warp-visual-checkpoints-v57
           path: test-results/
           if-no-files-found: ignore
           retention-days: 7
