@@ -1,4 +1,4 @@
-name: Interstellar Warp QA v55
+name: Interstellar Warp QA v56
 on:
   push:
     branches: [main]
@@ -16,17 +16,17 @@ jobs:
         with:
           node-version: 24
       - run: npm install
-      - name: Production nebula-crossing audit
+      - name: Production visible-nebula audit
         run: |
           for f in index.html version.json runtime/main.js runtime/mainCoreV53.js runtime/scene/InterstellarWarpSceneV53.js runtime/warp/WarpFieldManagerV53.js runtime/warp/CloudNebulaLayerV55.js runtime/warp/CachedVolumetricNebulaPassV53.js runtime/warp/VolumetricNebulaRaymarcherV53.js runtime/warp/DeepSpaceSectorSystemV53.js runtime/warp/GalacticWispSystemV53.js runtime/performance/LayerBudgetSchedulerV53.js runtime/audio/AudioEngineV53.js runtime/journey/CinematicEncounterSystemV55.js runtime/journey/CinematicEncounterSystemV53.js runtime/particles/ThreeNebulaParticleFXV53.js runtime/journey/SecureURUXJourneyAgent.js runtime/journey/URUXBackendClient.js worker/src/index-v2.js; do test -f "$f"; done
-          grep -q 'NEBULA-CROSSING-REAL-COMET' version.json
+          grep -q 'VISIBLE-NEBULA-REAL-COMET' version.json
           grep -q 'CloudNebulaLayerV55' runtime/warp/WarpFieldManagerV53.js
           grep -q "mode:'continuous-traversal'" runtime/warp/CloudNebulaLayerV55.js
-          grep -q 'crossings' runtime/warp/CloudNebulaLayerV55.js
+          grep -q 'hybrid-local-webgpu' runtime/warp/CloudNebulaLayerV55.js
+          grep -q 'peakOpacity' runtime/warp/CloudNebulaLayerV55.js
           grep -q 'sprite.position.z+=speed' runtime/warp/CloudNebulaLayerV55.js
           grep -q 'CinematicEncounterSystemV55' runtime/journey/CinematicSelectorV51.js
           grep -q 'morfología bilobulada tipo 67P' runtime/journey/CinematicEncounterSystemV55.js
-          grep -q 'comet-67p.jpg' runtime/journey/CinematicEncounterSystemV55.js
           grep -q 'redThermalShell:false' runtime/journey/CinematicEncounterSystemV55.js
           ! grep -q '0xff6a18' runtime/journey/CinematicEncounterSystemV55.js
           grep -q 'overtakePasses' runtime/journey/CinematicEncounterSystemV55.js
@@ -34,6 +34,7 @@ jobs:
           grep -q "mode:'event-driven'" runtime/particles/ThreeNebulaParticleFXV53.js
           grep -q 'CachedVolumetricNebulaPass' runtime/scene/InterstellarWarpSceneV53.js
           grep -q '230000' runtime/warp/CachedVolumetricNebulaPassV53.js
+          grep -q 'uVisibility.value=Math.min(.44' runtime/warp/VolumetricNebulaRaymarcherV53.js
           ! grep -q 'typpo.github.io/spacekit/build/spacekit.js' index.html
       - name: Scientific LAB audit
         run: |
@@ -52,11 +53,12 @@ jobs:
       - run: npm run build
       - run: node --check worker/src/index-v2.js
       - run: npx playwright install --with-deps chromium
+      - run: npx playwright test tests/e2e/nebula-comet-v55.spec.ts
       - run: npm run test:e2e
       - if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: warp-visual-checkpoints-v55
+          name: warp-visual-checkpoints-v56
           path: test-results/
           if-no-files-found: ignore
           retention-days: 7
