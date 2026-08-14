@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 
-const THREE_PLANETS='https://cdn.jsdelivr.net/npm/three@0.185.1/examples/textures/planets/';
+const THREE_PLANETS='https://raw.githubusercontent.com/mrdoob/three.js/r185/examples/textures/planets/';
 const PROFILES={
-  earth:{id:'earth',source:'Three.js / Solar System Scope',albedo:`${THREE_PLANETS}earth_atmos_2048.jpg`,normal:`${THREE_PLANETS}earth_normal_2048.jpg`,roughness:.48,normalScale:.42},
+  earth:{id:'earth',source:'Three.js r185 / official repository',albedo:`${THREE_PLANETS}earth_atmos_2048.jpg`,normal:`${THREE_PLANETS}earth_normal_2048.jpg`,roughness:.48,normalScale:.42},
   jupiter:{id:'jupiter',source:'NASA/JPL-Caltech',albedo:'https://assets.science.nasa.gov/dynamicimage/assets/science/cds/3d/resources/image/jupiter/preview.webp?w=1024',roughness:.86,normalScale:0},
   saturn:{id:'saturn',source:'SpaceKit astronomical texture',albedo:'https://typpo.github.io/spacekit/examples/saturn/th_saturn.png',roughness:.82,normalScale:0}
 };
