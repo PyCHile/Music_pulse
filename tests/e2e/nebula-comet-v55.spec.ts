@@ -10,5 +10,5 @@ test('v61 traverses colored gas through camera, varies planets and guarantees a 
  const route=await(await page.request.get('/runtime/journey/CinematicEncounterSystemV59Route.js')).text();expect(route).toContain('scheduleGuaranteedComet');expect(route).toContain('timerGuaranteed=true');
  const comet=await(await page.request.get('/runtime/journey/CinematicEncounterSystemV59.js')).text();expect(comet).toContain('PLANET_VARIANTS');expect(comet).toContain('buildTailGeometry');expect(comet).toContain('spawnProcedural');
  const clouds=await(await page.request.get('/runtime/warp/CloudNebulaVolumeV59.js')).text();expect(clouds).toContain('cameraCrossings');expect(clouds).toContain('THREE.Points');expect(clouds).toContain('ShaderMaterial');expect(clouds).toContain('coloredGas:true');expect(clouds).not.toContain('THREE.Sprite');expect(clouds).not.toContain('SpriteMaterial');
- await page.screenshot({path:testInfo.outputPath('v61-colored-gas-camera-crossing-real-comet.png'),animations:'disabled'});expect(errors.filter(e=>!e.includes('Failed to fetch')).toEqual([]);
+ await page.screenshot({path:testInfo.outputPath('v61-colored-gas-camera-crossing-real-comet.png'),animations:'disabled'});expect(errors.filter(e=>!e.includes('Failed to fetch'))).toEqual([]);
 });
