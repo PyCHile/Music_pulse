@@ -1,0 +1,12 @@
+import * as THREE from 'three';
+import { StarTunnelSystem } from './StarTunnelSystem.js?v=20260813-47';
+import { DeepSpaceSectorSystem } from './DeepSpaceSectorSystemV53.js?v=20260813-53';
+import { CloudNebulaLayer } from './CloudNebulaLayerV53.js?v=20260813-53';
+import { GalacticWispSystem } from './GalacticWispSystemV53.js?v=20260813-53';
+import { LayerBudgetScheduler } from '../performance/LayerBudgetSchedulerV53.js?v=20260813-53';
+export class WarpFieldManager{
+ constructor(maxStars=900,nebulaPass=null){this.group=new THREE.Group();this.scheduler=new LayerBudgetScheduler();this.clouds=new CloudNebulaLayer();this.deepSpace=new DeepSpaceSectorSystem();this.galacticWisps=new GalacticWispSystem();this.starTunnel=new StarTunnelSystem(maxStars);this.nebula=nebulaPass;this.group.add(this.clouds.group,this.deepSpace.group,this.galacticWisps.group,this.starTunnel.group);const n=48,p=new Float32Array(n*3);for(let i=0;i<n;i++){p[i*3]=(Math.random()-.5)*60;p[i*3+1]=(Math.random()-.5)*34;p[i*3+2]=-10-Math.random()*120;}this.dustGeometry=new THREE.BufferGeometry();this.dustGeometry.setAttribute('position',new THREE.BufferAttribute(p,3));this.dustMaterial=new THREE.PointsMaterial({size:.055,color:0x6d86aa,transparent:true,opacity:.10,depthWrite:false});this.dust=new THREE.Points(this.dustGeometry,this.dustMaterial);this.group.add(this.dust);this.dustPos=p;}
+ update(dt,state,features){const dc=this.scheduler.due('clouds',dt);if(dc)this.clouds.update(dc,state);const dd=this.scheduler.due('deepSpace',dt);if(dd)this.deepSpace.update(dd,state);state.spaceSectorPresence=this.deepSpace.maxPresence||0;const dw=this.scheduler.due('wisps',dt);if(dw)this.galacticWisps.update(dw,state,features);if(this.nebula)this.nebula.update(dt,state,features);this.starTunnel.update(dt,state,features);const du=this.scheduler.due('dust',dt);if(du){const sp=(state.speed||0)*.42;for(let i=0;i<this.dustPos.length;i+=3){this.dustPos[i+2]+=sp*du;if(this.dustPos[i+2]>-1)this.dustPos[i+2]=-130-Math.random()*20;}this.dustGeometry.attributes.position.needsUpdate=true;}}
+ dispose(){this.clouds.dispose();this.deepSpace.dispose();this.galacticWisps.dispose();this.starTunnel.dispose();this.dustGeometry.dispose();this.dustMaterial.dispose();}
+ get stats(){return{scheduler:this.scheduler.snapshot(),deepSpaceActive:this.deepSpace.activeSectorCount,nebula:this.nebula?.stats||null};}
+}
