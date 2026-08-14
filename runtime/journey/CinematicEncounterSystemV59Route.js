@@ -1,4 +1,4 @@
-import { CinematicEncounterSystem as Base } from './CinematicEncounterSystemV59.js?v=20260814-63';
+import { CinematicEncounterSystem as Base } from './CinematicEncounterSystemV59.js?v=20260814-64';
 
 const GUARANTEED_PALETTES={
  DESPRENDIMIENTO:['#eef7ff','#8ec9ff','#d9e9f5'],
