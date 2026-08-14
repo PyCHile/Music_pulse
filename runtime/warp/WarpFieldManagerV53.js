@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { StarTunnelSystem } from './StarTunnelSystem.js?v=20260813-47';
 import { DeepSpaceSectorSystem } from './DeepSpaceSectorSystemV53.js?v=20260813-53';
-import { CloudNebulaVolume } from './CloudNebulaVolumeV59.js?v=20260814-60';
+import { CloudNebulaVolume } from './CloudNebulaVolumeV59.js?v=20260814-61';
 import { GalacticWispSystem } from './GalacticWispSystemV53.js?v=20260813-53';
 import { LayerBudgetScheduler } from '../performance/LayerBudgetSchedulerV53.js?v=20260813-53';
 export class WarpFieldManager{
