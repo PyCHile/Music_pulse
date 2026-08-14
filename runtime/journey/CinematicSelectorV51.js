@@ -1,1 +1,1 @@
-export { CinematicEncounterSystem } from './CinematicEncounterSystemV59.js?v=20260814-59';
+export { CinematicEncounterSystem } from './CinematicEncounterSystemV59Route.js?v=20260814-59b';
