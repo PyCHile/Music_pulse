@@ -20,8 +20,12 @@ function routePosition(r,p,out=new THREE.Vector3()){
 
 export class CinematicEncounterSystem extends Base{
  constructor(scene,renderer=null){
-  super(scene,renderer);this.rendererRef=renderer;this.tuneTailGeometry();
-  const s=this.stats.cometRoute;s.kinematics='relative-velocity-aligned-v66';s.wallClockKinematics=true;s.tailFollowsRelativeVelocity=true;s.tailBehindMotion=true;s.tailAlignmentCosine=null;s.guaranteedRouteMode='overtake';s.guaranteedCloseRoute=true;s.guaranteedActualCameraCrossing=false;s.actualCameraCrossings=0;s.actualCrossingPose=null;s.whiteoutProtected=true;s.physicalCorePriority=true;s.musicGated=true;s.musicGateRetries=0;s.suppressedIntroEvents=0;s.cometBrightnessCap=.58;s.tailParticleSizeGain={ion:.58,dust:.50};
+  super(scene,renderer);
+  const existing=scene?.userData?.uruxCinematicEncounterSystem;
+  if(existing&&existing!==this){this._guaranteeStopped=true;clearTimeout(this._guaranteeTimer);existing.externalDriver=true;existing.stats.cometRoute.reusedByAIRuntime=true;return existing;}
+  if(scene?.userData)scene.userData.uruxCinematicEncounterSystem=this;
+  this.externalDriver=false;this.rendererRef=renderer;this.tuneTailGeometry();
+  const s=this.stats.cometRoute;s.kinematics='relative-velocity-aligned-v66';s.wallClockKinematics=true;s.tailFollowsRelativeVelocity=true;s.tailBehindMotion=true;s.tailAlignmentCosine=null;s.guaranteedRouteMode='overtake';s.guaranteedCloseRoute=true;s.guaranteedActualCameraCrossing=false;s.actualCameraCrossings=0;s.actualCrossingPose=null;s.whiteoutProtected=true;s.physicalCorePriority=true;s.musicGated=true;s.musicGateRetries=0;s.suppressedIntroEvents=0;s.cometBrightnessCap=.58;s.tailParticleSizeGain={ion:.58,dust:.50};s.visualRuntimeIndependentOfAI=true;s.reusedByAIRuntime=false;
   this.stats.musicDirection={revision:'v66-music-crescendo-director',lastSection:'INTRO',eventReadiness:0};
  }
  musicContext(){return this.scene?.userData?.uruxMusicDirection||{section:'INTRO',progress:0,macroArc:.08,visualEnergy:.05,nebulaScale:.04,cometIntensity:.30,eventReadiness:0,allowCloseComet:false};}
@@ -69,7 +73,7 @@ export class CinematicEncounterSystem extends Base{
    if(halo?.material){halo.material.opacity=(.006+near*.012)*intensity/.58;halo.scale.setScalar(4.8+near*2.0);}
    if(jets)for(const j of jets.children)if(j.material)j.material.opacity=(.007+near*.010)*intensity/.58;
    for(const mesh of a.root.userData.surfaceMeshes||[])if(mesh.material)mesh.material.opacity=clamp(.90+near*.10,.90,1);
-   const screen=Math.hypot(pos.x,pos.y),pose={mode:r.mode,p:+p.toFixed(3),x:+pos.x.toFixed(2),y:+pos.y.toFixed(2),z:+pos.z.toFixed(2),tailAlignment:+alignment.toFixed(3)};const centerline=Math.abs(pos.x)<2.8&&Math.abs(pos.y)<2.8,nearCamera=z>-56&&z<10;
+   const pose={mode:r.mode,p:+p.toFixed(3),x:+pos.x.toFixed(2),y:+pos.y.toFixed(2),z:+pos.z.toFixed(2),tailAlignment:+alignment.toFixed(3)};const centerline=Math.abs(pos.x)<2.8&&Math.abs(pos.y)<2.8,nearCamera=z>-56&&z<10;
    if(centerline&&!r.centerlineCounted){r.centerlineCounted=true;this.stats.cometRoute.centerlineCrossings=(this.stats.cometRoute.centerlineCrossings||0)+1;}
    if(r.close&&nearCamera&&Math.abs(pos.x)<5.2&&Math.abs(pos.y)<3.4&&!r.crossed){r.crossed=true;this.stats.cometRoute.actualCameraCrossings=(this.stats.cometRoute.actualCameraCrossings||0)+1;this.stats.cometRoute.actualCrossingPose=pose;if(r.guaranteed)this.stats.cometRoute.guaranteedActualCameraCrossing=true;}
    if(r.guaranteed)this.stats.cometRoute.lastGuaranteedPose=pose;
