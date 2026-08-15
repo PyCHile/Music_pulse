@@ -20,12 +20,12 @@ function routePosition(r,p,out=new THREE.Vector3()){
 
 export class CinematicEncounterSystem extends Base{
  constructor(scene,renderer=null){
-  super(scene,renderer);
+  super(scene,renderer);const bridgeAttach=globalThis.__URUX_CINEMATIC_ATTACHING__===true;
   const existing=scene?.userData?.uruxCinematicEncounterSystem;
-  if(existing&&existing!==this){this._guaranteeStopped=true;clearTimeout(this._guaranteeTimer);existing.externalDriver=true;existing.stats.cometRoute.reusedByAIRuntime=true;return existing;}
+  if(existing&&existing!==this){this._guaranteeStopped=true;clearTimeout(this._guaranteeTimer);if(!bridgeAttach)existing.externalDriver=true;existing.stats.cometRoute.reusedByAIRuntime=!bridgeAttach;return existing;}
   if(scene?.userData)scene.userData.uruxCinematicEncounterSystem=this;
-  this.externalDriver=false;this.rendererRef=renderer;this.tuneTailGeometry();
-  const s=this.stats.cometRoute;s.kinematics='relative-velocity-aligned-v66';s.wallClockKinematics=true;s.tailFollowsRelativeVelocity=true;s.tailBehindMotion=true;s.tailAlignmentCosine=null;s.guaranteedRouteMode='overtake';s.guaranteedCloseRoute=true;s.guaranteedActualCameraCrossing=false;s.actualCameraCrossings=0;s.actualCrossingPose=null;s.whiteoutProtected=true;s.physicalCorePriority=true;s.musicGated=true;s.musicGateRetries=0;s.suppressedIntroEvents=0;s.cometBrightnessCap=.58;s.tailParticleSizeGain={ion:.58,dust:.50};s.visualRuntimeIndependentOfAI=true;s.reusedByAIRuntime=false;
+  this.externalDriver=!bridgeAttach;this.rendererRef=renderer;this.tuneTailGeometry();
+  const s=this.stats.cometRoute;s.kinematics='relative-velocity-aligned-v66';s.wallClockKinematics=true;s.tailFollowsRelativeVelocity=true;s.tailBehindMotion=true;s.tailAlignmentCosine=null;s.guaranteedRouteMode='overtake';s.guaranteedCloseRoute=true;s.guaranteedActualCameraCrossing=false;s.actualCameraCrossings=0;s.actualCrossingPose=null;s.whiteoutProtected=true;s.physicalCorePriority=true;s.musicGated=true;s.musicGateRetries=0;s.suppressedIntroEvents=0;s.cometBrightnessCap=.58;s.tailParticleSizeGain={ion:.58,dust:.50};s.visualRuntimeIndependentOfAI=true;s.reusedByAIRuntime=false;s.bridgeAttached=bridgeAttach;
   this.stats.musicDirection={revision:'v66-music-crescendo-director',lastSection:'INTRO',eventReadiness:0};
  }
  musicContext(){return this.scene?.userData?.uruxMusicDirection||{section:'INTRO',progress:0,macroArc:.08,visualEnergy:.05,nebulaScale:.04,cometIntensity:.30,eventReadiness:0,allowCloseComet:false};}
