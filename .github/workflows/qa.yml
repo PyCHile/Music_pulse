@@ -31,13 +31,22 @@ jobs:
           grep -q "perceptualRevision:'v66-directed-crescendo-gas'" runtime/warp/CloudNebulaVolumeV66.js
           grep -q 'whiteoutProtection:true' runtime/warp/CloudNebulaVolumeV66.js
           grep -q "perceptualRevision='v66-music-directed-raymarch'" runtime/warp/VolumetricNebulaRaymarcherV66.js
-          grep -q 'PhysicalEncounterRuntimeV66' runtime/scene/InterstellarWarpSceneV53.js
-          grep -q "revision:'v66-lightweight-physical-encounters'" runtime/journey/PhysicalEncounterRuntimeV66.js
+          grep -q 'PhysicalEncounterRuntimeV66.js?v=20260815-66.2' runtime/scene/InterstellarWarpSceneV53.js
+          grep -q "revision:'v66.2-focal-organic-relative-motion'" runtime/journey/PhysicalEncounterRuntimeV66.js
+          grep -q "id:'ocean-terra'" runtime/journey/PhysicalEncounterRuntimeV66.js
+          grep -q 'organicFbmSurface:true' runtime/journey/PhysicalEncounterRuntimeV66.js
+          grep -q 'atmosphereShell:true' runtime/journey/PhysicalEncounterRuntimeV66.js
+          grep -q "motionModel:'shared-forward-speed-v66.2'" runtime/journey/PhysicalEncounterRuntimeV66.js
+          grep -q 'focalConeDeg' runtime/journey/PhysicalEncounterRuntimeV66.js
+          grep -q 'effectiveForwardSpeed' runtime/journey/PhysicalEncounterRuntimeV66.js
           grep -q "kinematics:'relative-velocity-aligned-v66'" runtime/journey/PhysicalEncounterRuntimeV66.js
           grep -q "guaranteedRouteMode:'overtake'" runtime/journey/PhysicalEncounterRuntimeV66.js
           grep -q 'legacyCinematicGraphActive:false' runtime/journey/PhysicalEncounterRuntimeV66.js
           grep -q 'visualRuntimeIndependentOfAI:true' runtime/journey/PhysicalEncounterRuntimeV66.js
           grep -q 'setFromUnitVectors' runtime/journey/PhysicalEncounterRuntimeV66.js
+          grep -q 'effectiveForwardSpeed:this.state.speed' runtime/scene/InterstellarWarpSceneV53.js
+          grep -q 'InterstellarWarpSceneV53.js?v=20260815-66.2' runtime/mainCoreV53.js
+          grep -q 'PhysicalEncounterRuntimeV66.js?v=20260815-66.2' runtime/main.js
           grep -q 'uruxMusicDirection' runtime/scene/InterstellarWarpSceneV53.js
           grep -q 'nebulaDirectorScale' runtime/scene/InterstellarWarpSceneV53.js
           grep -q 'musicSpeedTarget' runtime/scene/InterstellarWarpSceneV53.js
@@ -75,7 +84,7 @@ jobs:
       - if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: warp-visual-checkpoints-v66
+          name: warp-visual-checkpoints-v66-2
           path: test-results/
           if-no-files-found: ignore
           retention-days: 7
