@@ -8,7 +8,7 @@ import { JourneyNarrativeDirector } from '../warp/JourneyNarrativeDirector.js?v=
 import { WarpFieldManager } from '../warp/WarpFieldManagerV53.js?v=20260815-66';
 import { CachedVolumetricNebulaPass } from '../warp/CachedVolumetricNebulaPassV53.js?v=20260815-66';
 import { MusicPulseDirector } from '../audio/MusicPulseDirectorV66.js?v=20260815-66';
-import { PhysicalEncounterRuntimeV66 } from '../journey/PhysicalEncounterRuntimeV66.js?v=20260815-66.2';
+import { PhysicalEncounterRuntimeV66 } from '../journey/PhysicalEncounterRuntimeV66.js?v=20260815-66.3';
 import { runtimeCapabilities } from '../capabilities/RuntimeCapabilityRegistry.js';
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const mix=(a,b,t)=>a+(b-a)*t;
