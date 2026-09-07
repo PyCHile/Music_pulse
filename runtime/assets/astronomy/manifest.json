@@ -1,10 +1,10 @@
 {
   "schema": "urux-astronomy-assets-v1",
-  "generatedAt": "2026-08-31T13:48:29.456621+00:00",
+  "generatedAt": "2026-09-07T12:31:21.063334+00:00",
   "target": "M 42",
   "libraries": {
     "python": "3.12.14",
-    "numpy": "2.5.2",
+    "numpy": "2.5.3",
     "matplotlib": "3.11.1",
     "astropy": "8.0.1",
     "astroquery": "0.4.11",
@@ -60,8 +60,8 @@
   },
   "errors": {
     "astroquery.eso.query": {
-      "type": "RemoteServiceError",
-      "message": "The query resulted in a network problem; the service may be offline."
+      "type": "ValueError",
+      "message": "No header line found in table"
     }
   },
   "coordinates": {
@@ -74,5 +74,5 @@
       "bDeg": -19.381774282431564
     }
   },
-  "augmentedAt": "2026-08-31T14:06:30.839371+00:00"
+  "augmentedAt": "2026-09-07T12:31:43.373014+00:00"
 }
