@@ -1,11 +1,11 @@
 {
   "schema": "urux-astronomy-assets-v1",
-  "generatedAt": "2026-09-07T12:31:21.063334+00:00",
+  "generatedAt": "2026-09-14T12:45:06.158016+00:00",
   "target": "M 42",
   "libraries": {
     "python": "3.12.14",
     "numpy": "2.5.3",
-    "matplotlib": "3.11.1",
+    "matplotlib": "3.11.2",
     "astropy": "8.0.1",
     "astroquery": "0.4.11",
     "aplpy": "2.2.1",
@@ -74,5 +74,5 @@
       "bDeg": -19.381774282431564
     }
   },
-  "augmentedAt": "2026-09-07T12:31:43.373014+00:00"
+  "augmentedAt": "2026-09-14T12:45:38.403638+00:00"
 }
