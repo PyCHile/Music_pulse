@@ -1,16 +1,16 @@
 {
   "schema": "urux-astronomy-assets-v1",
-  "generatedAt": "2026-10-05T14:36:06.680867+00:00",
+  "generatedAt": "2026-10-12T15:22:29.318166+00:00",
   "target": "M 42",
   "libraries": {
-    "python": "3.12.14",
-    "numpy": "2.5.3",
+    "python": "3.12.15",
+    "numpy": "2.5.4",
     "matplotlib": "3.11.2",
     "astropy": "8.0.1",
     "astroquery": "0.4.11",
     "aplpy": "2.2.1",
     "reproject": "0.21.0",
-    "spectralCube": "0.6.7"
+    "spectralCube": "0.7.0"
   },
   "capabilities": {
     "astroquery.simbad": true,
@@ -60,8 +60,8 @@
   },
   "errors": {
     "astroquery.eso.query": {
-      "type": "ValueError",
-      "message": "No header line found in table"
+      "type": "ChunkedEncodingError",
+      "message": "Response ended prematurely"
     }
   },
   "coordinates": {
@@ -74,5 +74,5 @@
       "bDeg": -19.381774282431564
     }
   },
-  "augmentedAt": "2026-10-05T14:36:32.941368+00:00"
+  "augmentedAt": "2026-10-12T15:24:03.242596+00:00"
 }
