@@ -1,12 +1,12 @@
 {
   "schema": "urux-astronomy-assets-v1",
-  "generatedAt": "2026-10-12T15:22:29.318166+00:00",
+  "generatedAt": "2026-10-19T13:12:08.487803+00:00",
   "target": "M 42",
   "libraries": {
     "python": "3.12.15",
     "numpy": "2.5.4",
     "matplotlib": "3.11.2",
-    "astropy": "8.0.1",
+    "astropy": "8.0.2",
     "astroquery": "0.4.11",
     "aplpy": "2.2.1",
     "reproject": "0.21.0",
@@ -60,8 +60,8 @@
   },
   "errors": {
     "astroquery.eso.query": {
-      "type": "ChunkedEncodingError",
-      "message": "Response ended prematurely"
+      "type": "ValueError",
+      "message": "No header line found in table"
     }
   },
   "coordinates": {
@@ -74,5 +74,5 @@
       "bDeg": -19.381774282431564
     }
   },
-  "augmentedAt": "2026-10-12T15:24:03.242596+00:00"
+  "augmentedAt": "2026-10-19T13:12:32.998407+00:00"
 }
